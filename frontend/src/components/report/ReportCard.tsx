@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import type { Report } from '../../types/report'
 import CommitList from './CommitList'
-import { useGenerateAiSummary } from '../../hooks/useReports'
+import { useGenerateAiSummary, useUpdateSummary } from '../../hooks/useReports'
 import styles from './ReportCard.module.css'
 
 interface Props {
@@ -8,7 +9,22 @@ interface Props {
 }
 
 export default function ReportCard({ report }: Props) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [draft, setDraft] = useState(report.summary ?? '')
   const generateAiSummary = useGenerateAiSummary()
+  const updateSummary = useUpdateSummary()
+
+  const handleSave = () => {
+    updateSummary.mutate(
+      { id: report.id, payload: { summary: draft } },
+      { onSuccess: () => setIsEditing(false) },
+    )
+  }
+
+  const handleCancel = () => {
+    setDraft(report.summary ?? '')
+    setIsEditing(false)
+  }
 
   return (
     <div className={styles.card}>
@@ -32,21 +48,79 @@ export default function ReportCard({ report }: Props) {
 
       <div className={styles.divider} />
 
-      <div className={styles.summarySection}>
-        <div className={styles.summaryHeader}>
+      <div className={styles.contentArea}>
+        <div className={styles.leftPanel}>
+          <CommitList commits={report.commits ?? []} />
+        </div>
+
+        <div className={styles.rightPanel}>
           <button
             className={styles.aiBtn}
-            onClick={() => generateAiSummary.mutate(report.id)}
+            onClick={() =>
+              generateAiSummary.mutate(report.id, {
+                onSuccess: (updatedReport: Report) => {
+                  setDraft(updatedReport.summary ?? '')
+                  setIsEditing(true)
+                },
+              })
+            }
             disabled={generateAiSummary.isPending}
           >
             {generateAiSummary.isPending ? '생성 중...' : '✨ AI 요약 생성'}
           </button>
+
+          <div className={styles.reportArea}>
+            {isEditing ? (
+              <>
+                <textarea
+                  className={styles.textarea}
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  rows={10}
+                  placeholder="보고서 내용을 입력하세요..."
+                  autoFocus
+                />
+                <div className={styles.textareaFooter}>
+                  <span className={styles.charCount}>{draft.length}자</span>
+                  <div className={styles.editActions}>
+                    <button
+                      className={styles.cancelBtn}
+                      onClick={handleCancel}
+                      disabled={updateSummary.isPending}
+                    >
+                      취소
+                    </button>
+                    <button
+                      className={styles.saveBtn}
+                      onClick={handleSave}
+                      disabled={updateSummary.isPending}
+                    >
+                      {updateSummary.isPending ? '저장 중...' : '저장'}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className={styles.viewMode}>
+                <button
+                  className={styles.editIconBtn}
+                  onClick={() => setIsEditing(true)}
+                  title="편집"
+                >
+                  ✏️
+                </button>
+                {draft
+                  ? draft.split('\n').map((line, i) => (
+                      <p key={i} className={styles.summaryLine}>
+                        {line}
+                      </p>
+                    ))
+                  : <span className={styles.summaryEmpty}>요약 내용이 없습니다.</span>}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      <div className={styles.divider} />
-
-      <CommitList commits={report.commits ?? []} />
     </div>
   )
 }
