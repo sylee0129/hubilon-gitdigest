@@ -23,6 +23,8 @@ export const reportApi = {
     return res.data.data
   },
 
+  isAiSummaryFailed: (report: Report): boolean => report.aiSummaryFailed ?? false,
+
   updateSummary: async (id: number, payload: UpdateSummaryRequest): Promise<Report> => {
     const res = await apiClient.put<ApiResponse<Report>>(`/reports/${id}/summary`, payload)
     return res.data.data

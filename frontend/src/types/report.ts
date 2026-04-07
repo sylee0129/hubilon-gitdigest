@@ -38,6 +38,7 @@ export interface Report {
   manuallyEdited: boolean
   commits: CommitInfo[]
   createdAt: string
+  aiSummaryFailed: boolean
 }
 
 export interface CreateProjectRequest {

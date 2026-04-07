@@ -15,5 +15,6 @@ public record ReportResult(
         List<CommitInfoResult> commits,
         int commitCount,
         int contributorCount,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean aiSummaryFailed
 ) {}

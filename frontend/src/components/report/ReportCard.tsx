@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Report } from '../../types/report'
 import CommitList from './CommitList'
+import Toast from '../common/Toast'
 import { useGenerateAiSummary, useUpdateSummary } from '../../hooks/useReports'
 import styles from './ReportCard.module.css'
 
@@ -11,6 +12,7 @@ interface Props {
 export default function ReportCard({ report }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const [draft, setDraft] = useState(report.summary ?? '')
+  const [toastVisible, setToastVisible] = useState(false)
   const generateAiSummary = useGenerateAiSummary()
   const updateSummary = useUpdateSummary()
 
@@ -27,6 +29,12 @@ export default function ReportCard({ report }: Props) {
   }
 
   return (
+    <>
+    <Toast
+      message="AI 요약 생성에 실패하여 기본 요약으로 대체되었습니다."
+      visible={toastVisible}
+      onClose={() => setToastVisible(false)}
+    />
     <div className={styles.card}>
       <div className={styles.cardHeader}>
         <div className={styles.projectInfo}>
@@ -61,6 +69,9 @@ export default function ReportCard({ report }: Props) {
                 onSuccess: (updatedReport: Report) => {
                   setDraft(updatedReport.summary ?? '')
                   setIsEditing(true)
+                  if (updatedReport.aiSummaryFailed) {
+                    setToastVisible(true)
+                  }
                 },
               })
             }
@@ -122,5 +133,6 @@ export default function ReportCard({ report }: Props) {
         </div>
       </div>
     </div>
+    </>
   )
 }

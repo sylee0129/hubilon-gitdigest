@@ -30,9 +30,9 @@ public class ReportAiSummarizeService implements ReportAiSummarizeUseCase {
                 .orElseThrow(() -> new NotFoundException("보고서를 찾을 수 없습니다. id=" + reportId));
 
         log.info("Generating AI summary for reportId={}", reportId);
-        String aiSummary = aiSummaryPort.summarize(report.getCommits());
+        var aiResult = aiSummaryPort.summarize(report.getCommits());
 
-        Report updated = report.withAiSummary(aiSummary);
-        return reportAppMapper.toResult(reportCommandPort.save(updated));
+        Report updated = report.withAiSummary(aiResult.summary());
+        return reportAppMapper.toResult(reportCommandPort.save(updated), aiResult.aiUsed());
     }
 }

@@ -8,6 +8,9 @@ dist/
 .env.production
 .env.local
 
+# Secrets
+backend/.env
+
 # Java / Spring Boot
 target/
 *.class

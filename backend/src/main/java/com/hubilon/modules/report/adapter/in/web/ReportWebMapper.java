@@ -19,7 +19,8 @@ public class ReportWebMapper {
                 result.commits(),
                 result.commitCount(),
                 result.contributorCount(),
-                result.createdAt()
+                result.createdAt(),
+                result.aiSummaryFailed()
         );
     }
 

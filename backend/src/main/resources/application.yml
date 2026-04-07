@@ -30,8 +30,8 @@ gitlab:
 ai:
   summary:
     enabled: true
-    api-key: ${GEMINI_API_KEY:AIzaSyCBbHihdT3-Fa5VWDu1i5e-2iy39qE9Iws}
-    model: gemini-2.0-flash
+    api-key: ${GEMINI_API_KEY:}
+    model: gemini-2.0-flash-lite
 
 springdoc:
   swagger-ui:

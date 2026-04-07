@@ -15,6 +15,10 @@ import java.util.List;
 public class ReportAppMapper {
 
     public ReportResult toResult(Report report) {
+        return toResult(report, true);
+    }
+
+    public ReportResult toResult(Report report, boolean aiUsed) {
         List<CommitInfoResult> commitResults = report.getCommits() == null
                 ? Collections.emptyList()
                 : report.getCommits().stream().map(this::toCommitResult).toList();
@@ -37,7 +41,8 @@ public class ReportAppMapper {
                 commitResults,
                 commitCount,
                 contributorCount,
-                report.getCreatedAt()
+                report.getCreatedAt(),
+                !aiUsed
         );
     }
 

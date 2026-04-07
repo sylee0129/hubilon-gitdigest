@@ -21,5 +21,6 @@ public record ReportResponse(
         int commitCount,
         int contributorCount,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean aiSummaryFailed
 ) {}
