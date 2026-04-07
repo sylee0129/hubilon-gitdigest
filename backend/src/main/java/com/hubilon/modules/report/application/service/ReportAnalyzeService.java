@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,13 +52,17 @@ public class ReportAnalyzeService implements ReportAnalyzeUseCase {
     }
 
     private ReportResult analyzeProject(Project project, ReportAnalyzeCommand command) {
-        // 기존 보고서 캐시 확인 — 있으면 그대로 반환 (AI 요약은 버튼으로 별도 생성)
-        Optional<Report> existing = reportQueryPort.findExisting(
-                project.getId(), command.startDate(), command.endDate());
+        // 진행 중인 주(endDate >= 오늘)이면 항상 최신 커밋 조회
+        boolean isCurrentPeriod = !command.endDate().isBefore(LocalDate.now());
 
-        if (existing.isPresent()) {
-            log.info("Returning cached report for project={}", project.getId());
-            return reportAppMapper.toResult(existing.get());
+        if (!isCurrentPeriod) {
+            // 완료된 주 — 캐시된 보고서 반환 (AI 요약은 버튼으로 별도 생성)
+            Optional<Report> existing = reportQueryPort.findExisting(
+                    project.getId(), command.startDate(), command.endDate());
+            if (existing.isPresent()) {
+                log.info("Returning cached report for project={}", project.getId());
+                return reportAppMapper.toResult(existing.get());
+            }
         }
 
         // GitLab에서 커밋 조회
@@ -72,7 +77,19 @@ public class ReportAnalyzeService implements ReportAnalyzeUseCase {
                 command.endDate()
         );
 
-        // DB 저장 (AI 요약은 없이 커밋만 저장)
+        // 진행 중인 주 — 기존 레코드가 있으면 커밋만 갱신
+        if (isCurrentPeriod) {
+            Optional<Report> existing = reportQueryPort.findExisting(
+                    project.getId(), command.startDate(), command.endDate());
+            if (existing.isPresent()) {
+                log.info("Refreshing commits for current-period report, project={}", project.getId());
+                Report refreshed = existing.get().withRefreshedCommits(commits);
+                Report saved = reportCommandPort.save(refreshed);
+                return reportAppMapper.toResult(saved);
+            }
+        }
+
+        // 신규 생성 (완료된 주 캐시 없음 or 진행 중인 주 첫 생성)
         Report report = Report.builder()
                 .projectId(project.getId())
                 .projectName(project.getName())

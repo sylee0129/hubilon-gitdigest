@@ -58,4 +58,20 @@ public class Report {
                 .updatedAt(this.updatedAt)
                 .build();
     }
+
+    public Report withRefreshedCommits(List<CommitInfo> newCommits) {
+        return Report.builder()
+                .id(this.id)
+                .projectId(this.projectId)
+                .projectName(this.projectName)
+                .startDate(this.startDate)
+                .endDate(this.endDate)
+                .aiSummary(this.aiSummary)
+                .manualSummary(this.manualSummary)
+                .manuallyEdited(this.manuallyEdited)
+                .commits(newCommits)
+                .createdAt(this.createdAt)
+                .updatedAt(this.updatedAt)
+                .build();
+    }
 }

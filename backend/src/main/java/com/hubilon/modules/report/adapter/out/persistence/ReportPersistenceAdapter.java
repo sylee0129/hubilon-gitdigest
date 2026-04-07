@@ -25,14 +25,16 @@ public class ReportPersistenceAdapter implements ReportCommandPort, ReportQueryP
         if (report.getId() != null) {
             entity = reportJpaRepository.findById(report.getId())
                     .orElse(buildEntity(report));
+            // 커밋 갱신은 manuallyEdited 여부와 무관하게 처리
+            if (report.getCommits() != null) {
+                entity.clearCommits();
+                populateCommits(entity, report);
+            }
+            // 요약만 manuallyEdited 여부로 분기
             if (report.isManuallyEdited()) {
                 entity.updateSummary(report.getManualSummary());
             } else {
                 entity.refreshAiSummary(report.getAiSummary());
-                if (report.getCommits() != null) {
-                    entity.clearCommits();
-                    populateCommits(entity, report);
-                }
             }
         } else {
             entity = buildEntity(report);
