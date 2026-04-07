@@ -1,14 +1,14 @@
 :root {
-  --color-primary: #5C6EF5;
-  --color-primary-hover: #4a5ce0;
-  --color-bg: #F5F6FA;
+  --color-primary: #2383E2;
+  --color-primary-hover: #1a6ec0;
+  --color-bg: #F7F6F3;
   --color-surface: #FFFFFF;
-  --color-border: #E0E0E0;
-  --color-text-primary: #1A1A2E;
-  --color-text-secondary: #6B7280;
-  --color-success: #10B981;
-  --color-danger: #EF4444;
-  --color-danger-hover: #dc2626;
+  --color-border: #E9E9E7;
+  --color-text-primary: #37352F;
+  --color-text-secondary: #9B9A97;
+  --color-success: #0F7B6C;
+  --color-danger: #E03E3E;
+  --color-danger-hover: #c13333;
 }
 
 *, *::before, *::after {

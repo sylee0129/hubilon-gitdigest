@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
-  padding: 0 24px;
+  height: 44px;
+  padding: 0 20px;
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
@@ -15,75 +15,152 @@
 .left {
   display: flex;
   align-items: center;
-  min-width: 200px;
+  min-width: 180px;
 }
 
 .logo {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-text-primary);
   letter-spacing: -0.3px;
 }
 
 .center {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .navBtn {
-  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
   background: none;
   border: 1px solid var(--color-border);
-  border-radius: 6px;
-  color: var(--color-text-primary);
-  font-size: 13px;
-  transition: background-color 0.15s, border-color 0.15s;
+  border-radius: 4px;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  line-height: 1;
+  transition: background-color 0.15s, color 0.15s;
 }
 
 .navBtn:hover {
   background-color: var(--color-bg);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.dateRange {
-  font-size: 14px;
-  font-weight: 600;
   color: var(--color-text-primary);
-  padding: 0 8px;
-  min-width: 200px;
-  text-align: center;
 }
 
-.thisWeekBtn {
-  padding: 6px 12px;
-  background-color: var(--color-primary);
-  border: none;
-  border-radius: 6px;
-  color: #fff;
+.datePickerWrapper {
+  position: relative;
+}
+
+.dateRangeBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
   font-size: 13px;
   font-weight: 500;
+  color: var(--color-text-primary);
+  cursor: pointer;
   transition: background-color 0.15s;
 }
 
+.dateRangeBtn:hover {
+  background-color: var(--color-bg);
+}
+
+.chevron {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 200;
+  min-width: 300px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.weekOption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+  transition: background-color 0.1s;
+}
+
+.weekOption:hover {
+  background-color: var(--color-bg);
+}
+
+.selectedWeek {
+  background-color: #EDF3FC;
+}
+
+.selectedWeek .weekLabel {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.weekLabel {
+  color: var(--color-text-primary);
+  min-width: 70px;
+}
+
+.weekDate {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.thisWeekBtn {
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
 .thisWeekBtn:hover {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
 }
 
 .right {
   display: flex;
   align-items: center;
-  min-width: 200px;
+  min-width: 180px;
   justify-content: flex-end;
 }
 
 .userName {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--color-text-secondary);
-  padding: 6px 12px;
+  padding: 4px 10px;
   background-color: var(--color-bg);
-  border-radius: 20px;
+  border-radius: 4px;
   border: 1px solid var(--color-border);
 }

@@ -87,7 +87,7 @@ export default function ReportCard({ report }: Props) {
                   className={styles.textarea}
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
-                  rows={10}
+                  rows={14}
                   placeholder="보고서 내용을 입력하세요..."
                   autoFocus
                 />
