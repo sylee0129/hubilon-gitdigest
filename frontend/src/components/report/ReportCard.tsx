@@ -34,7 +34,6 @@ export default function ReportCard({ report }: Props) {
 
       <div className={styles.summarySection}>
         <div className={styles.summaryHeader}>
-          <span className={styles.summaryLabel}>📋 커밋 이력</span>
           <button
             className={styles.aiBtn}
             onClick={() => generateAiSummary.mutate(report.id)}
@@ -43,16 +42,6 @@ export default function ReportCard({ report }: Props) {
             {generateAiSummary.isPending ? '생성 중...' : '✨ AI 요약 생성'}
           </button>
         </div>
-
-        {report.summary ? (
-          <div className={styles.summaryText}>
-            {report.summary.split('\n').map((line, i) => (
-              <p key={i} className={styles.summaryLine}>{line}</p>
-            ))}
-          </div>
-        ) : (
-          <span className={styles.summaryEmpty}>요약 내용이 없습니다.</span>
-        )}
       </div>
 
       <div className={styles.divider} />

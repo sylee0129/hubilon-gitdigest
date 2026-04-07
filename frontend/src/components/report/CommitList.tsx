@@ -31,7 +31,7 @@ function getFileLabel(file: { newFile: boolean; deletedFile: boolean; renamedFil
 }
 
 export default function CommitList({ commits }: Props) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const [showAll, setShowAll] = useState(false)
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
 
