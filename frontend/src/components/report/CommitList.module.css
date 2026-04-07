@@ -1,0 +1,194 @@
+.container {
+  margin-top: 8px;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding: 4px 0;
+  transition: color 0.15s;
+}
+
+.toggleBtn:hover {
+  color: var(--color-text-primary);
+}
+
+.arrow {
+  font-size: 10px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.count {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.list {
+  margin-top: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* 계정 그룹 */
+.group {
+  border-bottom: 2px solid var(--color-border);
+}
+
+.group:last-child {
+  border-bottom: none;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  background-color: #f0f2ff;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.groupAuthor {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.groupCount {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+/* 커밋 블록 */
+.commitBlock {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.commitBlock:last-child {
+  border-bottom: none;
+}
+
+.commitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background-color 0.1s;
+  gap: 8px;
+}
+
+.commitRow:hover {
+  background-color: var(--color-bg);
+}
+
+.commitMain {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.date {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.message {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileArrow {
+  font-size: 9px;
+  color: var(--color-text-secondary);
+  transition: transform 0.2s;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.fileArrow.open {
+  transform: rotate(180deg);
+}
+
+/* 파일 목록 */
+.fileList {
+  padding: 6px 14px 10px;
+  background-color: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fileItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.fileNew {
+  color: var(--color-success);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.fileDeleted {
+  color: var(--color-danger);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.fileRenamed {
+  color: #6b7add;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.fileModified {
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.filePath {
+  color: var(--color-text-secondary);
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.showMoreBtn {
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-border);
+  font-size: 12px;
+  color: var(--color-primary);
+  text-align: center;
+  transition: background-color 0.15s;
+}
+
+.showMoreBtn:hover {
+  background-color: var(--color-bg);
+}

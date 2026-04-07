@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/worklogai;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  application:
+    name: work-log-ai
+
+server:
+  port: 8080
+
+gitlab:
+  api:
+    base-url: https://gitlab.com
+  oauth:
+    client-id: ${GITLAB_OAUTH_CLIENT_ID:your-client-id}
+    client-secret: ${GITLAB_OAUTH_CLIENT_SECRET:your-client-secret}
+    redirect-uri: ${GITLAB_OAUTH_REDIRECT_URI:http://localhost:8080/api/oauth/gitlab/callback}
+    frontend-origin: ${FRONTEND_ORIGIN:http://localhost:3000}
+
+ai:
+  summary:
+    enabled: true
+    api-key: ${GEMINI_API_KEY:AIzaSyCBbHihdT3-Fa5VWDu1i5e-2iy39qE9Iws}
+    model: gemini-2.0-flash
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs

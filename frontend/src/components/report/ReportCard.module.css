@@ -1,0 +1,124 @@
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.projectInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.projectName {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.dateRange {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.statItem {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.statItem strong {
+  color: var(--color-text-primary);
+}
+
+.statDot {
+  color: var(--color-border);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 14px 0;
+}
+
+.summarySection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summaryLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.aiBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background: none;
+  border: 1px solid var(--color-primary);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--color-primary);
+  transition: background-color 0.15s, color 0.15s;
+  margin-left: auto;
+}
+
+.aiBtn:hover:not(:disabled) {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.aiBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.summaryText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryLine {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.summaryEmpty {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}

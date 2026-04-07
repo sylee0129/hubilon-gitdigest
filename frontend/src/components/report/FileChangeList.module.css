@@ -1,0 +1,132 @@
+.container {
+  margin-top: 8px;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding: 4px 0;
+  transition: color 0.15s;
+}
+
+.toggleBtn:hover {
+  color: var(--color-text-primary);
+}
+
+.arrow {
+  font-size: 10px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.count {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.fileList {
+  margin-top: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.fileRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.1s;
+}
+
+.fileRow:last-child {
+  border-bottom: none;
+}
+
+.fileRow:hover {
+  background-color: var(--color-bg);
+}
+
+.filePath {
+  flex: 1;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.additions {
+  color: var(--color-success);
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+}
+
+.deletions {
+  color: var(--color-danger);
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+}
+
+.showMoreBtn {
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-border);
+  font-size: 12px;
+  color: var(--color-primary);
+  text-align: center;
+  transition: background-color 0.15s;
+}
+
+.showMoreBtn:hover {
+  background-color: var(--color-bg);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+
+.badgeM {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.badgeN {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badgeD {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badgeR {
+  background: #fef9c3;
+  color: #854d0e;
+}

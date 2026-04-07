@@ -1,0 +1,89 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 24px;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  min-width: 200px;
+}
+
+.logo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: -0.3px;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navBtn {
+  padding: 6px 12px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-primary);
+  font-size: 13px;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.navBtn:hover {
+  background-color: var(--color-bg);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dateRange {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  padding: 0 8px;
+  min-width: 200px;
+  text-align: center;
+}
+
+.thisWeekBtn {
+  padding: 6px 12px;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.15s;
+}
+
+.thisWeekBtn:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  min-width: 200px;
+  justify-content: flex-end;
+}
+
+.userName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  padding: 6px 12px;
+  background-color: var(--color-bg);
+  border-radius: 20px;
+  border: 1px solid var(--color-border);
+}

@@ -1,0 +1,94 @@
+.viewMode {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryLine {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+}
+
+.empty {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.editMode {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+  box-shadow: 0 0 0 3px rgba(92, 110, 245, 0.12);
+}
+
+.textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.errorMsg {
+  font-size: 12px;
+  color: var(--color-danger);
+  padding: 6px 8px;
+  background-color: #fef2f2;
+  border-radius: 6px;
+}
+
+.editActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cancelBtn {
+  padding: 6px 14px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  transition: background-color 0.15s;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background-color: var(--color-bg);
+}
+
+.cancelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.saveBtn {
+  padding: 6px 16px;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  transition: background-color 0.15s;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
