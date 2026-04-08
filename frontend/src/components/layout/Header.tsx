@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useReportStore } from '../../stores/useReportStore'
 import styles from './Header.module.css'
 
@@ -59,6 +60,7 @@ function generateWeeks(): WeekOption[] {
 
 export default function Header() {
   const { startDate, endDate, setCustomRange, setThisWeek, setPrevWeek, setNextWeek } = useReportStore()
+  const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const weeks = generateWeeks()
@@ -112,7 +114,11 @@ export default function Header() {
 
         <button className={styles.navBtn} onClick={setNextWeek}>›</button>
 
-        <button className={styles.thisWeekBtn} onClick={() => { setThisWeek(); setIsOpen(false) }}>
+        <button className={styles.thisWeekBtn} onClick={() => {
+          setThisWeek()
+          setIsOpen(false)
+          void queryClient.invalidateQueries({ queryKey: ['reports'] })
+        }}>
           이번주
         </button>
       </div>

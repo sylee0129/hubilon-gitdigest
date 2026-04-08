@@ -6,10 +6,14 @@ export const REPORT_QUERY_KEY = (params: ReportQueryParams) =>
   ['reports', params] as const
 
 export function useReports(params: ReportQueryParams) {
+  const today = new Date().toISOString().split('T')[0]
+  const isCurrentPeriod = Boolean(params.endDate && params.endDate >= today)
+
   return useQuery({
     queryKey: REPORT_QUERY_KEY(params),
     queryFn: () => reportApi.getReports(params),
     enabled: Boolean(params.startDate && params.endDate),
+    staleTime: isCurrentPeriod ? 0 : undefined,
   })
 }
 
