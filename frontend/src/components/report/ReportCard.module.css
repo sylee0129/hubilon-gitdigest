@@ -85,30 +85,29 @@
   margin: 0 22px;
 }
 
-/* AI Button */
+/* AI Button — inside dark panel header */
 .aiBtn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 16px;
-  background: var(--color-primary);
-  border: none;
-  border-radius: var(--radius-button);
-  font-size: 12px;
+  gap: 5px;
+  padding: 4px 10px;
+  background-color: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
   font-weight: 600;
-  color: #fff;
-  transition: background-color var(--transition-smooth), box-shadow var(--transition-smooth), opacity var(--transition-smooth);
+  color: rgba(255,255,255,0.75);
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
   cursor: pointer;
-  align-self: flex-start;
 }
 
 .aiBtn:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
-  box-shadow: 0 2px 8px rgba(79,70,229,0.3);
+  background-color: rgba(255,255,255,0.18);
+  color: #fff;
 }
 
 .aiBtn:disabled {
-  opacity: 0.55;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -156,6 +155,8 @@
 .viewModeHeader {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 10px;
 }
 

@@ -75,24 +75,6 @@ export default function ReportCard({ report, showCheckbox, isSelected, onSelect 
         </div>
 
         <div className={styles.rightPanel}>
-          <button
-            className={styles.aiBtn}
-            onClick={() =>
-              generateAiSummary.mutate(report.id, {
-                onSuccess: (updatedReport: Report) => {
-                  setDraft(updatedReport.summary ?? '')
-                  setIsEditing(true)
-                  if (updatedReport.aiSummaryFailed) {
-                    setToastVisible(true)
-                  }
-                },
-              })
-            }
-            disabled={generateAiSummary.isPending}
-          >
-            {generateAiSummary.isPending ? '생성 중...' : '✨ AI 요약 생성'}
-          </button>
-
           <div className={styles.reportArea}>
             {isEditing ? (
               <>
@@ -127,6 +109,23 @@ export default function ReportCard({ report, showCheckbox, isSelected, onSelect 
             ) : (
               <div className={styles.viewMode}>
                 <div className={styles.viewModeHeader}>
+                  <button
+                    className={styles.aiBtn}
+                    onClick={() =>
+                      generateAiSummary.mutate(report.id, {
+                        onSuccess: (updatedReport: Report) => {
+                          setDraft(updatedReport.summary ?? '')
+                          setIsEditing(true)
+                          if (updatedReport.aiSummaryFailed) {
+                            setToastVisible(true)
+                          }
+                        },
+                      })
+                    }
+                    disabled={generateAiSummary.isPending}
+                  >
+                    {generateAiSummary.isPending ? '생성 중...' : '✨ AI 요약'}
+                  </button>
                   <button
                     className={styles.editIconBtn}
                     onClick={() => setIsEditing(true)}

@@ -1,10 +1,10 @@
 :root {
-  /* Accent — refined indigo */
-  --color-primary: #4F46E5;
-  --color-primary-hover: #4338CA;
-  --color-primary-light: #EEF2FF;
-  --color-primary-surface: #F5F3FF;
-  --color-secondary: #6366F1;
+  /* Accent — clean blue */
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-primary-light: #EFF6FF;
+  --color-primary-surface: #F0F7FF;
+  --color-secondary: #3B82F6;
 
   /* Neutrals */
   --color-bg: #F7F8FA;
