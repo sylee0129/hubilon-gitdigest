@@ -119,16 +119,25 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-.content {
+.contentWrapper {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.cardColumn {
   flex: 1;
   overflow-y: auto;
+  min-width: 0;
   padding-right: 4px;
 }
 
 .cardList {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .stateContainer {

@@ -4,6 +4,7 @@ import { useReports, useExportExcel } from '../hooks/useReports'
 import Header from '../components/layout/Header'
 import Sidebar from '../components/layout/Sidebar'
 import ReportCard from '../components/report/ReportCard'
+import ReportPanel from '../components/report/ReportPanel'
 import styles from './ReportDashboard.module.css'
 
 const SIDEBAR_MIN = 160
@@ -14,6 +15,7 @@ export default function ReportDashboard() {
   const exportExcel = useExportExcel()
 
   const [selectedProjectIds, setSelectedProjectIds] = useState<Set<number>>(new Set())
+  const [activeReportId, setActiveReportId] = useState<number | null>(null)
   const [sidebarWidth, setSidebarWidth] = useState(240)
   const isResizing = useRef(false)
 
@@ -43,6 +45,19 @@ export default function ReportDashboard() {
       ? selectedProjectId
       : undefined,
   })
+
+  // 데이터 로드 시 첫 번째 카드 자동 선택
+  useEffect(() => {
+    if (reportsQuery.data && reportsQuery.data.length > 0) {
+      setActiveReportId(prev =>
+        reportsQuery.data.find(r => r.id === prev) ? prev : reportsQuery.data[0].id
+      )
+    } else {
+      setActiveReportId(null)
+    }
+  }, [reportsQuery.data])
+
+  const activeReport = reportsQuery.data?.find(r => r.id === activeReportId) ?? null
 
   const handleExport = () => {
     exportExcel.mutate({
@@ -110,47 +125,53 @@ export default function ReportDashboard() {
             )}
           </div>
 
-          <div className={styles.content}>
-            {reportsQuery.isLoading && (
-              <div className={styles.stateContainer}>
-                <div className={styles.spinner} />
-                <span>보고서를 불러오는 중...</span>
-              </div>
-            )}
+          <div className={styles.contentWrapper}>
+            <div className={styles.cardColumn}>
+              {reportsQuery.isLoading && (
+                <div className={styles.stateContainer}>
+                  <div className={styles.spinner} />
+                  <span>보고서를 불러오는 중...</span>
+                </div>
+              )}
 
-            {reportsQuery.isError && (
-              <div className={styles.stateContainer}>
-                <span className={styles.errorText}>
-                  {reportsQuery.error instanceof Error
-                    ? reportsQuery.error.message
-                    : '보고서를 불러오지 못했습니다.'}
-                </span>
-              </div>
-            )}
+              {reportsQuery.isError && (
+                <div className={styles.stateContainer}>
+                  <span className={styles.errorText}>
+                    {reportsQuery.error instanceof Error
+                      ? reportsQuery.error.message
+                      : '보고서를 불러오지 못했습니다.'}
+                  </span>
+                </div>
+              )}
 
-            {reportsQuery.isSuccess && reportsQuery.data.length === 0 && (
-              <div className={styles.stateContainer}>
-                <span className={styles.emptyText}>
-                  {activeTab === 'individual' && selectedProjectId == null
-                    ? '사이드바에서 프로젝트를 선택해 주세요.'
-                    : '해당 기간에 보고서가 없습니다.'}
-                </span>
-              </div>
-            )}
+              {reportsQuery.isSuccess && reportsQuery.data.length === 0 && (
+                <div className={styles.stateContainer}>
+                  <span className={styles.emptyText}>
+                    {activeTab === 'individual' && selectedProjectId == null
+                      ? '사이드바에서 프로젝트를 선택해 주세요.'
+                      : '해당 기간에 보고서가 없습니다.'}
+                  </span>
+                </div>
+              )}
 
-            {reportsQuery.isSuccess && reportsQuery.data.length > 0 && (
-              <div className={styles.cardList}>
-                {reportsQuery.data.map((report) => (
-                  <ReportCard
-                    key={report.id}
-                    report={report}
-                    showCheckbox={activeTab === 'all'}
-                    isSelected={selectedProjectIds.has(report.projectId)}
-                    onSelect={handleSelect}
-                  />
-                ))}
-              </div>
-            )}
+              {reportsQuery.isSuccess && reportsQuery.data.length > 0 && (
+                <div className={styles.cardList}>
+                  {reportsQuery.data.map((report) => (
+                    <ReportCard
+                      key={report.id}
+                      report={report}
+                      showCheckbox={activeTab === 'all'}
+                      isSelected={selectedProjectIds.has(report.projectId)}
+                      onSelect={handleSelect}
+                      isActive={activeReportId === report.id}
+                      onClick={() => setActiveReportId(report.id)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <ReportPanel report={activeReport} />
           </div>
 
           <div className={styles.footer}>

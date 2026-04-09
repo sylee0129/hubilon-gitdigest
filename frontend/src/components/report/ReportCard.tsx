@@ -1,8 +1,5 @@
-import { useState } from 'react'
 import type { Report } from '../../types/report'
 import CommitList from './CommitList'
-import Toast from '../common/Toast'
-import { useGenerateAiSummary, useUpdateSummary } from '../../hooks/useReports'
 import styles from './ReportCard.module.css'
 
 interface Props {
@@ -10,50 +7,36 @@ interface Props {
   showCheckbox?: boolean
   isSelected?: boolean
   onSelect?: (projectId: number, checked: boolean) => void
+  isActive?: boolean
+  onClick?: () => void
 }
 
-export default function ReportCard({ report, showCheckbox, isSelected, onSelect }: Props) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [draft, setDraft] = useState(report.summary ?? '')
-  const [toastVisible, setToastVisible] = useState(false)
-  const generateAiSummary = useGenerateAiSummary()
-  const updateSummary = useUpdateSummary()
-
-  const handleSave = () => {
-    updateSummary.mutate(
-      { id: report.id, payload: { summary: draft } },
-      { onSuccess: () => setIsEditing(false) },
-    )
-  }
-
-  const handleCancel = () => {
-    setDraft(report.summary ?? '')
-    setIsEditing(false)
-  }
-
+export default function ReportCard({ report, showCheckbox, isSelected, onSelect, isActive, onClick }: Props) {
   return (
-    <>
-    <Toast
-      message="AI 요약 생성에 실패하여 기본 요약으로 대체되었습니다."
-      visible={toastVisible}
-      onClose={() => setToastVisible(false)}
-    />
-    <div className={styles.card}>
+    <div
+      className={`${styles.card} ${isActive ? styles.activeCard : ''}`}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
+    >
       <div className={styles.cardHeader}>
         <div className={styles.projectLeft}>
           {showCheckbox && (
             <input
               type="checkbox"
               checked={isSelected ?? false}
-              onChange={(e) => onSelect?.(report.projectId, e.target.checked)}
+              onChange={(e) => {
+                e.stopPropagation()
+                onSelect?.(report.projectId, e.target.checked)
+              }}
               className={styles.checkbox}
+              onClick={(e) => e.stopPropagation()}
             />
           )}
           <div className={styles.projectInfo}>
             <h3 className={styles.projectName}>{report.projectName}</h3>
-            <span className={styles.dateRange}>
-              {report.startDate} ~ {report.endDate}
-            </span>
+            <span className={styles.dateRange}>{report.startDate} ~ {report.endDate}</span>
           </div>
         </div>
         <div className={styles.stats}>
@@ -69,88 +52,7 @@ export default function ReportCard({ report, showCheckbox, isSelected, onSelect 
 
       <div className={styles.divider} />
 
-      <div className={styles.contentArea}>
-        <div className={styles.leftPanel}>
-          <CommitList commits={report.commits ?? []} />
-        </div>
-
-        <div className={styles.rightPanel}>
-          <div className={styles.reportArea}>
-            <div className={styles.reportAreaHeader}>
-              <span className={styles.reportLabel}>📄 보고서</span>
-              <div className={styles.reportActions}>
-                {isEditing ? (
-                  <>
-                    <span className={styles.charCount}>{draft.length}자</span>
-                    <button
-                      className={styles.cancelBtn}
-                      onClick={handleCancel}
-                      disabled={updateSummary.isPending}
-                    >
-                      취소
-                    </button>
-                    <button
-                      className={styles.saveBtn}
-                      onClick={handleSave}
-                      disabled={updateSummary.isPending}
-                    >
-                      {updateSummary.isPending ? '저장 중...' : '저장'}
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      className={styles.aiBtn}
-                      onClick={() =>
-                        generateAiSummary.mutate(report.id, {
-                          onSuccess: (updatedReport: Report) => {
-                            setDraft(updatedReport.summary ?? '')
-                            setIsEditing(true)
-                            if (updatedReport.aiSummaryFailed) {
-                              setToastVisible(true)
-                            }
-                          },
-                        })
-                      }
-                      disabled={generateAiSummary.isPending}
-                    >
-                      {generateAiSummary.isPending ? '생성 중...' : '✨ AI 요약'}
-                    </button>
-                    <button
-                      className={styles.editIconBtn}
-                      onClick={() => setIsEditing(true)}
-                    >
-                      편집
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div className={styles.reportAreaContent}>
-              {isEditing ? (
-                <textarea
-                  className={styles.textarea}
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  rows={14}
-                  placeholder="보고서 내용을 입력하세요..."
-                  autoFocus
-                />
-              ) : (
-                <div className={styles.summaryContent}>
-                  {draft
-                    ? draft.split('\n').map((line, i) => (
-                        <p key={i} className={styles.summaryLine}>{line}</p>
-                      ))
-                    : <span className={styles.summaryEmpty}>요약 내용이 없습니다.<br/>AI 요약 또는 직접 편집해 주세요.</span>}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      <CommitList commits={report.commits ?? []} />
     </div>
-    </>
   )
 }
