@@ -3,6 +3,7 @@ export interface Project {
   name: string
   gitlabUrl: string
   authType: 'PAT' | 'OAUTH'
+  sortOrder: number
   createdAt: string
 }
 

@@ -42,6 +42,10 @@ public class ProjectJpaEntity {
     @Comment("GitLab 내부 프로젝트 ID")
     private Long gitlabProjectId;
 
+    @Comment("정렬 순서")
+    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
+    private int sortOrder;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -55,12 +59,17 @@ public class ProjectJpaEntity {
 
     @Builder
     public ProjectJpaEntity(Long id, String name, String gitlabUrl, String accessToken,
-                             AuthType authType, Long gitlabProjectId) {
+                             AuthType authType, Long gitlabProjectId, int sortOrder) {
         this.id = id;
         this.name = name;
         this.gitlabUrl = gitlabUrl;
         this.accessToken = accessToken;
         this.authType = authType;
         this.gitlabProjectId = gitlabProjectId;
+        this.sortOrder = sortOrder;
+    }
+
+    public void updateSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }

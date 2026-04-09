@@ -10,10 +10,10 @@
 
 .modal {
   background-color: var(--color-surface);
-  border-radius: 16px;
+  border-radius: 24px;
   padding: 28px;
   width: 480px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
 }
 
 .header {
@@ -35,7 +35,7 @@
   font-size: 16px;
   color: var(--color-text-secondary);
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-button);
   transition: background-color 0.15s;
 }
 
@@ -64,7 +64,7 @@
 .input {
   padding: 10px 12px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-input);
   font-size: 14px;
   color: var(--color-text-primary);
   background-color: var(--color-surface);
@@ -74,7 +74,7 @@
 
 .input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(92, 110, 245, 0.12);
+  box-shadow: 0 0 0 3px rgba(112, 42, 225, 0.12);
 }
 
 .input::placeholder {
@@ -121,9 +121,9 @@
   flex-direction: column;
   gap: 12px;
   padding: 16px;
-  background-color: #f8f9ff;
-  border: 1px solid #dde1ff;
-  border-radius: 10px;
+  background-color: var(--color-primary-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
 }
 
 .oauthDesc {
@@ -170,7 +170,7 @@
   padding: 10px 16px;
   background-color: #fc6d26;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-button);
   font-size: 14px;
   font-weight: 600;
   color: #fff;
@@ -191,7 +191,7 @@
   padding: 10px 12px;
   background-color: #fef2f2;
   border: 1px solid #fca5a5;
-  border-radius: 8px;
+  border-radius: var(--radius-input);
   font-size: 13px;
   color: var(--color-danger);
 }
@@ -207,7 +207,7 @@
   padding: 10px 18px;
   background: none;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-button);
   font-size: 14px;
   color: var(--color-text-secondary);
   transition: background-color 0.15s;
@@ -221,7 +221,7 @@
   padding: 10px 20px;
   background-color: var(--color-primary);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-button);
   font-size: 14px;
   font-weight: 600;
   color: #fff;

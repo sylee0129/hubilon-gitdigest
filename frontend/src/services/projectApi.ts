@@ -16,4 +16,8 @@ export const projectApi = {
   remove: async (id: number): Promise<void> => {
     await apiClient.delete(`/projects/${id}`)
   },
+
+  reorder: async (projectIds: number[]): Promise<void> => {
+    await apiClient.patch('/projects/reorder', { projectIds })
+  },
 }

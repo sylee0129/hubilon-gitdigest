@@ -7,9 +7,12 @@ import styles from './ReportCard.module.css'
 
 interface Props {
   report: Report
+  showCheckbox?: boolean
+  isSelected?: boolean
+  onSelect?: (projectId: number, checked: boolean) => void
 }
 
-export default function ReportCard({ report }: Props) {
+export default function ReportCard({ report, showCheckbox, isSelected, onSelect }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const [draft, setDraft] = useState(report.summary ?? '')
   const [toastVisible, setToastVisible] = useState(false)
@@ -37,11 +40,21 @@ export default function ReportCard({ report }: Props) {
     />
     <div className={styles.card}>
       <div className={styles.cardHeader}>
-        <div className={styles.projectInfo}>
-          <h3 className={styles.projectName}>{report.projectName}</h3>
-          <span className={styles.dateRange}>
-            {report.startDate} ~ {report.endDate}
-          </span>
+        <div className={styles.projectLeft}>
+          {showCheckbox && (
+            <input
+              type="checkbox"
+              checked={isSelected ?? false}
+              onChange={(e) => onSelect?.(report.projectId, e.target.checked)}
+              className={styles.checkbox}
+            />
+          )}
+          <div className={styles.projectInfo}>
+            <h3 className={styles.projectName}>{report.projectName}</h3>
+            <span className={styles.dateRange}>
+              {report.startDate} ~ {report.endDate}
+            </span>
+          </div>
         </div>
         <div className={styles.stats}>
           <span className={styles.statItem}>
@@ -113,20 +126,24 @@ export default function ReportCard({ report }: Props) {
               </>
             ) : (
               <div className={styles.viewMode}>
-                <button
-                  className={styles.editIconBtn}
-                  onClick={() => setIsEditing(true)}
-                  title="편집"
-                >
-                  ✏️
-                </button>
-                {draft
-                  ? draft.split('\n').map((line, i) => (
-                      <p key={i} className={styles.summaryLine}>
-                        {line}
-                      </p>
-                    ))
-                  : <span className={styles.summaryEmpty}>요약 내용이 없습니다.</span>}
+                <div className={styles.viewModeHeader}>
+                  <button
+                    className={styles.editIconBtn}
+                    onClick={() => setIsEditing(true)}
+                    title="편집"
+                  >
+                    ✏️ 편집
+                  </button>
+                </div>
+                <div className={styles.summaryContent}>
+                  {draft
+                    ? draft.split('\n').map((line, i) => (
+                        <p key={i} className={styles.summaryLine}>
+                          {line}
+                        </p>
+                      ))
+                    : <span className={styles.summaryEmpty}>요약 내용이 없습니다.</span>}
+                </div>
               </div>
             )}
           </div>

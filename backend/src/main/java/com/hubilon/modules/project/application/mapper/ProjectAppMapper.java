@@ -26,6 +26,7 @@ public class ProjectAppMapper {
                 project.getGitlabUrl(),
                 project.getAuthType(),
                 project.getGitlabProjectId(),
+                project.getSortOrder(),
                 project.getCreatedAt()
         );
     }

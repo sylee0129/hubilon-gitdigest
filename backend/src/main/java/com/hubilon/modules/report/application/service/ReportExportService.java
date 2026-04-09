@@ -34,9 +34,9 @@ public class ReportExportService implements ReportExportUseCase {
     @Override
     public byte[] exportToExcel(ReportExportQuery query) {
         List<Report> reports;
-        if (query.projectId() != null) {
-            reports = reportQueryPort.findByProjectIdAndDateRange(
-                    query.projectId(), query.startDate(), query.endDate());
+        if (query.projectIds() != null && !query.projectIds().isEmpty()) {
+            reports = reportQueryPort.findByProjectIdsAndDateRange(
+                    query.projectIds(), query.startDate(), query.endDate());
         } else {
             reports = reportQueryPort.findByDateRange(query.startDate(), query.endDate());
         }

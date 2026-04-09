@@ -12,6 +12,8 @@ public interface ReportQueryPort {
 
     List<Report> findByProjectIdAndDateRange(Long projectId, LocalDate startDate, LocalDate endDate);
 
+    List<Report> findByProjectIdsAndDateRange(List<Long> projectIds, LocalDate startDate, LocalDate endDate);
+
     List<Report> findByDateRange(LocalDate startDate, LocalDate endDate);
 
     Optional<Report> findExisting(Long projectId, LocalDate startDate, LocalDate endDate);

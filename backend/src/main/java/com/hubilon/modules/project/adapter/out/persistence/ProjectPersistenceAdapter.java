@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
@@ -29,9 +30,22 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
 
     @Override
     public List<Project> findAll() {
-        return projectJpaRepository.findAll().stream()
+        return projectJpaRepository.findAllByOrderBySortOrderAsc().stream()
                 .map(this::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void updateSortOrders(List<Long> orderedIds) {
+        List<ProjectJpaEntity> entities = projectJpaRepository.findAllById(orderedIds);
+        IntStream.range(0, orderedIds.size()).forEach(i -> {
+            Long id = orderedIds.get(i);
+            entities.stream()
+                    .filter(e -> e.getId().equals(id))
+                    .findFirst()
+                    .ifPresent(e -> e.updateSortOrder(i));
+        });
+        projectJpaRepository.saveAll(entities);
     }
 
     @Override
@@ -52,6 +66,7 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
                 .accessToken(project.getAccessToken())
                 .authType(ProjectJpaEntity.AuthType.valueOf(project.getAuthType().name()))
                 .gitlabProjectId(project.getGitlabProjectId())
+                .sortOrder(project.getSortOrder())
                 .build();
     }
 
@@ -63,6 +78,7 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
                 .accessToken(entity.getAccessToken())
                 .authType(Project.AuthType.valueOf(entity.getAuthType().name()))
                 .gitlabProjectId(entity.getGitlabProjectId())
+                .sortOrder(entity.getSortOrder())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();

@@ -15,6 +15,7 @@ public class Project {
     private String accessToken;
     private AuthType authType;
     private Long gitlabProjectId;
+    private int sortOrder;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

@@ -1,9 +1,10 @@
 package com.hubilon.modules.report.application.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record ReportExportQuery(
-        Long projectId,
+        List<Long> projectIds,
         LocalDate startDate,
         LocalDate endDate
 ) {}

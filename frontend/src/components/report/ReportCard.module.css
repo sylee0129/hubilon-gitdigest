@@ -1,14 +1,23 @@
 .card {
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 16px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: box-shadow 0.2s;
+  border-radius: var(--radius-card);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition-smooth), transform var(--transition-smooth);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+  margin-top: 2px;
 }
 
 .card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
 }
 
 .cardHeader {
@@ -19,6 +28,12 @@
   margin-bottom: 4px;
 }
 
+.projectLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
 .projectInfo {
   display: flex;
   flex-direction: column;
@@ -26,7 +41,7 @@
 }
 
 .projectName {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--color-text-primary);
 }
@@ -44,8 +59,11 @@
 }
 
 .statItem {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--color-text-secondary);
+  background-color: var(--color-primary-surface);
+  padding: 3px 10px;
+  border-radius: var(--radius-button);
 }
 
 .statItem strong {
@@ -59,26 +77,27 @@
 .divider {
   height: 1px;
   background-color: var(--color-border);
-  margin: 14px 0;
+  margin: 20px 0;
 }
 
 .aiBtn {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 12px;
-  background: none;
-  border: 1px solid var(--color-primary);
-  border-radius: 6px;
+  padding: 8px 18px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border: none;
+  border-radius: var(--radius-button);
   font-size: 12px;
-  color: var(--color-primary);
-  transition: background-color 0.15s, color 0.15s;
+  font-weight: 600;
+  color: #fff;
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), opacity var(--transition-smooth);
   cursor: pointer;
 }
 
 .aiBtn:hover:not(:disabled) {
-  background-color: var(--color-primary);
-  color: #fff;
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(112,42,225,0.3);
 }
 
 .aiBtn:disabled {
@@ -120,31 +139,46 @@
 
 .reportArea {
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--radius-input);
   padding: 12px;
   min-height: 300px;
-  background-color: var(--color-bg);
+  background-color: var(--color-primary-surface);
 }
 
 .viewMode {
-  position: relative;
+  display: flex;
+  flex-direction: column;
   min-height: 240px;
 }
 
+.viewModeHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
 .editIconBtn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: none;
-  border: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background-color: var(--color-primary-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-primary);
   cursor: pointer;
-  font-size: 14px;
-  padding: 2px 4px;
-  opacity: 0.5;
+  transition: background-color var(--transition-smooth), border-color var(--transition-smooth);
 }
 
 .editIconBtn:hover {
-  opacity: 1;
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.summaryContent {
+  flex: 1;
 }
 
 .textarea {
@@ -180,7 +214,7 @@
   padding: 4px 10px;
   background: none;
   border: 1px solid var(--color-border);
-  border-radius: 5px;
+  border-radius: var(--radius-button);
   font-size: 12px;
   color: var(--color-text-secondary);
   cursor: pointer;
@@ -194,7 +228,7 @@
   padding: 4px 10px;
   background-color: var(--color-primary);
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-button);
   font-size: 12px;
   color: #fff;
   cursor: pointer;

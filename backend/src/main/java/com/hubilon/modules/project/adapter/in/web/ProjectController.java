@@ -1,8 +1,10 @@
 package com.hubilon.modules.project.adapter.in.web;
 
 import com.hubilon.common.response.Response;
+import com.hubilon.modules.project.application.dto.ProjectReorderCommand;
 import com.hubilon.modules.project.domain.port.in.ProjectDeleteUseCase;
 import com.hubilon.modules.project.domain.port.in.ProjectRegisterUseCase;
+import com.hubilon.modules.project.domain.port.in.ProjectReorderUseCase;
 import com.hubilon.modules.project.domain.port.in.ProjectSearchUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +24,7 @@ public class ProjectController {
     private final ProjectRegisterUseCase projectRegisterUseCase;
     private final ProjectDeleteUseCase projectDeleteUseCase;
     private final ProjectSearchUseCase projectSearchUseCase;
+    private final ProjectReorderUseCase projectReorderUseCase;
     private final ProjectWebMapper projectWebMapper;
 
     @Operation(summary = "프로젝트 목록 조회", description = "등록된 GitLab 프로젝트 목록을 반환합니다.")
@@ -50,6 +53,13 @@ public class ProjectController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Response<Void> delete(@PathVariable Long id) {
         projectDeleteUseCase.delete(id);
+        return Response.ok();
+    }
+
+    @Operation(summary = "프로젝트 순서 변경", description = "사이드바 프로젝트 목록 순서를 변경합니다.")
+    @PatchMapping("/reorder")
+    public Response<Void> reorder(@RequestBody ProjectReorderRequest request) {
+        projectReorderUseCase.reorder(new ProjectReorderCommand(request.projectIds()));
         return Response.ok();
     }
 }

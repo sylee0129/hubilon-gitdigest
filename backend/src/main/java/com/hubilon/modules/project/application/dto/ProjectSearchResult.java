@@ -10,5 +10,6 @@ public record ProjectSearchResult(
         String gitlabUrl,
         AuthType authType,
         Long gitlabProjectId,
+        int sortOrder,
         LocalDateTime createdAt
 ) {}

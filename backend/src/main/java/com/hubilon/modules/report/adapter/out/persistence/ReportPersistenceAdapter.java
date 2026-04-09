@@ -56,6 +56,12 @@ public class ReportPersistenceAdapter implements ReportCommandPort, ReportQueryP
     }
 
     @Override
+    public List<Report> findByProjectIdsAndDateRange(List<Long> projectIds, LocalDate startDate, LocalDate endDate) {
+        return reportJpaRepository.findByProjectIdsAndDateRange(projectIds, startDate, endDate)
+                .stream().map(this::toDomain).toList();
+    }
+
+    @Override
     public List<Report> findByDateRange(LocalDate startDate, LocalDate endDate) {
         return reportJpaRepository.findByDateRange(startDate, endDate)
                 .stream().map(this::toDomain).toList();

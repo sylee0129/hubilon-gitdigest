@@ -73,11 +73,11 @@ public class ReportController {
     @Operation(summary = "엑셀 내보내기", description = "주간보고 데이터를 xlsx 파일로 다운로드합니다.")
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportExcel(
-            @RequestParam(required = false) Long projectId,
+            @RequestParam(required = false) List<Long> projectIds,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
-        ReportExportQuery query = new ReportExportQuery(projectId, startDate, endDate);
+        ReportExportQuery query = new ReportExportQuery(projectIds, startDate, endDate);
         byte[] excelBytes = reportExportUseCase.exportToExcel(query);
 
         String filename = "weekly-report-"

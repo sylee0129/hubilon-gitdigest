@@ -18,6 +18,14 @@ public interface ReportJpaRepository extends JpaRepository<ReportJpaEntity, Long
             @Param("endDate") LocalDate endDate
     );
 
+    @Query("SELECT r FROM ReportJpaEntity r WHERE r.projectId IN :projectIds " +
+           "AND r.startDate >= :startDate AND r.endDate <= :endDate")
+    List<ReportJpaEntity> findByProjectIdsAndDateRange(
+            @Param("projectIds") List<Long> projectIds,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
     @Query("SELECT r FROM ReportJpaEntity r WHERE r.startDate >= :startDate AND r.endDate <= :endDate")
     List<ReportJpaEntity> findByDateRange(
             @Param("startDate") LocalDate startDate,
