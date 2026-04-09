@@ -76,19 +76,12 @@ export default function ReportCard({ report, showCheckbox, isSelected, onSelect 
 
         <div className={styles.rightPanel}>
           <div className={styles.reportArea}>
-            {isEditing ? (
-              <>
-                <textarea
-                  className={styles.textarea}
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  rows={14}
-                  placeholder="보고서 내용을 입력하세요..."
-                  autoFocus
-                />
-                <div className={styles.textareaFooter}>
-                  <span className={styles.charCount}>{draft.length}자</span>
-                  <div className={styles.editActions}>
+            <div className={styles.reportAreaHeader}>
+              <span className={styles.reportLabel}>📄 보고서</span>
+              <div className={styles.reportActions}>
+                {isEditing ? (
+                  <>
+                    <span className={styles.charCount}>{draft.length}자</span>
                     <button
                       className={styles.cancelBtn}
                       onClick={handleCancel}
@@ -103,48 +96,57 @@ export default function ReportCard({ report, showCheckbox, isSelected, onSelect 
                     >
                       {updateSummary.isPending ? '저장 중...' : '저장'}
                     </button>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className={styles.viewMode}>
-                <div className={styles.viewModeHeader}>
-                  <button
-                    className={styles.aiBtn}
-                    onClick={() =>
-                      generateAiSummary.mutate(report.id, {
-                        onSuccess: (updatedReport: Report) => {
-                          setDraft(updatedReport.summary ?? '')
-                          setIsEditing(true)
-                          if (updatedReport.aiSummaryFailed) {
-                            setToastVisible(true)
-                          }
-                        },
-                      })
-                    }
-                    disabled={generateAiSummary.isPending}
-                  >
-                    {generateAiSummary.isPending ? '생성 중...' : '✨ AI 요약'}
-                  </button>
-                  <button
-                    className={styles.editIconBtn}
-                    onClick={() => setIsEditing(true)}
-                    title="편집"
-                  >
-                    ✏️ 편집
-                  </button>
-                </div>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className={styles.aiBtn}
+                      onClick={() =>
+                        generateAiSummary.mutate(report.id, {
+                          onSuccess: (updatedReport: Report) => {
+                            setDraft(updatedReport.summary ?? '')
+                            setIsEditing(true)
+                            if (updatedReport.aiSummaryFailed) {
+                              setToastVisible(true)
+                            }
+                          },
+                        })
+                      }
+                      disabled={generateAiSummary.isPending}
+                    >
+                      {generateAiSummary.isPending ? '생성 중...' : '✨ AI 요약'}
+                    </button>
+                    <button
+                      className={styles.editIconBtn}
+                      onClick={() => setIsEditing(true)}
+                    >
+                      편집
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.reportAreaContent}>
+              {isEditing ? (
+                <textarea
+                  className={styles.textarea}
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  rows={14}
+                  placeholder="보고서 내용을 입력하세요..."
+                  autoFocus
+                />
+              ) : (
                 <div className={styles.summaryContent}>
                   {draft
                     ? draft.split('\n').map((line, i) => (
-                        <p key={i} className={styles.summaryLine}>
-                          {line}
-                        </p>
+                        <p key={i} className={styles.summaryLine}>{line}</p>
                       ))
-                    : <span className={styles.summaryEmpty}>요약 내용이 없습니다.</span>}
+                    : <span className={styles.summaryEmpty}>요약 내용이 없습니다.<br/>AI 요약 또는 직접 편집해 주세요.</span>}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
