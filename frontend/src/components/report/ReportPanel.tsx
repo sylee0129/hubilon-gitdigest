@@ -38,7 +38,7 @@ export default function ReportPanel({ report }: Props) {
       <aside className={styles.panel}>
         <div className={styles.emptyState}>
           <span className={styles.emptyIcon}>📄</span>
-          <p>프로젝트 카드를 선택하면<br />보고서가 표시됩니다.</p>
+          <p>사이드바에서 프로젝트를 선택하면<br />보고서가 표시됩니다.</p>
         </div>
       </aside>
     )

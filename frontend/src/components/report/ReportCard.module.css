@@ -4,23 +4,6 @@
   border: 1px solid var(--color-border);
   padding: 18px 20px;
   box-shadow: var(--shadow-card);
-  transition: box-shadow var(--transition-smooth), border-color var(--transition-smooth);
-  cursor: pointer;
-  outline: none;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-card-hover);
-  border-color: #D1D5DB;
-}
-
-.activeCard {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light), var(--shadow-card);
-}
-
-.activeCard:hover {
-  border-color: var(--color-primary);
 }
 
 .checkbox {

@@ -7,19 +7,11 @@ interface Props {
   showCheckbox?: boolean
   isSelected?: boolean
   onSelect?: (projectId: number, checked: boolean) => void
-  isActive?: boolean
-  onClick?: () => void
 }
 
-export default function ReportCard({ report, showCheckbox, isSelected, onSelect, isActive, onClick }: Props) {
+export default function ReportCard({ report, showCheckbox, isSelected, onSelect }: Props) {
   return (
-    <div
-      className={`${styles.card} ${isActive ? styles.activeCard : ''}`}
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
-    >
+    <div className={styles.card}>
       <div className={styles.cardHeader}>
         <div className={styles.projectLeft}>
           {showCheckbox && (

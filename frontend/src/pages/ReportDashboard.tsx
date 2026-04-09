@@ -15,7 +15,6 @@ export default function ReportDashboard() {
   const exportExcel = useExportExcel()
 
   const [selectedProjectIds, setSelectedProjectIds] = useState<Set<number>>(new Set())
-  const [activeReportId, setActiveReportId] = useState<number | null>(null)
   const [sidebarWidth, setSidebarWidth] = useState(240)
   const isResizing = useRef(false)
 
@@ -46,18 +45,7 @@ export default function ReportDashboard() {
       : undefined,
   })
 
-  // 데이터 로드 시 첫 번째 카드 자동 선택
-  useEffect(() => {
-    if (reportsQuery.data && reportsQuery.data.length > 0) {
-      setActiveReportId(prev =>
-        reportsQuery.data.find(r => r.id === prev) ? prev : reportsQuery.data[0].id
-      )
-    } else {
-      setActiveReportId(null)
-    }
-  }, [reportsQuery.data])
-
-  const activeReport = reportsQuery.data?.find(r => r.id === activeReportId) ?? null
+  const activeReport = reportsQuery.data?.find(r => r.projectId === selectedProjectId) ?? null
 
   const handleExport = () => {
     exportExcel.mutate({
@@ -163,8 +151,6 @@ export default function ReportDashboard() {
                       showCheckbox={activeTab === 'all'}
                       isSelected={selectedProjectIds.has(report.projectId)}
                       onSelect={handleSelect}
-                      isActive={activeReportId === report.id}
-                      onClick={() => setActiveReportId(report.id)}
                     />
                   ))}
                 </div>
