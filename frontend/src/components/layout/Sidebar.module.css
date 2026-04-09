@@ -153,3 +153,239 @@
   padding: 8px;
   text-align: center;
 }
+
+/* ─── Folder Section ─────────────────────────────────────────────────────── */
+
+.folderSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 4px;
+  margin-bottom: 4px;
+}
+
+.addFolderBtn {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s;
+  white-space: nowrap;
+}
+
+.addFolderBtn:hover {
+  background-color: var(--color-primary-light);
+}
+
+.folderSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.folderItem {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-sm);
+  overflow: visible;
+}
+
+.folderHeader {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-smooth);
+  position: relative;
+}
+
+.folderHeader:hover {
+  background-color: var(--color-border-subtle);
+}
+
+.folderHeader:hover .dragHandle {
+  opacity: 1;
+}
+
+.folderHeader:hover .menuBtn {
+  opacity: 1;
+}
+
+.folderToggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+}
+
+.folderArrow {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+  width: 12px;
+}
+
+.folderName {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.statusInProgress {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.statusCompleted {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.menuWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.menuBtn {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  font-size: 14px;
+  padding: 2px 5px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: opacity 0.15s, background-color 0.15s;
+  line-height: 1;
+}
+
+.menuBtn:hover {
+  background-color: var(--color-border-subtle);
+  color: var(--color-text-primary);
+}
+
+.contextMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: hidden;
+  min-width: 80px;
+}
+
+.contextMenuItem {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.contextMenuItem:hover {
+  background-color: var(--color-border-subtle);
+}
+
+.contextMenuItemDanger {
+  color: var(--color-danger);
+}
+
+.contextMenuItemDanger:hover {
+  background-color: #fef2f2;
+}
+
+.workProjectList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-left: 20px;
+  margin-top: 2px;
+}
+
+.workProjectItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  transition: background-color var(--transition-smooth);
+  color: var(--color-text-secondary);
+}
+
+.workProjectItem:hover {
+  background-color: var(--color-border-subtle);
+  color: var(--color-text-primary);
+}
+
+.workProjectActive {
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
+}
+
+.workProjectActive .workProjectName {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.workProjectActive .workProjectDot {
+  background-color: var(--color-primary);
+}
+
+.workProjectDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.workProjectName {
+  font-size: 12px;
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.workProjectEmpty {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  padding: 4px 8px 4px 20px;
+  font-style: italic;
+}

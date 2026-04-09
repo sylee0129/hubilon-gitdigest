@@ -5,4 +5,6 @@ import com.hubilon.modules.user.domain.model.User;
 public interface UserCommandPort {
 
     User save(User user);
+
+    void deleteById(Long id);
 }

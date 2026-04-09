@@ -1,11 +1,13 @@
 package com.hubilon.common.exception.handler;
 
+import com.hubilon.common.exception.custom.ConflictException;
 import com.hubilon.common.exception.custom.ExternalServiceException;
 import com.hubilon.common.exception.custom.InvalidRequestException;
 import com.hubilon.common.exception.custom.NotFoundException;
 import com.hubilon.common.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +19,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Response<Object>> handleConflict(ConflictException e) {
+        log.warn("Conflict: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new Response<>(false, e.getConflictData(), e.getMessage()));
+    }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

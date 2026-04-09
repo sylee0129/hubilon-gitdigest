@@ -33,6 +33,7 @@ interface ReportState {
   endDate: string
   activeTab: 'all' | 'individual'
   selectedProjectId: number | null
+  selectedWorkProjectId: number | null
 
   setPrevWeek: () => void
   setNextWeek: () => void
@@ -40,6 +41,7 @@ interface ReportState {
   setCustomRange: (startDate: string, endDate: string) => void
   setTab: (tab: 'all' | 'individual') => void
   setSelectedProject: (id: number | null) => void
+  setSelectedWorkProject: (id: number | null) => void
 }
 
 export const useReportStore = create<ReportState>((set, get) => ({
@@ -47,6 +49,7 @@ export const useReportStore = create<ReportState>((set, get) => ({
   endDate: initialRange.endDate,
   activeTab: 'all',
   selectedProjectId: null,
+  selectedWorkProjectId: null,
 
   setPrevWeek: () => {
     const monday = new Date(get().startDate)
@@ -72,4 +75,6 @@ export const useReportStore = create<ReportState>((set, get) => ({
   setTab: (tab) => set({ activeTab: tab }),
 
   setSelectedProject: (id) => set({ selectedProjectId: id }),
+
+  setSelectedWorkProject: (id) => set({ selectedWorkProjectId: id }),
 }))

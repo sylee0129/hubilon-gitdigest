@@ -1,0 +1,18 @@
+package com.hubilon.modules.folder.adapter.in.web;
+
+import com.hubilon.modules.folder.application.dto.FolderMemberResult;
+import com.hubilon.modules.folder.application.dto.WorkProjectResult;
+import com.hubilon.modules.folder.domain.model.FolderCategory;
+import com.hubilon.modules.folder.domain.model.FolderStatus;
+
+import java.util.List;
+
+public record FolderResponse(
+        Long id,
+        String name,
+        FolderCategory category,
+        FolderStatus status,
+        int sortOrder,
+        List<FolderMemberResult> members,
+        List<WorkProjectResult> workProjects
+) {}

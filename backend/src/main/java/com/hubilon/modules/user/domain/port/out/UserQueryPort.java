@@ -9,7 +9,11 @@ public interface UserQueryPort {
 
     List<User> findAll();
 
+    List<User> findByQuery(String q);
+
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
+
+    boolean existsById(Long id);
 }

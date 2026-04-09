@@ -46,6 +46,23 @@ public class UserPersistenceAdapter implements UserCommandPort, UserQueryPort {
         return userRepository.existsByEmail(email);
     }
 
+    @Override
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public List<User> findByQuery(String q) {
+        return userRepository.findByQuery(q).stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return userRepository.existsById(id);
+    }
+
     private User toDomain(UserJpaEntity entity) {
         return User.builder()
                 .id(entity.getId())

@@ -1,0 +1,42 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { folderApi, type FolderCreatePayload, type FolderUpdatePayload, type FolderOrderItem } from '../services/folderApi'
+import type { Folder } from '../types/folder'
+
+export function useFolders(status?: Folder['status']) {
+  return useQuery({
+    queryKey: ['folders', status],
+    queryFn: () => folderApi.getAll(status),
+  })
+}
+
+export function useCreateFolder() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: FolderCreatePayload) => folderApi.create(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['folders'] }),
+  })
+}
+
+export function useUpdateFolder() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: FolderUpdatePayload }) => folderApi.update(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['folders'] }),
+  })
+}
+
+export function useDeleteFolder() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, force }: { id: number; force?: boolean }) => folderApi.delete(id, force),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['folders'] }),
+  })
+}
+
+export function useReorderFolders() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (orders: FolderOrderItem[]) => folderApi.reorder(orders),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['folders'] }),
+  })
+}

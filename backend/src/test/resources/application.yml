@@ -14,3 +14,8 @@ gitlab:
 ai:
   summary:
     enabled: false
+
+jwt:
+  secret: test-secret-key-min-32-chars-for-testing!!
+  access-token-expiry: 3600
+  refresh-token-expiry: 604800

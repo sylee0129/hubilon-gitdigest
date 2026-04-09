@@ -26,6 +26,13 @@ public class UserQueryService implements UserQueryUseCase {
     }
 
     @Override
+    public List<UserSearchResult> searchByQuery(String q) {
+        return userQueryPort.findByQuery(q).stream()
+                .map(u -> new UserSearchResult(u.getId(), u.getName(), u.getEmail(), u.getDepartment(), u.getRole()))
+                .toList();
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
         return userQueryPort.findByEmail(email);
     }

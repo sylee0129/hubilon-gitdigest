@@ -10,6 +10,8 @@ public interface UserQueryUseCase {
 
     List<UserSearchResult> searchAll();
 
+    List<UserSearchResult> searchByQuery(String q);
+
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
