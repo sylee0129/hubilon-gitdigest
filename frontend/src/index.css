@@ -1,23 +1,40 @@
 :root {
-  --color-primary: #702ae1;
-  --color-primary-hover: #5b1fc4;
-  --color-primary-light: #ede4fb;
-  --color-primary-surface: #f8f5ff;
-  --color-secondary: #7742a6;
-  --color-bg: #f4f0fa;
+  /* Accent — refined indigo */
+  --color-primary: #4F46E5;
+  --color-primary-hover: #4338CA;
+  --color-primary-light: #EEF2FF;
+  --color-primary-surface: #F5F3FF;
+  --color-secondary: #6366F1;
+
+  /* Neutrals */
+  --color-bg: #F7F8FA;
   --color-surface: #FFFFFF;
-  --color-border: #e8e0f0;
-  --color-text-primary: #1e1b2e;
-  --color-text-secondary: #7c7591;
-  --color-success: #0F7B6C;
-  --color-danger: #E03E3E;
-  --color-danger-hover: #c13333;
-  --radius-card: 16px;
-  --radius-button: 9999px;
-  --radius-input: 12px;
-  --shadow-card: 0 1px 3px rgba(112, 42, 225, 0.06), 0 4px 12px rgba(112, 42, 225, 0.04);
-  --shadow-card-hover: 0 8px 24px rgba(112, 42, 225, 0.12);
-  --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --color-sidebar: #FAFAFA;
+  --color-border: #E5E7EB;
+  --color-border-subtle: #F3F4F6;
+
+  /* Text */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-tertiary: #9CA3AF;
+
+  /* Status */
+  --color-success: #059669;
+  --color-danger: #DC2626;
+  --color-danger-hover: #B91C1C;
+
+  /* Radius */
+  --radius-card: 12px;
+  --radius-button: 8px;
+  --radius-input: 8px;
+  --radius-sm: 6px;
+
+  /* Shadows — neutral, not purple-tinted */
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-dropdown: 0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+
+  --transition-smooth: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 *, *::before, *::after {

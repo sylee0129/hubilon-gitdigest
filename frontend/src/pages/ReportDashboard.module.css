@@ -12,7 +12,7 @@
 }
 
 .resizeHandle {
-  width: 6px;
+  width: 4px;
   cursor: col-resize;
   background-color: transparent;
   flex-shrink: 0;
@@ -20,7 +20,7 @@
 }
 
 .resizeHandle:hover {
-  background-color: rgba(112,42,225,0.2);
+  background-color: var(--color-border);
 }
 
 .main {
@@ -28,8 +28,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 32px;
-  gap: 28px;
+  padding: 28px 32px;
+  gap: 20px;
 }
 
 .tabs {
@@ -41,9 +41,10 @@
 
 .tabPills {
   display: inline-flex;
-  gap: 4px;
-  background-color: var(--color-primary-surface);
-  padding: 4px;
+  gap: 2px;
+  background-color: var(--color-border-subtle);
+  border: 1px solid var(--color-border);
+  padding: 3px;
   border-radius: var(--radius-button);
 }
 
@@ -54,27 +55,28 @@
 }
 
 .selectAllBtn {
-  padding: 7px 16px;
-  background-color: var(--color-primary-surface);
+  padding: 6px 14px;
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-button);
-  font-size: 13px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
   font-weight: 500;
-  color: var(--color-primary);
-  transition: background-color var(--transition-smooth), border-color var(--transition-smooth);
+  color: var(--color-text-secondary);
+  transition: background-color var(--transition-smooth), color var(--transition-smooth), border-color var(--transition-smooth);
 }
 
 .selectAllBtn:hover {
-  background-color: var(--color-primary-light);
   border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
 }
 
 .deselectAllBtn {
-  padding: 7px 16px;
+  padding: 6px 14px;
   background: none;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-button);
-  font-size: 13px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
   font-weight: 500;
   color: var(--color-text-secondary);
   transition: background-color var(--transition-smooth), color var(--transition-smooth);
@@ -89,32 +91,32 @@
   padding: 3px 10px;
   background-color: var(--color-primary);
   color: #fff;
-  border-radius: var(--radius-button);
+  border-radius: var(--radius-sm);
   font-size: 12px;
   font-weight: 600;
-  margin-left: 10px;
+  margin-left: 6px;
 }
 
 .tabBtn {
-  padding: 8px 20px;
+  padding: 7px 18px;
   background: none;
   border: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--color-text-secondary);
-  border-radius: var(--radius-button);
+  border-radius: calc(var(--radius-button) - 3px);
   transition: color var(--transition-smooth), background-color var(--transition-smooth);
 }
 
 .tabBtn:hover {
   color: var(--color-text-primary);
-  background-color: rgba(112,42,225,0.08);
 }
 
 .tabBtn.activeTab {
-  color: #fff;
-  font-weight: 700;
-  background-color: var(--color-primary);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  background-color: var(--color-surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 .content {
@@ -126,7 +128,7 @@
 .cardList {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .stateContainer {
@@ -136,17 +138,17 @@
   justify-content: center;
   height: 200px;
   gap: 12px;
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   font-size: 14px;
 }
 
 .spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--color-border);
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--color-border);
   border-top-color: var(--color-primary);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
@@ -158,35 +160,40 @@
 }
 
 .emptyText {
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
 }
 
 .footer {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   flex-shrink: 0;
-  padding-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+  gap: 10px;
 }
 
 .exportBtn {
-  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-button);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: var(--color-text-primary);
-  transition: border-color var(--transition-smooth), color var(--transition-smooth), background-color var(--transition-smooth), transform var(--transition-smooth);
+  color: var(--color-text-secondary);
+  transition: border-color var(--transition-smooth), color var(--transition-smooth), background-color var(--transition-smooth);
 }
 
 .exportBtn:hover:not(:disabled) {
   border-color: var(--color-primary);
   color: var(--color-primary);
   background-color: var(--color-primary-light);
-  transform: translateY(-1px);
 }
 
 .exportBtn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }

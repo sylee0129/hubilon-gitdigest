@@ -1,58 +1,71 @@
 .sidebar {
-  background-color: #1e1b2e;
-  color: #fff;
+  background-color: var(--color-sidebar);
+  border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  padding: 24px 16px;
+  padding: 20px 12px;
   overflow-y: auto;
-  border-radius: 0 2rem 2rem 0;
-  box-shadow: 4px 0 24px rgba(0,0,0,0.08);
 }
 
 .addBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
-  padding: 10px 14px;
-  background-color: rgba(255,255,255,0.15);
+  padding: 9px 12px;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: var(--radius-button);
   font-size: 13px;
   font-weight: 600;
   text-align: left;
-  transition: background-color var(--transition-smooth);
+  transition: background-color var(--transition-smooth), transform var(--transition-smooth);
 }
 
 .addBtn:hover {
-  background-color: rgba(255,255,255,0.25);
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
 }
 
 .divider {
   height: 1px;
-  background-color: rgba(255,255,255,0.12);
-  margin: 12px 0;
+  background-color: var(--color-border);
+  margin: 14px 0 8px;
+}
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  padding: 0 8px;
+  margin-bottom: 6px;
 }
 
 .projectList {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .projectItem {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
-  border-radius: 12px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background-color var(--transition-smooth), transform var(--transition-smooth);
+  transition: background-color var(--transition-smooth);
   position: relative;
   outline: none;
+  color: var(--color-text-secondary);
 }
 
 .projectItem:hover {
-  background-color: rgba(255,255,255,0.08);
-  transform: translateX(4px);
+  background-color: var(--color-border-subtle);
+  color: var(--color-text-primary);
 }
 
 .projectItem:hover .deleteBtn {
@@ -60,26 +73,27 @@
 }
 
 .projectItem.active {
-  background-color: rgba(112,42,225,0.3);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .projectItem.active .projectName {
-  color: #fff;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
 .projectItem.active .projectDot {
-  background-color: #fff;
+  background-color: var(--color-primary);
 }
 
 .dragHandle {
-  color: rgba(255,255,255,0.25);
-  font-size: 13px;
+  color: var(--color-text-tertiary);
+  font-size: 12px;
   cursor: grab;
   flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
   line-height: 1;
-  padding: 0 2px;
-  transition: color 0.15s;
 }
 
 .dragHandle:active {
@@ -87,52 +101,55 @@
 }
 
 .projectItem:hover .dragHandle {
-  color: rgba(255,255,255,0.55);
+  opacity: 1;
 }
 
 .projectDot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background-color: rgba(255,255,255,0.4);
+  background-color: var(--color-text-tertiary);
   flex-shrink: 0;
+  transition: background-color var(--transition-smooth);
 }
 
 .projectName {
   flex: 1;
   font-size: 13px;
-  color: rgba(255,255,255,0.85);
+  color: inherit;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color var(--transition-smooth);
 }
 
 .deleteBtn {
   opacity: 0;
-  padding: 2px 6px;
+  padding: 2px 5px;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.5);
+  color: var(--color-text-tertiary);
   font-size: 11px;
-  border-radius: 4px;
-  transition: opacity 0.15s, background-color 0.15s;
+  border-radius: var(--radius-sm);
+  transition: opacity 0.15s, background-color 0.15s, color 0.15s;
   flex-shrink: 0;
 }
 
 .deleteBtn:hover {
-  background-color: rgba(255,80,80,0.2);
+  background-color: #FEE2E2;
+  color: var(--color-danger);
 }
 
 .stateMsg {
   font-size: 12px;
-  color: rgba(255,255,255,0.5);
-  padding: 8px 4px;
+  color: var(--color-text-tertiary);
+  padding: 12px 8px;
   text-align: center;
 }
 
 .errorMsg {
   font-size: 12px;
-  color: #ff6b6b;
-  padding: 8px 4px;
+  color: var(--color-danger);
+  padding: 8px;
   text-align: center;
 }

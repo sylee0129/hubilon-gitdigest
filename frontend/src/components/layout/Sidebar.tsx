@@ -115,6 +115,8 @@ export default function Sidebar({ width = 240 }: Props) {
 
         <div className={styles.divider} />
 
+        <div className={styles.sectionLabel}>Projects</div>
+
         <nav className={styles.projectList}>
           {isLoading && (
             <div className={styles.stateMsg}>불러오는 중...</div>

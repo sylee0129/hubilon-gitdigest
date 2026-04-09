@@ -78,7 +78,7 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.left}>
-        <span className={styles.logo}>Hubilon GitDigest</span>
+        <span className={styles.logo}>Hubilon <span className={styles.logoAccent}>GitDigest</span></span>
       </div>
 
       <div className={styles.center}>
