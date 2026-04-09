@@ -12,17 +12,12 @@ const SIDEBAR_MIN = 160
 const SIDEBAR_MAX = 480
 
 export default function ReportDashboard() {
-  const { startDate, endDate, activeTab, selectedProjectId, selectedFolderId, setTab } = useReportStore()
+  const { startDate, endDate, activeTab, selectedProjectId, selectedFolderId } = useReportStore()
   const exportExcel = useExportExcel()
   const { data: projects } = useProjects()
 
-  const [selectedProjectIds, setSelectedProjectIds] = useState<Set<number>>(new Set())
   const [sidebarWidth, setSidebarWidth] = useState(240)
   const isResizing = useRef(false)
-
-  useEffect(() => {
-    setSelectedProjectIds(new Set())
-  }, [activeTab])
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -63,28 +58,8 @@ export default function ReportDashboard() {
       projectId: activeTab === 'individual' && selectedProjectId != null
         ? selectedProjectId
         : undefined,
-      projectIds: activeTab === 'all' && selectedProjectIds.size > 0
-        ? Array.from(selectedProjectIds)
-        : undefined,
     })
   }
-
-  const handleSelect = (projectId: number, checked: boolean) => {
-    setSelectedProjectIds(prev => {
-      const next = new Set(prev)
-      if (checked) next.add(projectId)
-      else next.delete(projectId)
-      return next
-    })
-  }
-
-  const handleSelectAll = () => {
-    if (reportsQuery.data) {
-      setSelectedProjectIds(new Set(reportsQuery.data.map(r => r.projectId)))
-    }
-  }
-
-  const handleDeselectAll = () => setSelectedProjectIds(new Set())
 
   return (
     <div className={styles.layout}>
@@ -99,29 +74,6 @@ export default function ReportDashboard() {
         />
 
         <main className={styles.main}>
-          <div className={styles.tabs}>
-            <div className={styles.tabPills}>
-              <button
-                className={`${styles.tabBtn} ${activeTab === 'all' ? styles.activeTab : ''}`}
-                onClick={() => setTab('all')}
-              >
-                전체 프로젝트
-              </button>
-              <button
-                className={`${styles.tabBtn} ${activeTab === 'individual' ? styles.activeTab : ''}`}
-                onClick={() => setTab('individual')}
-              >
-                개별 프로젝트
-              </button>
-            </div>
-            {activeTab === 'all' && (
-              <div className={styles.tabActions}>
-                <button className={styles.selectAllBtn} onClick={handleSelectAll}>전체 선택</button>
-                <button className={styles.deselectAllBtn} onClick={handleDeselectAll}>전체 해제</button>
-              </div>
-            )}
-          </div>
-
           <div className={styles.contentWrapper}>
             <div className={styles.cardColumn}>
               {isFolderEmpty ? (
@@ -163,9 +115,6 @@ export default function ReportDashboard() {
                         <ReportCard
                           key={report.id}
                           report={report}
-                          showCheckbox={activeTab === 'all'}
-                          isSelected={selectedProjectIds.has(report.projectId)}
-                          onSelect={handleSelect}
                         />
                       ))}
                     </div>
@@ -190,11 +139,6 @@ export default function ReportDashboard() {
             >
               {exportExcel.isPending ? '내보내는 중...' : '📥 엑셀 내보내기'}
             </button>
-            {selectedProjectIds.size > 0 && (
-              <span className={styles.selectedBadge}>
-                {selectedProjectIds.size}개 선택
-              </span>
-            )}
           </div>
         </main>
       </div>

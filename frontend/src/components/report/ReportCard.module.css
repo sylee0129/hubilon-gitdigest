@@ -6,15 +6,6 @@
   box-shadow: var(--shadow-card);
 }
 
-.checkbox {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  cursor: pointer;
-  accent-color: var(--color-primary);
-  margin-top: 2px;
-}
-
 .cardHeader {
   display: flex;
   align-items: center;
