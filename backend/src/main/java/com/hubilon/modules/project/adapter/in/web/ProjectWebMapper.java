@@ -36,6 +36,7 @@ public class ProjectWebMapper {
                 result.authType(),
                 result.gitlabProjectId(),
                 result.sortOrder(),
+                result.folderId(),
                 result.createdAt()
         );
     }

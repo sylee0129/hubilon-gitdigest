@@ -31,6 +31,17 @@ export function useDeleteProject() {
   })
 }
 
+export function useMoveProjectToFolder() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, folderId }: { id: number; folderId: number | null }) =>
+      projectApi.moveToFolder(id, folderId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY })
+    },
+  })
+}
+
 export function useReorderProjects() {
   const queryClient = useQueryClient()
   return useMutation({

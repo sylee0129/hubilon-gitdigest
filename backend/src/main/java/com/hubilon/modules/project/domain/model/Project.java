@@ -16,6 +16,7 @@ public class Project {
     private AuthType authType;
     private Long gitlabProjectId;
     private int sortOrder;
+    private Long folderId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

@@ -34,6 +34,7 @@ interface ReportState {
   activeTab: 'all' | 'individual'
   selectedProjectId: number | null
   selectedWorkProjectId: number | null
+  selectedFolderId: number | null
 
   setPrevWeek: () => void
   setNextWeek: () => void
@@ -42,6 +43,7 @@ interface ReportState {
   setTab: (tab: 'all' | 'individual') => void
   setSelectedProject: (id: number | null) => void
   setSelectedWorkProject: (id: number | null) => void
+  setSelectedFolder: (folderId: number | null) => void
 }
 
 export const useReportStore = create<ReportState>((set, get) => ({
@@ -50,6 +52,7 @@ export const useReportStore = create<ReportState>((set, get) => ({
   activeTab: 'all',
   selectedProjectId: null,
   selectedWorkProjectId: null,
+  selectedFolderId: null,
 
   setPrevWeek: () => {
     const monday = new Date(get().startDate)
@@ -77,4 +80,9 @@ export const useReportStore = create<ReportState>((set, get) => ({
   setSelectedProject: (id) => set({ selectedProjectId: id }),
 
   setSelectedWorkProject: (id) => set({ selectedWorkProjectId: id }),
+
+  setSelectedFolder: (folderId) => set(folderId != null
+    ? { selectedFolderId: folderId, activeTab: 'all', selectedProjectId: null }
+    : { selectedFolderId: null }
+  ),
 }))

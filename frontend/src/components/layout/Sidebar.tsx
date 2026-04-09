@@ -18,6 +18,7 @@ import { useProjects, useDeleteProject, useReorderProjects } from '../../hooks/u
 import { useFolders, useDeleteFolder, useReorderFolders } from '../../hooks/useFolders'
 import { useReportStore } from '../../stores/useReportStore'
 import AddProjectModal from '../project/AddProjectModal'
+import AssignFolderModal from '../project/AssignFolderModal'
 import FolderModal from '../folder/FolderModal'
 import type { Project } from '../../types/report'
 import type { Folder, WorkProjectItem } from '../../types/folder'
@@ -32,9 +33,13 @@ interface SortableProjectItemProps {
   isActive: boolean
   onProjectClick: (id: number) => void
   onDelete: (e: React.MouseEvent, id: number) => void
+  onMoveToFolder: (id: number) => void
 }
 
-function SortableProjectItem({ project, isActive, onProjectClick, onDelete }: SortableProjectItemProps) {
+function SortableProjectItem({ project, isActive, onProjectClick, onDelete, onMoveToFolder }: SortableProjectItemProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: project.id,
   })
@@ -44,6 +49,16 @@ function SortableProjectItem({ project, isActive, onProjectClick, onDelete }: So
     transition,
     opacity: isDragging ? 0.5 : 1,
   }
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    if (menuOpen) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [menuOpen])
 
   return (
     <div
@@ -65,13 +80,31 @@ function SortableProjectItem({ project, isActive, onProjectClick, onDelete }: So
       </span>
       <span className={styles.projectDot} />
       <span className={styles.projectName}>{project.name}</span>
-      <button
-        className={styles.deleteBtn}
-        onClick={(e) => onDelete(e, project.id)}
-        title="프로젝트 삭제"
-      >
-        ✕
-      </button>
+      <div className={styles.menuWrapper} ref={menuRef} onClick={(e) => e.stopPropagation()}>
+        <button
+          className={styles.menuBtn}
+          onClick={(e) => { e.stopPropagation(); setMenuOpen((prev) => !prev) }}
+          title="메뉴"
+        >
+          ⋮
+        </button>
+        {menuOpen && (
+          <div className={styles.contextMenu}>
+            <button
+              className={styles.contextMenuItem}
+              onClick={() => { setMenuOpen(false); onMoveToFolder(project.id) }}
+            >
+              폴더로 이동
+            </button>
+            <button
+              className={`${styles.contextMenuItem} ${styles.contextMenuItemDanger}`}
+              onClick={(e) => { setMenuOpen(false); onDelete(e, project.id) }}
+            >
+              삭제
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -81,21 +114,29 @@ function SortableProjectItem({ project, isActive, onProjectClick, onDelete }: So
 interface SortableFolderItemProps {
   folder: Folder
   isExpanded: boolean
+  isSelected: boolean
   onToggle: (id: number) => void
+  onFolderSelect: (id: number) => void
   onEdit: (folder: Folder) => void
   onDelete: (id: number) => void
   selectedWorkProjectId: number | null
   onWorkProjectClick: (id: number) => void
+  assignedProjects: Project[]
+  onProjectClick: (id: number) => void
 }
 
 function SortableFolderItem({
   folder,
   isExpanded,
+  isSelected,
   onToggle,
+  onFolderSelect,
   onEdit,
   onDelete,
   selectedWorkProjectId,
   onWorkProjectClick,
+  assignedProjects,
+  onProjectClick,
 }: SortableFolderItemProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -124,7 +165,7 @@ function SortableFolderItem({
 
   return (
     <div ref={setNodeRef} style={style} className={styles.folderItem}>
-      <div className={styles.folderHeader}>
+      <div className={`${styles.folderHeader} ${isSelected ? styles.folderHeaderActive : ''}`}>
         <span
           className={styles.dragHandle}
           {...attributes}
@@ -134,7 +175,7 @@ function SortableFolderItem({
         </span>
         <button
           className={styles.folderToggle}
-          onClick={() => onToggle(folder.id)}
+          onClick={() => { onToggle(folder.id); onFolderSelect(folder.id) }}
         >
           <span className={styles.folderArrow}>{isExpanded ? '▾' : '▸'}</span>
           <span className={styles.folderName}>{folder.name}</span>
@@ -168,6 +209,21 @@ function SortableFolderItem({
           )}
         </div>
       </div>
+
+      {isExpanded && assignedProjects.length > 0 && (
+        <div className={styles.workProjectList}>
+          {assignedProjects.map((p) => (
+            <button
+              key={`proj-${p.id}`}
+              className={styles.workProjectItem}
+              onClick={() => onProjectClick(p.id)}
+            >
+              <span className={styles.projectDot} />
+              <span className={styles.workProjectName}>{p.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {isExpanded && folder.workProjects.length > 0 && (
         <div className={styles.workProjectList}>
@@ -205,6 +261,7 @@ export default function Sidebar({ width = 240 }: Props) {
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false)
   const [editingFolder, setEditingFolder] = useState<Folder | undefined>(undefined)
   const [expandedFolderIds, setExpandedFolderIds] = useState<Set<number>>(new Set())
+  const [assigningProjectId, setAssigningProjectId] = useState<number | null>(null)
 
   const { data: projects, isLoading, isError } = useProjects()
   const { data: folders, isLoading: foldersLoading, isError: foldersError } = useFolders()
@@ -217,9 +274,11 @@ export default function Sidebar({ width = 240 }: Props) {
     selectedProjectId,
     activeTab,
     selectedWorkProjectId,
+    selectedFolderId,
     setSelectedProject,
     setTab,
     setSelectedWorkProject,
+    setSelectedFolder,
   } = useReportStore()
 
   const sensors = useSensors(
@@ -233,6 +292,11 @@ export default function Sidebar({ width = 240 }: Props) {
   const handleProjectClick = (id: number) => {
     setSelectedProject(id)
     setTab('individual')
+    setSelectedFolder(null)
+  }
+
+  const handleFolderSelect = (id: number) => {
+    setSelectedFolder(id)
   }
 
   const handleDelete = (e: React.MouseEvent, id: number) => {
@@ -332,20 +396,26 @@ export default function Sidebar({ width = 240 }: Props) {
           )}
           {projects && (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={projects.map((p) => p.id)} strategy={verticalListSortingStrategy}>
-                {projects.map((project) => (
-                  <SortableProjectItem
-                    key={project.id}
-                    project={project}
-                    isActive={selectedProjectId === project.id && activeTab === 'individual'}
-                    onProjectClick={handleProjectClick}
-                    onDelete={handleDelete}
-                  />
-                ))}
-              </SortableContext>
+              {(() => {
+                const unassignedProjects = projects.filter((p) => !p.folderId)
+                return (
+                  <SortableContext items={unassignedProjects.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+                    {unassignedProjects.map((project) => (
+                      <SortableProjectItem
+                        key={project.id}
+                        project={project}
+                        isActive={selectedProjectId === project.id && activeTab === 'individual'}
+                        onProjectClick={handleProjectClick}
+                        onDelete={handleDelete}
+                        onMoveToFolder={setAssigningProjectId}
+                      />
+                    ))}
+                  </SortableContext>
+                )
+              })()}
             </DndContext>
           )}
-          {!isLoading && !isError && projects?.length === 0 && (
+          {!isLoading && !isError && projects?.filter((p) => !p.folderId).length === 0 && (
             <div className={styles.stateMsg}>등록된 프로젝트가 없습니다.</div>
           )}
         </nav>
@@ -375,11 +445,15 @@ export default function Sidebar({ width = 240 }: Props) {
                     key={folder.id}
                     folder={folder}
                     isExpanded={expandedFolderIds.has(folder.id)}
+                    isSelected={selectedFolderId === folder.id}
                     onToggle={handleToggleFolder}
+                    onFolderSelect={handleFolderSelect}
                     onEdit={handleEditFolder}
                     onDelete={handleDeleteFolder}
                     selectedWorkProjectId={selectedWorkProjectId}
                     onWorkProjectClick={handleWorkProjectClick}
+                    assignedProjects={projects?.filter((p) => p.folderId === folder.id) ?? []}
+                    onProjectClick={handleProjectClick}
                   />
                 ))}
               </SortableContext>
@@ -399,6 +473,13 @@ export default function Sidebar({ width = 240 }: Props) {
         <FolderModal
           onClose={handleCloseFolderModal}
           folder={editingFolder}
+        />
+      )}
+
+      {assigningProjectId !== null && (
+        <AssignFolderModal
+          projectId={assigningProjectId}
+          onClose={() => setAssigningProjectId(null)}
         />
       )}
     </>

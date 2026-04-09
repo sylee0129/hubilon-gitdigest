@@ -12,6 +12,7 @@ public record ProjectSearchResponse(
         AuthType authType,
         Long gitlabProjectId,
         int sortOrder,
+        Long folderId,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
 ) {}

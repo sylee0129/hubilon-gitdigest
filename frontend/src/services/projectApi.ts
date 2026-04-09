@@ -20,4 +20,8 @@ export const projectApi = {
   reorder: async (projectIds: number[]): Promise<void> => {
     await apiClient.patch('/projects/reorder', { projectIds })
   },
+
+  moveToFolder: async (id: number, folderId: number | null): Promise<void> => {
+    await apiClient.patch(`/projects/${id}/folder`, { folderId })
+  },
 }

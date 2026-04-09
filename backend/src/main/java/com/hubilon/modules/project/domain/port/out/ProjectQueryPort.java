@@ -11,5 +11,7 @@ public interface ProjectQueryPort {
 
     Optional<Project> findById(Long id);
 
+    List<Project> findByFolderId(Long folderId);
+
     boolean existsById(Long id);
 }

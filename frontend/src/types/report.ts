@@ -5,6 +5,7 @@ export interface Project {
   authType: 'PAT' | 'OAUTH'
   sortOrder: number
   createdAt: string
+  folderId?: number | null
 }
 
 export interface FileChange {
@@ -51,4 +52,17 @@ export interface CreateProjectRequest {
 
 export interface UpdateSummaryRequest {
   summary: string
+}
+
+export interface FolderSummary {
+  id: number
+  folderId: number
+  folderName: string
+  startDate: string
+  endDate: string
+  totalCommitCount: number
+  uniqueContributorCount: number
+  summary: string
+  manuallyEdited: boolean
+  aiSummaryFailed: boolean
 }

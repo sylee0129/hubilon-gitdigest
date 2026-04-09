@@ -7,4 +7,6 @@ import java.util.List;
 public interface ProjectJpaRepository extends JpaRepository<ProjectJpaEntity, Long> {
 
     List<ProjectJpaEntity> findAllByOrderBySortOrderAsc();
+
+    List<ProjectJpaEntity> findByFolderIdOrderBySortOrderAsc(Long folderId);
 }

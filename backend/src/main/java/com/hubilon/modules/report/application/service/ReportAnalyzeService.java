@@ -35,17 +35,23 @@ public class ReportAnalyzeService implements ReportAnalyzeUseCase {
     @Transactional
     @Override
     public List<ReportResult> analyze(ReportAnalyzeCommand command) {
-        List<Project> projects = resolveProjects(command.projectId());
+        List<Project> projects = resolveProjects(command);
 
         return projects.stream()
                 .map(project -> analyzeProject(project, command))
                 .toList();
     }
 
-    private List<Project> resolveProjects(Long projectId) {
-        if (projectId != null) {
-            Project project = projectQueryPort.findById(projectId)
-                    .orElseThrow(() -> new NotFoundException("프로젝트를 찾을 수 없습니다. id=" + projectId));
+    private List<Project> resolveProjects(ReportAnalyzeCommand command) {
+        if (command.projectIds() != null && !command.projectIds().isEmpty()) {
+            return command.projectIds().stream()
+                    .map(id -> projectQueryPort.findById(id)
+                            .orElseThrow(() -> new NotFoundException("프로젝트를 찾을 수 없습니다. id=" + id)))
+                    .toList();
+        }
+        if (command.projectId() != null) {
+            Project project = projectQueryPort.findById(command.projectId())
+                    .orElseThrow(() -> new NotFoundException("프로젝트를 찾을 수 없습니다. id=" + command.projectId()));
             return List.of(project);
         }
         return projectQueryPort.findAll();

@@ -2,6 +2,42 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { reportApi, type ReportQueryParams } from '../services/reportApi'
 import type { UpdateSummaryRequest } from '../types/report'
 
+export function useFolderSummary(params: { folderId: number | null; startDate: string; endDate: string }) {
+  return useQuery({
+    queryKey: ['folder-summary', params.folderId, params.startDate, params.endDate],
+    queryFn: () => reportApi.getFolderSummary({
+      folderId: params.folderId!,
+      startDate: params.startDate,
+      endDate: params.endDate,
+    }),
+    enabled: params.folderId != null && Boolean(params.startDate && params.endDate),
+  })
+}
+
+export function useGenerateFolderAiSummary() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { folderId: number; startDate: string; endDate: string }) =>
+      reportApi.generateFolderAiSummary(payload),
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: ['folder-summary', variables.folderId],
+      })
+    },
+  })
+}
+
+export function useUpdateFolderSummary() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: { summary: string } }) =>
+      reportApi.updateFolderSummary(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['folder-summary'] })
+    },
+  })
+}
+
 export const REPORT_QUERY_KEY = (params: ReportQueryParams) =>
   ['reports', params] as const
 

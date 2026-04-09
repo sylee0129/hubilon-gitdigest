@@ -11,5 +11,6 @@ public record ProjectSearchResult(
         AuthType authType,
         Long gitlabProjectId,
         int sortOrder,
+        Long folderId,
         LocalDateTime createdAt
 ) {}

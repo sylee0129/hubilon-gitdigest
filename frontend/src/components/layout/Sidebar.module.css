@@ -72,6 +72,10 @@
   opacity: 1;
 }
 
+.projectItem:hover .menuBtn {
+  opacity: 1;
+}
+
 .projectItem.active {
   background-color: var(--color-primary-light);
   color: var(--color-primary);
@@ -205,6 +209,19 @@
 
 .folderHeader:hover {
   background-color: var(--color-border-subtle);
+}
+
+.folderHeaderActive {
+  background-color: var(--color-primary-light) !important;
+}
+
+.folderHeaderActive .folderName {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.folderHeaderActive .folderArrow {
+  color: var(--color-primary);
 }
 
 .folderHeader:hover .dragHandle {

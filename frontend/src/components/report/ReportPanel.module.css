@@ -74,6 +74,28 @@
   white-space: nowrap;
 }
 
+/* Stats bar */
+.panelStats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
+}
+
+.statBadge {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background-color: var(--color-border-subtle);
+  border: 1px solid var(--color-border);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
 /* Actions bar */
 .panelActions {
   display: flex;

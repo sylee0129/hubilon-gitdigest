@@ -54,6 +54,13 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
     }
 
     @Override
+    public List<Project> findByFolderId(Long folderId) {
+        return projectJpaRepository.findByFolderIdOrderBySortOrderAsc(folderId).stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
+    @Override
     public boolean existsById(Long id) {
         return projectJpaRepository.existsById(id);
     }
@@ -67,6 +74,7 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
                 .authType(ProjectJpaEntity.AuthType.valueOf(project.getAuthType().name()))
                 .gitlabProjectId(project.getGitlabProjectId())
                 .sortOrder(project.getSortOrder())
+                .folderId(project.getFolderId())
                 .build();
     }
 
@@ -79,6 +87,7 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
                 .authType(Project.AuthType.valueOf(entity.getAuthType().name()))
                 .gitlabProjectId(entity.getGitlabProjectId())
                 .sortOrder(entity.getSortOrder())
+                .folderId(entity.getFolderId())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();

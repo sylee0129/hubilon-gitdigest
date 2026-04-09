@@ -39,10 +39,14 @@ public class ReportController {
     @GetMapping
     public Response<List<ReportResponse>> analyze(
             @RequestParam(required = false) Long projectId,
+            @RequestParam(required = false) List<Long> projectIds,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
-        ReportAnalyzeCommand command = new ReportAnalyzeCommand(projectId, startDate, endDate);
+        if (projectIds != null && projectIds.isEmpty()) {
+            return Response.ok(List.of());
+        }
+        ReportAnalyzeCommand command = new ReportAnalyzeCommand(projectId, projectIds, startDate, endDate);
         List<ReportResponse> responses = reportAnalyzeUseCase.analyze(command).stream()
                 .map(reportWebMapper::toResponse)
                 .toList();

@@ -2,6 +2,7 @@ package com.hubilon.common.exception.handler;
 
 import com.hubilon.common.exception.custom.ConflictException;
 import com.hubilon.common.exception.custom.ExternalServiceException;
+import com.hubilon.common.exception.custom.ForbiddenException;
 import com.hubilon.common.exception.custom.InvalidRequestException;
 import com.hubilon.common.exception.custom.NotFoundException;
 import com.hubilon.common.response.Response;
@@ -25,6 +26,13 @@ public class GlobalExceptionHandler {
         log.warn("Conflict: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new Response<>(false, e.getConflictData(), e.getMessage()));
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Response<Void> handleForbidden(ForbiddenException e) {
+        log.warn("Forbidden: {}", e.getMessage());
+        return Response.fail(e.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
