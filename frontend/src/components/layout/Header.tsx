@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { useReportStore } from '../../stores/useReportStore'
+import { useAuthStore } from '../../stores/useAuthStore'
 import styles from './Header.module.css'
 
 interface WeekOption {
@@ -61,9 +63,16 @@ function generateWeeks(): WeekOption[] {
 export default function Header() {
   const { startDate, endDate, setCustomRange, setThisWeek, setPrevWeek, setNextWeek } = useReportStore()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const { user, logout } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const weeks = generateWeeks()
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login')
+  }
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -124,7 +133,8 @@ export default function Header() {
       </div>
 
       <div className={styles.right}>
-        <span className={styles.userName}>사용자</span>
+        <span className={styles.userName}>{user?.name ?? '사용자'}</span>
+        <button className={styles.logoutBtn} onClick={() => void handleLogout()}>로그아웃</button>
       </div>
     </header>
   )

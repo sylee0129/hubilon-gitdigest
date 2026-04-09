@@ -33,6 +33,11 @@ ai:
     api-key: ${GEMINI_API_KEY:}
     model: gemini-2.5-flash
 
+jwt:
+  secret: ${JWT_SECRET:local-dev-secret-key-min-32-chars-!!}
+  access-token-expiry: 3600
+  refresh-token-expiry: 604800
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
