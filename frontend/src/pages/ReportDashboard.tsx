@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useReportStore } from '../stores/useReportStore'
-import { useReports, useExportExcel } from '../hooks/useReports'
+import { useReports } from '../hooks/useReports'
 import { useProjects } from '../hooks/useProjects'
 import Header from '../components/layout/Header'
 import Sidebar from '../components/layout/Sidebar'
@@ -14,7 +14,6 @@ const SIDEBAR_MAX = 480
 
 export default function ReportDashboard() {
   const { startDate, endDate, activeTab, selectedProjectId, selectedFolderId, setSelectedFolder } = useReportStore()
-  const exportExcel = useExportExcel()
   const { data: projects } = useProjects()
 
   const [sidebarWidth, setSidebarWidth] = useState(240)
@@ -51,16 +50,6 @@ export default function ReportDashboard() {
       ? targetProjects.map(p => p.id)
       : undefined,
   })
-
-  const handleExport = () => {
-    exportExcel.mutate({
-      startDate,
-      endDate,
-      projectId: activeTab === 'individual' && selectedProjectId != null
-        ? selectedProjectId
-        : undefined,
-    })
-  }
 
   return (
     <div className={styles.layout}>
@@ -144,15 +133,6 @@ export default function ReportDashboard() {
                 ) : null}
               </div>
 
-              <div className={styles.footer}>
-                <button
-                  className={styles.exportBtn}
-                  onClick={handleExport}
-                  disabled={exportExcel.isPending}
-                >
-                  {exportExcel.isPending ? '내보내는 중...' : '📥 엑셀 내보내기'}
-                </button>
-              </div>
             </>
           )}
         </main>

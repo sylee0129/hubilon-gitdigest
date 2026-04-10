@@ -85,41 +85,6 @@
   color: var(--color-text-tertiary);
 }
 
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-shrink: 0;
-  padding-top: 8px;
-  border-top: 1px solid var(--color-border);
-  gap: 10px;
-}
-
-.exportBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-button);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  transition: border-color var(--transition-smooth), color var(--transition-smooth), background-color var(--transition-smooth);
-}
-
-.exportBtn:hover:not(:disabled) {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  background-color: var(--color-primary-light);
-}
-
-.exportBtn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
 /* 대시보드 래퍼 — 선택 전 초기 상태 */
 .dashboardWrapper {
   flex: 1;

@@ -2,24 +2,17 @@ package com.hubilon.modules.report.adapter.in.web;
 
 import com.hubilon.common.response.Response;
 import com.hubilon.modules.report.application.dto.ReportAnalyzeCommand;
-import com.hubilon.modules.report.application.dto.ReportExportQuery;
 import com.hubilon.modules.report.domain.port.in.ReportAiSummarizeUseCase;
 import com.hubilon.modules.report.domain.port.in.ReportAnalyzeUseCase;
-import com.hubilon.modules.report.domain.port.in.ReportExportUseCase;
 import com.hubilon.modules.report.domain.port.in.ReportSummaryUpdateUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Tag(name = "Reports", description = "주간보고 분석 및 관리 API")
@@ -31,7 +24,6 @@ public class ReportController {
     private final ReportAnalyzeUseCase reportAnalyzeUseCase;
     private final ReportAiSummarizeUseCase reportAiSummarizeUseCase;
     private final ReportSummaryUpdateUseCase reportSummaryUpdateUseCase;
-    private final ReportExportUseCase reportExportUseCase;
     private final ReportWebMapper reportWebMapper;
 
     @Operation(summary = "주간 분석 결과 조회",
@@ -74,28 +66,4 @@ public class ReportController {
         );
     }
 
-    @Operation(summary = "엑셀 내보내기", description = "주간보고 데이터를 xlsx 파일로 다운로드합니다.")
-    @GetMapping("/export")
-    public ResponseEntity<byte[]> exportExcel(
-            @RequestParam(required = false) List<Long> projectIds,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
-        ReportExportQuery query = new ReportExportQuery(projectIds, startDate, endDate);
-        byte[] excelBytes = reportExportUseCase.exportToExcel(query);
-
-        String filename = "weekly-report-"
-                + startDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-                + "-"
-                + endDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-                + ".xlsx";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-        headers.setContentDisposition(ContentDisposition.attachment().filename(filename).build());
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(excelBytes);
-    }
 }

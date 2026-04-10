@@ -115,7 +115,7 @@ describe('DashboardView', () => {
       isLoading: false,
       isError: false,
       error: null,
-    } as ReturnType<typeof useDashboardModule.useDashboardSummary>)
+    } as unknown as ReturnType<typeof useDashboardModule.useDashboardSummary>)
 
     render(wrapper(<DashboardView onFolderSelect={onFolderSelect} />))
     expect(screen.getByText('최근 24시간 내 커밋 활동이 없습니다.')).toBeInTheDocument()

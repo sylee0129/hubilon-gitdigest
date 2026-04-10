@@ -81,17 +81,3 @@ export function useGenerateAiSummary() {
     },
   })
 }
-
-export function useExportExcel() {
-  return useMutation({
-    mutationFn: (params: ReportQueryParams) => reportApi.exportExcel(params),
-    onSuccess: (blob, params) => {
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `주간보고_${params.startDate}_${params.endDate}.xlsx`
-      a.click()
-      URL.revokeObjectURL(url)
-    },
-  })
-}
