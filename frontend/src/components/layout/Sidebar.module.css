@@ -406,3 +406,45 @@
   padding: 4px 8px 4px 20px;
   font-style: italic;
 }
+
+/* 카테고리 그룹 */
+.categoryGroup {
+  margin-bottom: 8px;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  border-left: 2px solid #ddd;
+  cursor: pointer;
+  color: #888;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.categoryHeader:hover {
+  color: #555;
+  border-left-color: #aaa;
+}
+
+.categoryArrow {
+  font-size: 9px;
+  width: 10px;
+  flex-shrink: 0;
+}
+
+.categoryLabel {
+  flex: 1;
+  text-align: left;
+}
+
+.categoryCount {
+  font-size: 10px;
+  color: #bbb;
+}

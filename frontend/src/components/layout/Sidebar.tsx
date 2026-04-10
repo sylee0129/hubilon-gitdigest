@@ -22,7 +22,7 @@ import AssignFolderModal from '../project/AssignFolderModal'
 import FolderModal from '../folder/FolderModal'
 import type { Project } from '../../types/report'
 import type { Folder, WorkProjectItem } from '../../types/folder'
-import { STATUS_LABELS } from '../../types/folder'
+import { STATUS_LABELS, CATEGORY_LABELS } from '../../types/folder'
 import type { FolderOrderItem } from '../../services/folderApi'
 import styles from './Sidebar.module.css'
 
@@ -252,6 +252,9 @@ function SortableFolderItem({
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 
+const CATEGORY_ORDER = ['DEVELOPMENT', 'NEW_BUSINESS', 'OTHER'] as const
+type FolderCategory = typeof CATEGORY_ORDER[number]
+
 interface Props {
   width?: number
 }
@@ -262,6 +265,7 @@ export default function Sidebar({ width = 240 }: Props) {
   const [editingFolder, setEditingFolder] = useState<Folder | undefined>(undefined)
   const [expandedFolderIds, setExpandedFolderIds] = useState<Set<number>>(new Set())
   const [assigningProjectId, setAssigningProjectId] = useState<number | null>(null)
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<FolderCategory>>(new Set())
 
   const { data: projects, isLoading, isError } = useProjects()
   const { data: folders, isLoading: foldersLoading, isError: foldersError } = useFolders()
@@ -316,15 +320,26 @@ export default function Sidebar({ width = 240 }: Props) {
     reorderProjects.mutate(reordered.map((p) => p.id))
   }
 
-  const handleFolderDragEnd = (event: DragEndEvent) => {
+  const handleFolderDragEnd = (event: DragEndEvent, category: FolderCategory) => {
     const { active, over } = event
     if (!over || active.id === over.id || !folders) return
 
-    const oldIndex = folders.findIndex((f) => f.id === active.id)
-    const newIndex = folders.findIndex((f) => f.id === over.id)
-    const reordered = arrayMove(folders, oldIndex, newIndex)
+    const categoryFolders = folders
+      .filter((f) => f.category === category)
+      .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+    const oldIndex = categoryFolders.findIndex((f) => f.id === active.id)
+    const newIndex = categoryFolders.findIndex((f) => f.id === over.id)
+    const reordered = arrayMove(categoryFolders, oldIndex, newIndex)
     const orders: FolderOrderItem[] = reordered.map((f, i) => ({ id: f.id, sortOrder: i + 1 }))
     reorderFolders.mutate(orders)
+  }
+
+  const toggleCategory = (cat: FolderCategory) => {
+    setCollapsedCategories((prev) => {
+      const next = new Set(prev)
+      next.has(cat) ? next.delete(cat) : next.add(cat)
+      return next
+    })
   }
 
   const handleToggleFolder = (id: number) => {
@@ -438,26 +453,58 @@ export default function Sidebar({ width = 240 }: Props) {
             <div className={styles.errorMsg}>폴더를 불러오지 못했습니다.</div>
           )}
           {folders && (
-            <DndContext sensors={folderSensors} collisionDetection={closestCenter} onDragEnd={handleFolderDragEnd}>
-              <SortableContext items={folders.map((f) => f.id)} strategy={verticalListSortingStrategy}>
-                {folders.map((folder) => (
-                  <SortableFolderItem
-                    key={folder.id}
-                    folder={folder}
-                    isExpanded={expandedFolderIds.has(folder.id)}
-                    isSelected={selectedFolderId === folder.id}
-                    onToggle={handleToggleFolder}
-                    onFolderSelect={handleFolderSelect}
-                    onEdit={handleEditFolder}
-                    onDelete={handleDeleteFolder}
-                    selectedWorkProjectId={selectedWorkProjectId}
-                    onWorkProjectClick={handleWorkProjectClick}
-                    assignedProjects={projects?.filter((p) => p.folderId === folder.id) ?? []}
-                    onProjectClick={handleProjectClick}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
+            <>
+              {CATEGORY_ORDER.map((cat) => {
+                const label = CATEGORY_LABELS[cat]
+                const STATUS_SORT: Record<string, number> = { IN_PROGRESS: 0, COMPLETED: 1 }
+                const items = folders
+                  .filter((f) => f.category === cat)
+                  .sort((a, b) =>
+                    STATUS_SORT[a.status] - STATUS_SORT[b.status] ||
+                    a.name.localeCompare(b.name, 'ko')
+                  )
+                if (items.length === 0) return null
+                const isCollapsed = collapsedCategories.has(cat)
+                return (
+                  <div key={cat} className={styles.categoryGroup}>
+                    <button
+                      className={styles.categoryHeader}
+                      onClick={() => toggleCategory(cat)}
+                    >
+                      <span className={styles.categoryArrow}>{isCollapsed ? '▶' : '▼'}</span>
+                      <span className={styles.categoryLabel}>{label}</span>
+                      <span className={styles.categoryCount}>{items.length}</span>
+                    </button>
+                    {!isCollapsed && (
+                      <DndContext
+                        sensors={folderSensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(e) => handleFolderDragEnd(e, cat)}
+                      >
+                        <SortableContext items={items.map((f) => f.id)} strategy={verticalListSortingStrategy}>
+                          {items.map((folder) => (
+                            <SortableFolderItem
+                              key={folder.id}
+                              folder={folder}
+                              isExpanded={expandedFolderIds.has(folder.id)}
+                              isSelected={selectedFolderId === folder.id}
+                              onToggle={handleToggleFolder}
+                              onFolderSelect={handleFolderSelect}
+                              onEdit={handleEditFolder}
+                              onDelete={handleDeleteFolder}
+                              selectedWorkProjectId={selectedWorkProjectId}
+                              onWorkProjectClick={handleWorkProjectClick}
+                              assignedProjects={projects?.filter((p) => p.folderId === folder.id) ?? []}
+                              onProjectClick={handleProjectClick}
+                            />
+                          ))}
+                        </SortableContext>
+                      </DndContext>
+                    )}
+                  </div>
+                )
+              })}
+            </>
           )}
           {!foldersLoading && !foldersError && folders?.length === 0 && (
             <div className={styles.stateMsg}>등록된 폴더가 없습니다.</div>

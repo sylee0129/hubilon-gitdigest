@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:3000/ -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="./주간보고 관리2_files/client"></script>
+
+    
+    <link rel="icon" type="image/svg+xml" href="http://localhost:3000/vite.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./주간보고 관리2_files/css2" rel="stylesheet">
+    <title>주간보고 관리</title>
+  <style type="text/css" data-vite-dev-id="C:/dev/2026/claude/work-log-ai/frontend/src/components/layout/Header.module.css">._header_ab8k7_1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 24px;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+._left_ab8k7_15 {
+  display: flex;
+  align-items: center;
+  min-width: 160px;
+}
+
+._logo_ab8k7_21 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.4px;
+}
+
+._logoAccent_ab8k7_28 {
+  color: var(--color-primary);
+}
+
+._center_ab8k7_32 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+._navBtn_ab8k7_38 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  line-height: 1;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth), border-color var(--transition-smooth);
+}
+
+._navBtn_ab8k7_38:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-tertiary);
+}
+
+._datePickerWrapper_ab8k7_61 {
+  position: relative;
+}
+
+._dateRangeBtn_ab8k7_65 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+  min-width: 200px;
+  justify-content: center;
+}
+
+._dateRangeBtn_ab8k7_65:hover {
+  background-color: var(--color-border-subtle);
+  border-color: var(--color-text-tertiary);
+}
+
+._chevron_ab8k7_87 {
+  font-size: 9px;
+  color: var(--color-text-tertiary);
+  margin-left: 2px;
+}
+
+._dropdown_ab8k7_93 {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-dropdown);
+  z-index: 200;
+  min-width: 280px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+._weekOption_ab8k7_109 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-smooth);
+  gap: 12px;
+}
+
+._weekOption_ab8k7_109:hover {
+  background-color: var(--color-bg);
+}
+
+._selectedWeek_ab8k7_129 {
+  background-color: var(--color-primary-light);
+}
+
+._selectedWeek_ab8k7_129 ._weekLabel_ab8k7_133 {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+._weekLabel_ab8k7_133 {
+  color: var(--color-text-primary);
+  min-width: 60px;
+  font-weight: 500;
+}
+
+._weekDate_ab8k7_144 {
+  color: var(--color-text-tertiary);
+  font-size: 12px;
+}
+
+._thisWeekBtn_ab8k7_149 {
+  padding: 5px 11px;
+  background: var(--color-primary-light);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+  transition: background-color 0.15s, color 0.15s;
+  margin-left: 4px;
+}
+
+._thisWeekBtn_ab8k7_149:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+._right_ab8k7_166 {
+  display: flex;
+  align-items: center;
+  min-width: 160px;
+  justify-content: flex-end;
+}
+
+._userName_ab8k7_173 {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  padding: 5px 10px;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+</style><style type="text/css" data-vite-dev-id="C:/dev/2026/claude/work-log-ai/frontend/src/components/project/AddProjectModal.module.css">._overlay_1utlf_1 {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+._modal_1utlf_11 {
+  background-color: var(--color-surface);
+  border-radius: 24px;
+  padding: 28px;
+  width: 480px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+}
+
+._header_1utlf_19 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+._title_1utlf_26 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+._closeBtn_1utlf_32 {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  padding: 4px 8px;
+  border-radius: var(--radius-button);
+  transition: background-color 0.15s;
+}
+
+._closeBtn_1utlf_32:hover {
+  background-color: var(--color-bg);
+}
+
+._form_1utlf_46 {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+._field_1utlf_52 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+._label_1utlf_58 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+._input_1utlf_64 {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  font-size: 14px;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+._input_1utlf_64:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(112, 42, 225, 0.12);
+}
+
+._input_1utlf_64::placeholder {
+  color: var(--color-text-secondary);
+}
+
+._radioGroup_1utlf_84 {
+  display: flex;
+  gap: 20px;
+}
+
+._radioLabel_1utlf_89 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+._radioLabel_1utlf_89 input[type="radio"] {
+  accent-color: var(--color-primary);
+}
+
+._optional_1utlf_102 {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+._fieldHint_1utlf_108 {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+._fieldHint_1utlf_108 strong {
+  color: var(--color-primary);
+}
+
+._oauthSection_1utlf_119 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--color-primary-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+}
+
+._oauthDesc_1utlf_129 {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+._oauthWaiting_1utlf_135 {
+  font-size: 13px;
+  color: #7c5700;
+  background-color: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 0;
+}
+
+._oauthSuccess_1utlf_145 {
+  font-size: 13px;
+  color: #065f46;
+  background-color: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 0;
+}
+
+._oauthErrorMsg_1utlf_155 {
+  font-size: 13px;
+  color: var(--color-danger);
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 0;
+}
+
+._oauthBtn_1utlf_165 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #fc6d26;
+  border: none;
+  border-radius: var(--radius-button);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  transition: background-color 0.15s;
+  align-self: flex-start;
+}
+
+._oauthBtn_1utlf_165:hover:not(:disabled) {
+  background-color: #e8601f;
+}
+
+._oauthBtn_1utlf_165:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+._errorMsg_1utlf_190 {
+  padding: 10px 12px;
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-input);
+  font-size: 13px;
+  color: var(--color-danger);
+}
+
+._actions_1utlf_199 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+._cancelBtn_1utlf_206 {
+  padding: 10px 18px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  transition: background-color 0.15s;
+}
+
+._cancelBtn_1utlf_206:hover {
+  background-color: var(--color-bg);
+}
+
+._submitBtn_1utlf_220 {
+  padding: 10px 20px;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-button);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  transition: background-color 0.15s;
+}
+
+._submitBtn_1utlf_220:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+._submitBtn_1utlf_220:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+</style><style type="text/css" data-vite-dev-id="C:/dev/2026/claude/work-log-ai/frontend/src/components/layout/Sidebar.module.css">._sidebar_b7g7f_1 {
+  background-color: var(--color-sidebar);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+  overflow-y: auto;
+}
+
+._addBtn_b7g7f_10 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  background-color: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-button);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  transition: background-color var(--transition-smooth), transform var(--transition-smooth);
+}
+
+._addBtn_b7g7f_10:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+._divider_b7g7f_31 {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 14px 0 8px;
+}
+
+._sectionLabel_b7g7f_37 {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+
+._projectList_b7g7f_47 {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+._projectItem_b7g7f_53 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-smooth);
+  position: relative;
+  outline: none;
+  color: var(--color-text-secondary);
+}
+
+._projectItem_b7g7f_53:hover {
+  background-color: var(--color-border-subtle);
+  color: var(--color-text-primary);
+}
+
+._projectItem_b7g7f_53:hover ._deleteBtn_b7g7f_71 {
+  opacity: 1;
+}
+
+._projectItem_b7g7f_53._active_b7g7f_75 {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+._projectItem_b7g7f_53._active_b7g7f_75 ._projectName_b7g7f_80 {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+._projectItem_b7g7f_53._active_b7g7f_75 ._projectDot_b7g7f_85 {
+  background-color: var(--color-primary);
+}
+
+._dragHandle_b7g7f_89 {
+  color: var(--color-text-tertiary);
+  font-size: 12px;
+  cursor: grab;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+  line-height: 1;
+}
+
+._dragHandle_b7g7f_89:active {
+  cursor: grabbing;
+}
+
+._projectItem_b7g7f_53:hover ._dragHandle_b7g7f_89 {
+  opacity: 1;
+}
+
+._projectDot_b7g7f_85 {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-text-tertiary);
+  flex-shrink: 0;
+  transition: background-color var(--transition-smooth);
+}
+
+._projectName_b7g7f_80 {
+  flex: 1;
+  font-size: 13px;
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--transition-smooth);
+}
+
+._deleteBtn_b7g7f_71 {
+  opacity: 0;
+  padding: 2px 5px;
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+  transition: opacity 0.15s, background-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+._deleteBtn_b7g7f_71:hover {
+  background-color: #FEE2E2;
+  color: var(--color-danger);
+}
+
+._stateMsg_b7g7f_143 {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  padding: 12px 8px;
+  text-align: center;
+}
+
+._errorMsg_b7g7f_150 {
+  font-size: 12px;
+  color: var(--color-danger);
+  padding: 8px;
+  text-align: center;
+}
+</style><style type="text/css" data-vite-dev-id="C:/dev/2026/claude/work-log-ai/frontend/src/components/report/CommitList.module.css">._container_1brm9_1 {
+  margin-top: 4px;
+}
+
+._toggleBtn_1brm9_5 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding: 4px 0;
+  transition: color 0.15s;
+  letter-spacing: 0.01em;
+}
+
+._toggleBtn_1brm9_5:hover {
+  color: var(--color-text-primary);
+}
+
+._arrow_1brm9_23 {
+  font-size: 10px;
+  transition: transform 0.2s;
+  display: inline-block;
+  color: var(--color-text-tertiary);
+}
+
+._arrow_1brm9_23._open_1brm9_30 {
+  transform: rotate(180deg);
+}
+
+._count_1brm9_34 {
+  font-weight: 400;
+  color: var(--color-text-tertiary);
+}
+
+._list_1brm9_39 {
+  margin-top: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  overflow: hidden;
+}
+
+/* Group */
+._group_1brm9_47 {
+  border-bottom: 1px solid var(--color-border);
+}
+
+._group_1brm9_47:last-child {
+  border-bottom: none;
+}
+
+._groupHeader_1brm9_55 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 14px;
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+._groupAuthor_1brm9_64 {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: 0.01em;
+}
+
+._groupCount_1brm9_71 {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 1px 7px;
+  border-radius: var(--radius-sm);
+}
+
+/* Commit block */
+._commitBlock_1brm9_81 {
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+._commitBlock_1brm9_81:last-child {
+  border-bottom: none;
+}
+
+._commitRow_1brm9_89 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color var(--transition-smooth);
+  gap: 8px;
+}
+
+._commitRow_1brm9_89:hover {
+  background-color: var(--color-bg);
+}
+
+._commitMain_1brm9_103 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+._date_1brm9_111 {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+._message_1brm9_118 {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+._fileArrow_1brm9_127 {
+  font-size: 9px;
+  color: var(--color-text-tertiary);
+  transition: transform 0.2s;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+._fileArrow_1brm9_127._open_1brm9_30 {
+  transform: rotate(180deg);
+}
+
+/* File list */
+._fileList_1brm9_140 {
+  padding: 6px 14px 10px;
+  background-color: var(--color-bg);
+  border-top: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+._fileItem_1brm9_149 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+._fileNew_1brm9_156 {
+  color: var(--color-success);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+._fileDeleted_1brm9_162 {
+  color: var(--color-danger);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+._fileRenamed_1brm9_168 {
+  color: #6366F1;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+._fileModified_1brm9_174 {
+  color: var(--color-text-tertiary);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+._filePath_1brm9_180 {
+  color: var(--color-text-secondary);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+._showMoreBtn_1brm9_189 {
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
+  font-size: 12px;
+  color: var(--color-primary);
+  font-weight: 500;
+  text-align: center;
+  transition: background-color 0.15s;
+}
+
+._showMoreBtn_1brm9_189:hover {
+  background-color: var(--color-primary-light);
+}
+</style><style type="text/css" data-vite-dev-id="C:/dev/2026/claude/work-log-ai/frontend/src/components/common/Toast.module.css">._toast_vmqu6_1 {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #ff4d4f;
+  color: #fff;
+  border-radius: var(--radius-button);
+  box-shadow: var(--shadow-card-hover);
+  backdrop-filter: blur(8px);
+  font-size: 14px;
+  z-index: 9999;
+  animation: _slideIn_vmqu6_1 0.2s ease;
+}
+
+._close_vmqu6_19 {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+._close_vmqu6_19:hover {
+  opacity: 1;
+}
+
+@keyframes _slideIn_vmqu6_1 {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+</style><style type="text/css" data-vite-dev-id="C:/dev/2026/claude/work-log-ai/frontend/src/components/report/ReportCard.module.css">._card_1maxu_1 {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition-smooth), border-color var(--transition-smooth);
+  overflow: hidden;
+}
+
+._card_1maxu_1:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: #D1D5DB;
+}
+
+._checkbox_1maxu_15 {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+  margin-top: 2px;
+}
+
+._cardHeader_1maxu_24 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 22px 16px;
+}
+
+._projectLeft_1maxu_32 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+._projectInfo_1maxu_38 {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+._projectName_1maxu_44 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.2px;
+}
+
+._dateRange_1maxu_51 {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+
+._stats_1maxu_56 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+._statItem_1maxu_63 {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+}
+
+._statItem_1maxu_63 strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+._statDot_1maxu_77 {
+  color: var(--color-border);
+  font-size: 10px;
+}
+
+._divider_1maxu_82 {
+  height: 1px;
+  background-color: var(--color-border-subtle);
+  margin: 0 22px;
+}
+
+/* AI Button */
+._aiBtn_1maxu_89 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-button);
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  transition: background-color var(--transition-smooth), box-shadow var(--transition-smooth), opacity var(--transition-smooth);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+._aiBtn_1maxu_89:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  box-shadow: 0 2px 8px rgba(79,70,229,0.3);
+}
+
+._aiBtn_1maxu_89:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Content Layout */
+._contentArea_1maxu_116 {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  padding: 20px 22px;
+}
+
+._leftPanel_1maxu_123 {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20px;
+}
+
+._rightPanel_1maxu_129 {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-left: 1px solid var(--color-border-subtle);
+  padding-left: 20px;
+}
+
+/* AI Summary Panel */
+._reportArea_1maxu_140 {
+  border-radius: var(--radius-input);
+  padding: 14px;
+  min-height: 280px;
+  background-color: #1A1D27;
+  border: none;
+  flex: 1;
+}
+
+._viewMode_1maxu_149 {
+  display: flex;
+  flex-direction: column;
+  min-height: 240px;
+  height: 100%;
+}
+
+._viewModeHeader_1maxu_156 {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+._editIconBtn_1maxu_162 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background-color: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+}
+
+._editIconBtn_1maxu_162:hover {
+  background-color: rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.9);
+}
+
+._summaryContent_1maxu_182 {
+  flex: 1;
+}
+
+._summaryLine_1maxu_186 {
+  font-size: 13px;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.7;
+  margin: 0;
+}
+
+._summaryEmpty_1maxu_193 {
+  font-size: 13px;
+  color: rgba(255,255,255,0.3);
+  font-style: italic;
+}
+
+/* Textarea editing */
+._textarea_1maxu_200 {
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.85);
+  background: transparent;
+  box-sizing: border-box;
+  caret-color: var(--color-primary);
+}
+
+._textarea_1maxu_200::placeholder {
+  color: rgba(255,255,255,0.25);
+}
+
+._textareaFooter_1maxu_217 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+._charCount_1maxu_226 {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+}
+
+._editActions_1maxu_231 {
+  display: flex;
+  gap: 6px;
+}
+
+._cancelBtn_1maxu_236 {
+  padding: 5px 12px;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+._cancelBtn_1maxu_236:hover:not(:disabled) {
+  background-color: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.8);
+}
+
+._saveBtn_1maxu_252 {
+  padding: 5px 12px;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+._saveBtn_1maxu_252:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+._saveBtn_1maxu_252:disabled,
+._cancelBtn_1maxu_236:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  ._contentArea_1maxu_116 {
+    flex-direction: column;
+  }
+  ._rightPanel_1maxu_129 {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--color-border-subtle);
+    padding-left: 0;
+    padding-top: 20px;
+  }
+}
+</style><style type="text/css" data-vite-dev-id="C:/dev/2026/claude/work-log-ai/frontend/src/pages/ReportDashboard.module.css">._layout_1qqol_1 {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--color-bg);
+}
+
+._body_1qqol_8 {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+._resizeHandle_1qqol_14 {
+  width: 4px;
+  cursor: col-resize;
+  background-color: transparent;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+}
+
+._resizeHandle_1qqol_14:hover {
+  background-color: var(--color-border);
+}
+
+._main_1qqol_26 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 28px 32px;
+  gap: 20px;
+}
+
+._tabs_1qqol_35 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+._tabPills_1qqol_42 {
+  display: inline-flex;
+  gap: 2px;
+  background-color: var(--color-border-subtle);
+  border: 1px solid var(--color-border);
+  padding: 3px;
+  border-radius: var(--radius-button);
+}
+
+._tabActions_1qqol_51 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+._selectAllBtn_1qqol_57 {
+  padding: 6px 14px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: background-color var(--transition-smooth), color var(--transition-smooth), border-color var(--transition-smooth);
+}
+
+._selectAllBtn_1qqol_57:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+._deselectAllBtn_1qqol_74 {
+  padding: 6px 14px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+}
+
+._deselectAllBtn_1qqol_74:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+._selectedBadge_1qqol_90 {
+  padding: 3px 10px;
+  background-color: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+._tabBtn_1qqol_100 {
+  padding: 7px 18px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-radius: calc(var(--radius-button) - 3px);
+  transition: color var(--transition-smooth), background-color var(--transition-smooth);
+}
+
+._tabBtn_1qqol_100:hover {
+  color: var(--color-text-primary);
+}
+
+._tabBtn_1qqol_100._activeTab_1qqol_115 {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  background-color: var(--color-surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+._content_1qqol_122 {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+._cardList_1qqol_128 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+._stateContainer_1qqol_134 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 12px;
+  color: var(--color-text-tertiary);
+  font-size: 14px;
+}
+
+._spinner_1qqol_145 {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: _spin_1qqol_145 0.7s linear infinite;
+}
+
+@keyframes _spin_1qqol_145 {
+  to { transform: rotate(360deg); }
+}
+
+._errorText_1qqol_158 {
+  color: var(--color-danger);
+}
+
+._emptyText_1qqol_162 {
+  color: var(--color-text-tertiary);
+}
+
+._footer_1qqol_166 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+  gap: 10px;
+}
+
+._exportBtn_1qqol_176 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: border-color var(--transition-smooth), color var(--transition-smooth), background-color var(--transition-smooth);
+}
+
+._exportBtn_1qqol_176:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+._exportBtn_1qqol_176:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+</style><style type="text/css" data-vite-dev-id="C:/dev/2026/claude/work-log-ai/frontend/src/index.css">:root {
+  /* Accent — refined indigo */
+  --color-primary: #4F46E5;
+  --color-primary-hover: #4338CA;
+  --color-primary-light: #EEF2FF;
+  --color-primary-surface: #F5F3FF;
+  --color-secondary: #6366F1;
+
+  /* Neutrals */
+  --color-bg: #F7F8FA;
+  --color-surface: #FFFFFF;
+  --color-sidebar: #FAFAFA;
+  --color-border: #E5E7EB;
+  --color-border-subtle: #F3F4F6;
+
+  /* Text */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-tertiary: #9CA3AF;
+
+  /* Status */
+  --color-success: #059669;
+  --color-danger: #DC2626;
+  --color-danger-hover: #B91C1C;
+
+  /* Radius */
+  --radius-card: 12px;
+  --radius-button: 8px;
+  --radius-input: 8px;
+  --radius-sm: 6px;
+
+  /* Shadows — neutral, not purple-tinted */
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-dropdown: 0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+
+  --transition-smooth: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input, textarea {
+  font-family: inherit;
+}
+</style></head>
+  <body>
+    <div id="root"><div class="_layout_1qqol_1"><header class="_header_ab8k7_1"><div class="_left_ab8k7_15"><span class="_logo_ab8k7_21">Hubilon <span class="_logoAccent_ab8k7_28">GitDigest</span></span></div><div class="_center_ab8k7_32"><button class="_navBtn_ab8k7_38">‹</button><div class="_datePickerWrapper_ab8k7_61"><button class="_dateRangeBtn_ab8k7_65">2026-03-09 ~ 2026-03-15<span class="_chevron_ab8k7_87">▾</span></button></div><button class="_navBtn_ab8k7_38">›</button><button class="_thisWeekBtn_ab8k7_149">이번주</button></div><div class="_right_ab8k7_166"><span class="_userName_ab8k7_173">사용자</span></div></header><div class="_body_1qqol_8"><aside class="_sidebar_b7g7f_1" style="width: 240px; min-width: 240px;"><button class="_addBtn_b7g7f_10">+ 프로젝트 추가</button><div class="_divider_b7g7f_31"></div><div class="_sectionLabel_b7g7f_37">Projects</div><nav class="_projectList_b7g7f_47"><div class="_projectItem_b7g7f_53 _active_b7g7f_75" role="button" tabindex="0" style="opacity: 1; transition: transform linear;"><span class="_dragHandle_b7g7f_89" role="button" tabindex="0" aria-disabled="false" aria-roledescription="sortable" aria-describedby="DndDescribedBy-0">⠿</span><span class="_projectDot_b7g7f_85"></span><span class="_projectName_b7g7f_80">kt-shopping-center</span><button class="_deleteBtn_b7g7f_71" title="프로젝트 삭제">✕</button></div><div class="_projectItem_b7g7f_53 " role="button" tabindex="0" style="opacity: 1; transition: transform linear;"><span class="_dragHandle_b7g7f_89" role="button" tabindex="0" aria-disabled="false" aria-roledescription="sortable" aria-describedby="DndDescribedBy-0">⠿</span><span class="_projectDot_b7g7f_85"></span><span class="_projectName_b7g7f_80">kt-sjeasy-shopping-center-api</span><button class="_deleteBtn_b7g7f_71" title="프로젝트 삭제">✕</button></div><div class="_projectItem_b7g7f_53 " role="button" tabindex="0" style="opacity: 1; transition: transform linear;"><span class="_dragHandle_b7g7f_89" role="button" tabindex="0" aria-disabled="false" aria-roledescription="sortable" aria-describedby="DndDescribedBy-0">⠿</span><span class="_projectDot_b7g7f_85"></span><span class="_projectName_b7g7f_80">kt-shopping-center-publishing</span><button class="_deleteBtn_b7g7f_71" title="프로젝트 삭제">✕</button></div><div id="DndDescribedBy-0" style="display: none;">
+    To pick up a draggable item, press the space bar.
+    While dragging, use the arrow keys to move the item.
+    Press space again to drop the item in its new position, or press escape to cancel.
+  </div><div id="DndLiveRegion-0" role="status" aria-live="assertive" aria-atomic="true" style="position: fixed; top: 0px; left: 0px; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); clip-path: inset(100%); white-space: nowrap;"></div></nav></aside><div class="_resizeHandle_1qqol_14"></div><main class="_main_1qqol_26"><div class="_tabs_1qqol_35"><div class="_tabPills_1qqol_42"><button class="_tabBtn_1qqol_100 ">전체 프로젝트</button><button class="_tabBtn_1qqol_100 _activeTab_1qqol_115">개별 프로젝트</button></div></div><div class="_content_1qqol_122"><div class="_cardList_1qqol_128"><div class="_card_1maxu_1"><div class="_cardHeader_1maxu_24"><div class="_projectLeft_1maxu_32"><div class="_projectInfo_1maxu_38"><h3 class="_projectName_1maxu_44">kt-shopping-center</h3><span class="_dateRange_1maxu_51">2026-03-09 ~ 2026-03-15</span></div></div><div class="_stats_1maxu_56"><span class="_statItem_1maxu_63">커밋 <strong>49건</strong></span><span class="_statDot_1maxu_77">·</span><span class="_statItem_1maxu_63">기여자 <strong>4명</strong></span></div></div><div class="_divider_1maxu_82"></div><div class="_contentArea_1maxu_116"><div class="_leftPanel_1maxu_123"><div class="_container_1brm9_1"><button class="_toggleBtn_1brm9_5"><span>커밋 이력</span><span class="_arrow_1brm9_23 _open_1brm9_30">▼</span><span class="_count_1brm9_34">(49건)</span></button><div class="_list_1brm9_39"><div class="_group_1brm9_47"><div class="_groupHeader_1brm9_55"><span class="_groupAuthor_1brm9_64">Jisoo</span><span class="_groupCount_1brm9_71">7건</span></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">fix: 결제화면 불필요한 플래그 제거, alert 제거</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">fix: 결제화면 불필요한 플래그 제거</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">fix: 결제 콜백 처리 보완</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">fix: 결제 콜백 처리 보완</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">fix: 간편결제실패 처리 테스트</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">fix: 간편결제실패 처리 테스트</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">fix: 푸터 판매자 입점문의 항목추가</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div></div><div class="_group_1brm9_47"><div class="_groupHeader_1brm9_55"><span class="_groupAuthor_1brm9_64">suyeon129</span><span class="_groupCount_1brm9_71">7건</span></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">feat: Copyright 추가</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">fix: 약관 상세 a태그 링크 이동 수정 (useAnchorRouter와 동일 로직)</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">fix: 상담신청 약관 전체동의 추가</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-13</span><span class="_message_1brm9_118">fix: 이용약관 &gt; 정기결제(배송) 이용약관 주석 처리</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">fix: 이용약관 &gt; 전자금융거래이용약관 주석 처리</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">Merge remote-tracking branch 'origin/main'</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">fix: 약관 상세 페이지 HTML 렌더링에 Shadow DOM 적용
+
+- Shadow DOM으로 외부 CSS(Tailwind) 영향 차단
+- 테이블에 가로 스크롤 자동 적용</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div></div><div class="_group_1brm9_47"><div class="_groupHeader_1brm9_55"><span class="_groupAuthor_1brm9_64">youngkwanji</span><span class="_groupCount_1brm9_71">5건</span></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">Close: #9: fix: 시큐이티 이슈 보완조치</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">Close: #8: fix: 시큐이티 이슈 보완조치</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">Close: #6: fix: a태그 클릭 이벤트 수정</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">Close: #7: fix: 웹뷰 Dev 툴 제거</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">Close: #5: fix: 공유하기 버튼 제거</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div></div><div class="_group_1brm9_47"><div class="_groupHeader_1brm9_55"><span class="_groupAuthor_1brm9_64">kangbokyeong</span><span class="_groupCount_1brm9_71">1건</span></div><div class="_commitBlock_1brm9_81"><div class="_commitRow_1brm9_89"><div class="_commitMain_1brm9_103"><span class="_date_1brm9_111">2026-03-12</span><span class="_message_1brm9_118">fix 교환/반품 반품 수거 문구 오타 수정</span></div><span class="_fileArrow_1brm9_127 ">▼</span></div></div></div><button class="_showMoreBtn_1brm9_189">더보기 (29건 더)</button></div></div></div><div class="_rightPanel_1maxu_129"><button class="_aiBtn_1maxu_89">✨ AI 요약 생성</button><div class="_reportArea_1maxu_140"><div class="_viewMode_1maxu_149"><div class="_viewModeHeader_1maxu_156"><button class="_editIconBtn_1maxu_162" title="편집">✏️ 편집</button></div><div class="_summaryContent_1maxu_182"><p class="_summaryLine_1maxu_186">Jisoo: 결제 화면 및 콜백 처리 로직 개선, 불필요한 요소 제거, 결제 관련 약관 및 주문서 기능 보완.</p><p class="_summaryLine_1maxu_186">suyeon129: 약관 및 관련 UI/UX 기능 개선, HTML 렌더링 보완, 판매자 리스트 추가 및 다양한 화면 문구 수정.</p><p class="_summaryLine_1maxu_186">youngkwanji: 보안 이슈 보완 및 웹뷰 기능 개선, HTML 링크와 ReactRouter 연동, sticky 영역 계산 수정 및 퍼블리싱 CSS 작업.</p><p class="_summaryLine_1maxu_186">kangbokyeong: 교환/반품 관련 반품 수거 및 확인 문구의 오타 수정 및 내용 변경.</p></div></div></div></div></div></div></div></div><div class="_footer_1qqol_166"><button class="_exportBtn_1qqol_176">📥 엑셀 내보내기</button></div></main></div></div></div>
+    <script type="module" src="./주간보고 관리2_files/main.tsx"></script>
+  
+
+</body></html>
