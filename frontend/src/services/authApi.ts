@@ -28,8 +28,8 @@ const authApi = {
     const res = await apiClient.post<ApiResponse<{ accessToken: string; expiresIn: number }>>('/auth/refresh', {})
     return res.data.data.accessToken
   },
-  logout: async (): Promise<void> => {
-    await apiClient.post('/auth/logout', {})
+  logout: async (refreshToken: string): Promise<void> => {
+    await apiClient.post('/auth/logout', { refreshToken })
   },
   me: async () => {
     const res = await apiClient.get<ApiResponse<{ id: number; name: string; email: string; department: string | null; role: 'ADMIN' | 'USER' }>>('/auth/me')

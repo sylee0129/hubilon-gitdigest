@@ -119,3 +119,30 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* 대시보드 래퍼 — 선택 전 초기 상태 */
+.dashboardWrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* 우측 패널 플레이스홀더 */
+.panelPlaceholder {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 24px;
+}
+
+.panelPlaceholderText {
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+  text-align: center;
+  line-height: 1.6;
+}

@@ -15,7 +15,26 @@
 .left {
   display: flex;
   align-items: center;
+  gap: 12px;
   min-width: 160px;
+}
+
+.dashboardBtn {
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+  white-space: nowrap;
+}
+
+.dashboardBtn:hover {
+  background-color: var(--color-primary);
+  color: #fff;
 }
 
 .logo {

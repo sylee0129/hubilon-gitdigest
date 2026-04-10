@@ -12,6 +12,7 @@ interface User {
 interface AuthStore {
   user: User | null
   accessToken: string | null
+  refreshToken: string | null
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   setAccessToken: (token: string) => void
@@ -19,21 +20,25 @@ interface AuthStore {
   clearAuth: () => void
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   accessToken: null,
+  refreshToken: null,
   login: async (email, password) => {
     const data = await authApi.login(email, password)
-    set({ user: data.user, accessToken: data.accessToken })
+    set({ user: data.user, accessToken: data.accessToken, refreshToken: data.refreshToken })
   },
   logout: async () => {
+    const { refreshToken } = get()
     try {
-      await authApi.logout()
+      if (refreshToken) {
+        await authApi.logout(refreshToken)
+      }
     } finally {
-      set({ user: null, accessToken: null })
+      set({ user: null, accessToken: null, refreshToken: null })
     }
   },
   setAccessToken: (token) => set({ accessToken: token }),
   setUser: (user) => set({ user }),
-  clearAuth: () => set({ user: null, accessToken: null }),
+  clearAuth: () => set({ user: null, accessToken: null, refreshToken: null }),
 }))

@@ -61,7 +61,12 @@ function generateWeeks(): WeekOption[] {
 }
 
 export default function Header() {
-  const { startDate, endDate, setCustomRange, setThisWeek, setPrevWeek, setNextWeek } = useReportStore()
+  const { startDate, endDate, setCustomRange, setThisWeek, setPrevWeek, setNextWeek, setSelectedFolder, setSelectedProject } = useReportStore()
+
+  const handleDashboard = () => {
+    setSelectedFolder(null)
+    setSelectedProject(null)
+  }
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
@@ -88,6 +93,7 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.left}>
         <span className={styles.logo}>Hubilon <span className={styles.logoAccent}>GitDigest</span></span>
+        <button className={styles.dashboardBtn} onClick={handleDashboard}>대시보드</button>
       </div>
 
       <div className={styles.center}>

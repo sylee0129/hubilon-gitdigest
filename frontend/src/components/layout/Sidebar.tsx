@@ -243,7 +243,7 @@ function SortableFolderItem({
         </div>
       )}
 
-      {isExpanded && folder.workProjects.length === 0 && (
+      {isExpanded && folder.workProjects.length === 0 && assignedProjects.length === 0 && (
         <div className={styles.workProjectEmpty}>세부 프로젝트 없음</div>
       )}
     </div>

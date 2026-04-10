@@ -33,11 +33,12 @@ apiClient.interceptors.response.use(
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true
         try {
+          const refreshToken = useAuthStore.getState().refreshToken
           const res = await refreshClient.post<{
             success: boolean
             data: { accessToken: string; expiresIn: number }
             message: string | null
-          }>('/auth/refresh', {})
+          }>('/auth/refresh', { refreshToken })
           const newToken = res.data.data.accessToken
           useAuthStore.getState().setAccessToken(newToken)
           originalRequest.headers.Authorization = `Bearer ${newToken}`
