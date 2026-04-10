@@ -47,8 +47,26 @@ public class FolderSummaryUpdateService implements FolderSummaryUpdateUseCase {
             throw new ForbiddenException("해당 폴더의 멤버가 아닙니다.");
         }
 
-        FolderSummary updated = folderSummary.withManualSummary(command.summary());
+        // PATCH 의미론: 빈 문자열은 null로 변환, null은 기존 값 보존
+        String newProgressSummary = resolveField(command.progressSummary(), folderSummary.getProgressSummary());
+        String newPlanSummary = resolveField(command.planSummary(), folderSummary.getPlanSummary());
+
+        // summary 필드는 progressSummary 값으로 동기화 (하위호환)
+        FolderSummary updated = folderSummary.withManualSummary(newProgressSummary, newPlanSummary);
         FolderSummary saved = folderSummaryCommandPort.save(updated);
         return folderSummaryAppMapper.toResult(saved);
+    }
+
+    /**
+     * PATCH 필드 해결 규칙:
+     * - null → 기존 값 보존
+     * - "" (빈 문자열) → null 처리 (삭제)
+     * - 값 있음 → 신규 값 사용
+     */
+    private String resolveField(String newValue, String existing) {
+        if (newValue == null) {
+            return existing;
+        }
+        return newValue.isBlank() ? null : newValue;
     }
 }

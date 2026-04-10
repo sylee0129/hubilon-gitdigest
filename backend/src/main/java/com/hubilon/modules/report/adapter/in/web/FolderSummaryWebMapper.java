@@ -20,6 +20,8 @@ public class FolderSummaryWebMapper {
                 result.summary(),
                 result.manuallyEdited(),
                 result.aiSummaryFailed(),
+                result.progressSummary(),
+                result.planSummary(),
                 result.createdAt(),
                 result.updatedAt()
         );
@@ -34,6 +36,10 @@ public class FolderSummaryWebMapper {
     }
 
     public FolderSummaryUpdateCommand toCommand(FolderSummaryUpdateRequest request) {
-        return new FolderSummaryUpdateCommand(request.summary());
+        return new FolderSummaryUpdateCommand(
+                request.summary(),
+                request.progressSummary(),
+                request.planSummary()
+        );
     }
 }

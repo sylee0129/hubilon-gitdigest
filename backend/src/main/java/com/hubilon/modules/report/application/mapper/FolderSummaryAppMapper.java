@@ -19,6 +19,8 @@ public class FolderSummaryAppMapper {
                 folderSummary.getSummary(),
                 folderSummary.isManuallyEdited(),
                 folderSummary.isAiSummaryFailed(),
+                folderSummary.getProgressSummary(),
+                folderSummary.getPlanSummary(),
                 folderSummary.getCreatedAt(),
                 folderSummary.getUpdatedAt()
         );

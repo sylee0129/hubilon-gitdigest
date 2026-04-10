@@ -23,6 +23,7 @@ export function useGenerateFolderAiSummary() {
       void queryClient.invalidateQueries({
         queryKey: ['folder-summary', variables.folderId],
       })
+      void queryClient.invalidateQueries({ queryKey: ['reports'] })
     },
   })
 }
@@ -30,10 +31,17 @@ export function useGenerateFolderAiSummary() {
 export function useUpdateFolderSummary() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: { summary: string } }) =>
-      reportApi.updateFolderSummary(id, payload),
+    mutationFn: ({ id, payload }: {
+      id: number
+      payload: {
+        summary?: string
+        progressSummary?: string | null
+        planSummary?: string | null
+      }
+    }) => reportApi.updateFolderSummary(id, payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['folder-summary'] })
+      void queryClient.invalidateQueries({ queryKey: ['reports'] })
     },
   })
 }

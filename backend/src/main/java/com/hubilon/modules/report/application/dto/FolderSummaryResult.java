@@ -14,6 +14,8 @@ public record FolderSummaryResult(
         String summary,
         boolean manuallyEdited,
         boolean aiSummaryFailed,
+        String progressSummary,
+        String planSummary,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

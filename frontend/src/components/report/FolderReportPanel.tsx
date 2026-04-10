@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import type { Report } from '../../types/report'
 import { useFolderSummary, useGenerateFolderAiSummary, useUpdateFolderSummary } from '../../hooks/useReports'
+import { useFolderSummaryEditor } from '../../hooks/useFolderSummaryEditor'
 import { useFolders } from '../../hooks/useFolders'
 import { useReportStore } from '../../stores/useReportStore'
 import Toast from '../common/Toast'
@@ -14,7 +15,6 @@ interface FolderReportPanelProps {
 export default function FolderReportPanel({ folderId, reports }: FolderReportPanelProps) {
   const { startDate, endDate } = useReportStore()
   const [isEditing, setIsEditing] = useState(false)
-  const [draft, setDraft] = useState('')
   const [toastVisible, setToastVisible] = useState(false)
 
   const { data: folders } = useFolders()
@@ -26,10 +26,8 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
 
   const folderSummary = folderSummaryQuery.data ?? null
 
-  useEffect(() => {
-    setDraft(folderSummary?.summary ?? '')
-    setIsEditing(false)
-  }, [folderSummary?.id, folderId])
+  const { progressDraft, planDraft, setProgressDraft, setPlanDraft, reset } =
+    useFolderSummaryEditor(folderSummary)
 
   const totalCommitCount = reports.reduce((sum, r) => sum + r.commitCount, 0)
   const uniqueContributorCount = new Set(
@@ -39,13 +37,19 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
   const handleSave = () => {
     if (!folderSummary) return
     updateFolderSummary.mutate(
-      { id: folderSummary.id, payload: { summary: draft } },
+      {
+        id: folderSummary.id,
+        payload: {
+          progressSummary: progressDraft || null,
+          planSummary: planDraft || null,
+        },
+      },
       { onSuccess: () => setIsEditing(false) },
     )
   }
 
   const handleCancel = () => {
-    setDraft(folderSummary?.summary ?? '')
+    reset()
     setIsEditing(false)
   }
 
@@ -54,15 +58,60 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
       { folderId, startDate, endDate },
       {
         onSuccess: (updated) => {
-          setDraft(updated.summary ?? '')
           setIsEditing(true)
-          if (updated.aiSummaryFailed) {
-            setToastVisible(true)
-          }
+          if (updated.aiSummaryFailed) setToastVisible(true)
         },
       },
     )
   }
+
+  const panelContent = isEditing ? (
+    <div className={styles.summaryContent}>
+      <div className={styles.summarySection}>
+        <h4 className={styles.sectionTitle}>금주 진행사항</h4>
+        <textarea
+          className={styles.textarea}
+          value={progressDraft}
+          onChange={(e) => setProgressDraft(e.target.value)}
+          placeholder="금주 진행사항을 입력하세요..."
+          autoFocus
+        />
+      </div>
+      <div className={styles.summarySection}>
+        <h4 className={styles.sectionTitle}>차주 진행계획</h4>
+        <textarea
+          className={styles.textarea}
+          value={planDraft}
+          onChange={(e) => setPlanDraft(e.target.value)}
+          placeholder="차주 진행계획을 입력하세요..."
+        />
+      </div>
+    </div>
+  ) : (
+    <div className={styles.summaryContent}>
+      {progressDraft || planDraft ? (
+        <>
+          <div className={styles.summarySection}>
+            <h4 className={styles.sectionTitle}>금주 진행사항</h4>
+            {(progressDraft || '').split('\n').map((line, i) => (
+              <p key={i} className={styles.summaryLine}>{line}</p>
+            ))}
+          </div>
+          <div className={styles.summarySection}>
+            <h4 className={styles.sectionTitle}>차주 진행계획</h4>
+            {(planDraft || '').split('\n').map((line, i) => (
+              <p key={i} className={styles.summaryLine}>{line}</p>
+            ))}
+          </div>
+        </>
+      ) : (
+        <span className={styles.summaryEmpty}>
+          요약 내용이 없습니다.<br />
+          AI 요약 또는 직접 편집해 주세요.
+        </span>
+      )}
+    </div>
+  )
 
   return (
     <>
@@ -91,7 +140,7 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
         <div className={styles.panelActions}>
           {isEditing ? (
             <>
-              <span className={styles.charCount}>{draft.length}자</span>
+              <span className={styles.charCount}>{progressDraft.length + planDraft.length}자</span>
               <button
                 className={styles.cancelBtn}
                 onClick={handleCancel}
@@ -118,8 +167,11 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
               </button>
               <button
                 className={styles.editBtn}
-                onClick={() => setIsEditing(true)}
-                disabled={!folderSummary}
+                onClick={() => {
+                  if (!folderSummary) handleGenerateAi()
+                  else setIsEditing(true)
+                }}
+                disabled={generateFolderAiSummary.isPending}
               >
                 편집
               </button>
@@ -130,28 +182,7 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
         <div className={styles.panelContent}>
           {folderSummaryQuery.isLoading ? (
             <span className={styles.summaryEmpty}>불러오는 중...</span>
-          ) : isEditing ? (
-            <textarea
-              className={styles.textarea}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              placeholder="폴더 요약 내용을 입력하세요..."
-              autoFocus
-            />
-          ) : (
-            <div className={styles.summaryContent}>
-              {draft
-                ? draft.split('\n').map((line, i) => (
-                    <p key={i} className={styles.summaryLine}>{line}</p>
-                  ))
-                : (
-                  <span className={styles.summaryEmpty}>
-                    요약 내용이 없습니다.<br />
-                    AI 요약 또는 직접 편집해 주세요.
-                  </span>
-                )}
-            </div>
-          )}
+          ) : panelContent}
         </div>
       </aside>
     </>

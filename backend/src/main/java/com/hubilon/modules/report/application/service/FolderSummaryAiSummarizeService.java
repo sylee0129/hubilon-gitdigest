@@ -1,14 +1,14 @@
 package com.hubilon.modules.report.application.service;
 
-import com.hubilon.common.exception.custom.NotFoundException;
+import com.hubilon.common.exception.custom.InvalidRequestException;
 import com.hubilon.modules.folder.adapter.out.persistence.FolderJpaRepository;
 import com.hubilon.modules.project.domain.model.Project;
 import com.hubilon.modules.project.domain.port.out.ProjectQueryPort;
 import com.hubilon.modules.report.application.dto.FolderSummaryAiSummarizeCommand;
 import com.hubilon.modules.report.application.dto.FolderSummaryResult;
 import com.hubilon.modules.report.application.mapper.FolderSummaryAppMapper;
-import com.hubilon.modules.report.domain.model.AiSummaryResult;
 import com.hubilon.modules.report.domain.model.CommitInfo;
+import com.hubilon.modules.report.domain.model.FolderAiSummaryResult;
 import com.hubilon.modules.report.domain.model.FolderSummary;
 import com.hubilon.modules.report.domain.model.Report;
 import com.hubilon.modules.report.domain.port.in.FolderSummaryAiSummarizeUseCase;
@@ -40,11 +40,16 @@ public class FolderSummaryAiSummarizeService implements FolderSummaryAiSummarize
     @Transactional
     @Override
     public FolderSummaryResult summarize(FolderSummaryAiSummarizeCommand command) {
+        // 입력 검증
+        if (command.startDate() == null || command.endDate() == null) {
+            throw new InvalidRequestException("시작일/종료일은 필수입니다.");
+        }
+        if (command.endDate().isBefore(command.startDate())) {
+            throw new InvalidRequestException("종료일은 시작일보다 이전일 수 없습니다.");
+        }
+
         // 1. folderId에 속한 프로젝트 조회
         List<Project> projects = projectQueryPort.findByFolderId(command.folderId());
-        if (projects.isEmpty()) {
-            throw new NotFoundException("폴더에 프로젝트가 없습니다. folderId=" + command.folderId());
-        }
 
         // 2. 해당 기간의 모든 Report 조회
         List<Long> projectIds = projects.stream().map(Project::getId).toList();
@@ -63,15 +68,16 @@ public class FolderSummaryAiSummarizeService implements FolderSummaryAiSummarize
                 .distinct()
                 .count();
 
-        // 4. AI 요약 생성
-        log.info("Generating folder AI summary for folderId={}, period={} ~ {}",
-                command.folderId(), command.startDate(), command.endDate());
-        AiSummaryResult aiResult = aiSummaryPort.summarize(allCommits);
-
-        // 5. 폴더명 조회
+        // 4. 폴더명 조회
         String folderName = folderJpaRepository.findById(command.folderId())
                 .map(f -> f.getName())
                 .orElse("폴더 #" + command.folderId());
+
+        // 5. AI 요약 생성
+        log.info("Generating folder AI summary for folderId={}, period={} ~ {}",
+                command.folderId(), command.startDate(), command.endDate());
+        FolderAiSummaryResult aiResult = aiSummaryPort.summarizeFolder(
+                allCommits, command.startDate(), command.endDate(), folderName);
 
         // 6. 기존 FolderSummary 조회 후 저장/업데이트
         Optional<FolderSummary> existing = folderSummaryQueryPort.findByFolderIdAndDateRange(
@@ -88,9 +94,11 @@ public class FolderSummaryAiSummarizeService implements FolderSummaryAiSummarize
                     .endDate(command.endDate())
                     .totalCommitCount(totalCommitCount)
                     .uniqueContributorCount(uniqueContributorCount)
-                    .summary(aiResult.summary())
+                    .summary(aiResult.progressSummary())
                     .manuallyEdited(false)
                     .aiSummaryFailed(!aiResult.aiUsed())
+                    .progressSummary(aiResult.progressSummary())
+                    .planSummary(aiResult.planSummary())
                     .createdAt(current.getCreatedAt())
                     .build();
         } else {
@@ -101,9 +109,11 @@ public class FolderSummaryAiSummarizeService implements FolderSummaryAiSummarize
                     .endDate(command.endDate())
                     .totalCommitCount(totalCommitCount)
                     .uniqueContributorCount(uniqueContributorCount)
-                    .summary(aiResult.summary())
+                    .summary(aiResult.progressSummary())
                     .manuallyEdited(false)
                     .aiSummaryFailed(!aiResult.aiUsed())
+                    .progressSummary(aiResult.progressSummary())
+                    .planSummary(aiResult.planSummary())
                     .build();
         }
 

@@ -65,4 +65,6 @@ export interface FolderSummary {
   summary: string
   manuallyEdited: boolean
   aiSummaryFailed: boolean
+  progressSummary: string | null
+  planSummary: string | null
 }

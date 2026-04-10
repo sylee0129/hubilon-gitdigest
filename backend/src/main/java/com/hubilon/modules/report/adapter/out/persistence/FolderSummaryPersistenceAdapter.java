@@ -26,7 +26,9 @@ public class FolderSummaryPersistenceAdapter implements FolderSummaryCommandPort
                     folderSummary.isManuallyEdited(),
                     folderSummary.isAiSummaryFailed(),
                     folderSummary.getTotalCommitCount(),
-                    folderSummary.getUniqueContributorCount()
+                    folderSummary.getUniqueContributorCount(),
+                    folderSummary.getProgressSummary(),
+                    folderSummary.getPlanSummary()
             );
         } else {
             entity = buildEntity(folderSummary);
@@ -58,6 +60,8 @@ public class FolderSummaryPersistenceAdapter implements FolderSummaryCommandPort
                 .summary(folderSummary.getSummary())
                 .manuallyEdited(folderSummary.isManuallyEdited())
                 .aiSummaryFailed(folderSummary.isAiSummaryFailed())
+                .progressSummary(folderSummary.getProgressSummary())
+                .planSummary(folderSummary.getPlanSummary())
                 .build();
     }
 
@@ -73,6 +77,8 @@ public class FolderSummaryPersistenceAdapter implements FolderSummaryCommandPort
                 .summary(entity.getSummary())
                 .manuallyEdited(entity.isManuallyEdited())
                 .aiSummaryFailed(entity.isAiSummaryFailed())
+                .progressSummary(entity.getProgressSummary())
+                .planSummary(entity.getPlanSummary())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();

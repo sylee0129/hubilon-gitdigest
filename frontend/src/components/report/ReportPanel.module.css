@@ -236,3 +236,16 @@
   font-style: italic;
   line-height: 1.7;
 }
+
+.summarySection {
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 6px 0;
+}

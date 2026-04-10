@@ -20,10 +20,12 @@ public class FolderSummary {
     private String summary;
     private boolean manuallyEdited;
     private boolean aiSummaryFailed;
+    private String progressSummary;
+    private String planSummary;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public FolderSummary withAiSummary(String aiSummary, boolean failed) {
+    public FolderSummary withAiSummary(String progressSummary, String planSummary, boolean failed) {
         return FolderSummary.builder()
                 .id(this.id)
                 .folderId(this.folderId)
@@ -32,15 +34,17 @@ public class FolderSummary {
                 .endDate(this.endDate)
                 .totalCommitCount(this.totalCommitCount)
                 .uniqueContributorCount(this.uniqueContributorCount)
-                .summary(aiSummary)
+                .summary(progressSummary)
                 .manuallyEdited(false)
                 .aiSummaryFailed(failed)
+                .progressSummary(progressSummary)
+                .planSummary(planSummary)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .build();
     }
 
-    public FolderSummary withManualSummary(String manualSummary) {
+    public FolderSummary withManualSummary(String progressSummary, String planSummary) {
         return FolderSummary.builder()
                 .id(this.id)
                 .folderId(this.folderId)
@@ -49,9 +53,11 @@ public class FolderSummary {
                 .endDate(this.endDate)
                 .totalCommitCount(this.totalCommitCount)
                 .uniqueContributorCount(this.uniqueContributorCount)
-                .summary(manualSummary)
+                .summary(progressSummary)
                 .manuallyEdited(true)
                 .aiSummaryFailed(this.aiSummaryFailed)
+                .progressSummary(progressSummary)
+                .planSummary(planSummary)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .build();

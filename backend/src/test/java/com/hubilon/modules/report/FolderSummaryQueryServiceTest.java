@@ -49,7 +49,7 @@ class FolderSummaryQueryServiceTest {
                 .build();
 
         FolderSummaryResult result = new FolderSummaryResult(
-                1L, 10L, "개발팀 폴더", start, end, 5, 2, "주간 커밋 요약", false, false, null, null);
+                1L, 10L, "개발팀 폴더", start, end, 5, 2, "주간 커밋 요약", false, false, null, null, null, null);
 
         when(folderSummaryQueryPort.findByFolderIdAndDateRange(10L, start, end))
                 .thenReturn(Optional.of(domain));

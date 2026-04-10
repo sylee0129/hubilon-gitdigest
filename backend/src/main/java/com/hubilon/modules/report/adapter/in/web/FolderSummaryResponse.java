@@ -18,6 +18,8 @@ public record FolderSummaryResponse(
         String summary,
         boolean manuallyEdited,
         boolean aiSummaryFailed,
+        String progressSummary,
+        String planSummary,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

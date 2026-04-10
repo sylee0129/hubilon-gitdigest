@@ -45,7 +45,11 @@ export const reportApi = {
     return res.data.data
   },
 
-  updateFolderSummary: async (id: number, payload: { summary: string }): Promise<FolderSummary> => {
+  updateFolderSummary: async (id: number, payload: {
+    summary?: string
+    progressSummary?: string | null
+    planSummary?: string | null
+  }): Promise<FolderSummary> => {
     const res = await apiClient.put<ApiResponse<FolderSummary>>(`/reports/folder-summary/${id}/summary`, payload)
     return res.data.data
   },

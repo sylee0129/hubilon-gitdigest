@@ -66,6 +66,16 @@ public class FolderSummaryJpaEntity {
     @Column(name = "ai_summary_failed", nullable = false)
     private boolean aiSummaryFailed;
 
+    @Comment("금주 진행사항")
+    @Lob
+    @Column(columnDefinition = "TEXT", name = "progress_summary")
+    private String progressSummary;
+
+    @Comment("차주 진행계획")
+    @Lob
+    @Column(columnDefinition = "TEXT", name = "plan_summary")
+    private String planSummary;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -78,7 +88,8 @@ public class FolderSummaryJpaEntity {
     public FolderSummaryJpaEntity(Long id, Long folderId, String folderName,
                                    LocalDate startDate, LocalDate endDate,
                                    int totalCommitCount, int uniqueContributorCount,
-                                   String summary, boolean manuallyEdited, boolean aiSummaryFailed) {
+                                   String summary, boolean manuallyEdited, boolean aiSummaryFailed,
+                                   String progressSummary, String planSummary) {
         this.id = id;
         this.folderId = folderId;
         this.folderName = folderName;
@@ -89,14 +100,19 @@ public class FolderSummaryJpaEntity {
         this.summary = summary;
         this.manuallyEdited = manuallyEdited;
         this.aiSummaryFailed = aiSummaryFailed;
+        this.progressSummary = progressSummary;
+        this.planSummary = planSummary;
     }
 
     public void updateSummary(String summary, boolean manuallyEdited, boolean aiSummaryFailed,
-                              int totalCommitCount, int uniqueContributorCount) {
+                              int totalCommitCount, int uniqueContributorCount,
+                              String progressSummary, String planSummary) {
         this.summary = summary;
         this.manuallyEdited = manuallyEdited;
         this.aiSummaryFailed = aiSummaryFailed;
         this.totalCommitCount = totalCommitCount;
         this.uniqueContributorCount = uniqueContributorCount;
+        this.progressSummary = progressSummary;
+        this.planSummary = planSummary;
     }
 }
