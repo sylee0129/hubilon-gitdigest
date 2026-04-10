@@ -93,7 +93,7 @@ public class ReportExportService implements ReportExportUseCase {
     }
 
     private void writeProjectSheet(XSSFWorkbook workbook, Report report) {
-        String sheetName = sanitizeSheetName(report.getProjectName());
+        String sheetName = uniqueSheetName(workbook, sanitizeSheetName(report.getProjectName()));
         Sheet sheet = workbook.createSheet(sheetName);
         CellStyle headerStyle = createHeaderStyle(workbook);
 
@@ -167,6 +167,19 @@ public class ReportExportService implements ReportExportUseCase {
         style.setBorderLeft(BorderStyle.THIN);
         style.setBorderRight(BorderStyle.THIN);
         return style;
+    }
+
+    private String uniqueSheetName(XSSFWorkbook workbook, String baseName) {
+        if (workbook.getSheet(baseName) == null) return baseName;
+        int idx = 2;
+        while (true) {
+            String suffix = "_" + idx;
+            String candidate = baseName.length() + suffix.length() <= 31
+                    ? baseName + suffix
+                    : baseName.substring(0, 31 - suffix.length()) + suffix;
+            if (workbook.getSheet(candidate) == null) return candidate;
+            idx++;
+        }
     }
 
     private String sanitizeSheetName(String name) {
