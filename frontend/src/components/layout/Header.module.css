@@ -187,6 +187,29 @@
   align-items: center;
   min-width: 160px;
   justify-content: flex-end;
+  gap: 8px;
+}
+
+.excelBtn {
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  background: #217346;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-smooth);
+  white-space: nowrap;
+}
+
+.excelBtn:hover:not(:disabled) {
+  background-color: #1a5c38;
+}
+
+.excelBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .userName {

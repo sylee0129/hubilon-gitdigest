@@ -12,6 +12,19 @@ export default defineConfig({
       },
     },
   },
+  resolve: {
+    alias: {
+      stream: 'stream-browserify',
+      buffer: 'buffer/',
+    },
+  },
+  define: {
+    global: 'globalThis',
+    'process.env': {},
+  },
+  optimizeDeps: {
+    include: ['exceljs'],
+  },
   test: {
     globals: true,
     environment: 'jsdom',
