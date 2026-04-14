@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useReportStore } from '../../stores/useReportStore'
 import { useAuthStore } from '../../stores/useAuthStore'
 import { useWeeklyExcelDownload } from '../../hooks/useWeeklyExcelDownload'
+import { useWeeklyConfluenceUpload } from '../../hooks/useWeeklyConfluenceUpload'
 import styles from './Header.module.css'
 
 interface WeekOption {
@@ -64,6 +65,7 @@ function generateWeeks(): WeekOption[] {
 export default function Header() {
   const { startDate, endDate, setCustomRange, setThisWeek, setPrevWeek, setNextWeek, setSelectedFolder, setSelectedProject } = useReportStore()
   const { download, loading: excelLoading } = useWeeklyExcelDownload()
+  const { upload, loading: confluenceLoading, disabled } = useWeeklyConfluenceUpload()
 
   const handleDashboard = () => {
     setSelectedFolder(null)
@@ -147,6 +149,13 @@ export default function Header() {
           disabled={excelLoading}
         >
           {excelLoading ? '생성 중…' : '주간보고 다운로드'}
+        </button>
+        <button
+          className={styles.excelBtn}
+          onClick={() => void upload()}
+          disabled={confluenceLoading || disabled}
+        >
+          {confluenceLoading ? '업로드 중…' : 'Confluence 업로드'}
         </button>
         <span className={styles.userName}>{user?.name ?? '사용자'}</span>
         <button className={styles.logoutBtn} onClick={() => void handleLogout()}>로그아웃</button>

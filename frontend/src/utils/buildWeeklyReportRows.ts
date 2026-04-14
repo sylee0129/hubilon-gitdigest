@@ -1,0 +1,34 @@
+import type { Folder } from '../types/folder'
+import { reportApi } from '../services/reportApi'
+import type { WeeklyReportRow } from './weeklyExcelExport'
+
+const CATEGORY_ORDER: Folder['category'][] = ['DEVELOPMENT', 'NEW_BUSINESS', 'OTHER']
+
+export async function buildWeeklyReportRows(
+  folders: Folder[],
+  startDate: string,
+  endDate: string
+): Promise<WeeklyReportRow[]> {
+  const results = await Promise.allSettled(
+    folders.map((folder) =>
+      reportApi.getFolderSummary({ folderId: folder.id, startDate, endDate })
+    )
+  )
+
+  const rows: WeeklyReportRow[] = []
+  results.forEach((result, i) => {
+    if (result.status === 'rejected') return
+    const folder = folders[i]
+    const summary = result.value
+    rows.push({
+      category: folder.category,
+      folderName: folder.name,
+      members: folder.members.map((m) => m.name),
+      progressSummary: summary?.progressSummary ?? '진행사항 없음',
+      planSummary: summary?.planSummary ?? '진행사항 확인',
+    })
+  })
+
+  rows.sort((a, b) => CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category))
+  return rows
+}
