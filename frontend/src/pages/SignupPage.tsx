@@ -1,17 +1,15 @@
 import { useState, FormEvent } from 'react'
-import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { useAuthStore } from '../stores/useAuthStore'
+import { useNavigate, Link } from 'react-router-dom'
+import authApi from '../services/authApi'
 import styles from './LoginPage.module.css'
 
-export default function LoginPage() {
+export default function SignupPage() {
   const navigate = useNavigate()
-  const location = useLocation()
-  const login = useAuthStore((s) => s.login)
 
-  const successMessage = (location.state as { message?: string } | null)?.message ?? null
-
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [department, setDepartment] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -21,10 +19,10 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      await login(email, password)
-      navigate('/')
+      await authApi.register({ name, email, password, department })
+      navigate('/login', { state: { message: '회원가입이 완료됐습니다. 로그인해 주세요.' } })
     } catch (err) {
-      setError(err instanceof Error ? err.message : '로그인에 실패했습니다.')
+      setError(err instanceof Error ? err.message : '회원가입에 실패했습니다.')
     } finally {
       setLoading(false)
     }
@@ -37,11 +35,24 @@ export default function LoginPage() {
           <h1 className={styles.title}>
             Hubilon <span className={styles.titleAccent}>GitDigest</span>
           </h1>
-          <p className={styles.subtitle}>업무 로그를 AI로 분석하세요</p>
+          <p className={styles.subtitle}>새 계정을 만드세요</p>
         </div>
 
         <form className={styles.form} onSubmit={(e) => void handleSubmit(e)}>
-          {successMessage && <p className={styles.successMsg}>{successMessage}</p>}
+          <div className={styles.fieldGroup}>
+            <label className={styles.label} htmlFor="name">이름</label>
+            <input
+              id="name"
+              type="text"
+              className={styles.input}
+              placeholder="홍길동"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              autoComplete="name"
+            />
+          </div>
+
           <div className={styles.fieldGroup}>
             <label className={styles.label} htmlFor="email">이메일</label>
             <input
@@ -66,7 +77,20 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="current-password"
+              autoComplete="new-password"
+            />
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.label} htmlFor="department">팀</label>
+            <input
+              id="department"
+              type="text"
+              className={styles.input}
+              placeholder="예: 플랫폼개발팀"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              required
             />
           </div>
 
@@ -77,11 +101,11 @@ export default function LoginPage() {
             className={styles.submitBtn}
             disabled={loading}
           >
-            {loading ? '로그인 중...' : '로그인'}
+            {loading ? '가입 중...' : '회원가입'}
           </button>
 
           <p className={styles.signupLink}>
-            계정이 없으신가요? <Link to="/signup">회원가입</Link>
+            이미 계정이 있으신가요? <Link to="/login">로그인</Link>
           </p>
         </form>
       </div>

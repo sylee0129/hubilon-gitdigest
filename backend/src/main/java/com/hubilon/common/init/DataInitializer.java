@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ public class DataInitializer implements ApplicationRunner {
     private final UserCommandPort userCommandPort;
     private final UserQueryPort userQueryPort;
     private final PasswordEncoder passwordEncoder;
+    private final JdbcTemplate jdbcTemplate;
 
     private static final String DEFAULT_PASSWORD = "hubilon1!";
 
@@ -37,6 +39,11 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
+        int count = jdbcTemplate.update(
+                "UPDATE users SET department = '플랫폼개발팀' WHERE department IS NULL OR department = ''"
+        );
+        log.info("초기 사용자 팀 정보 업데이트 완료: {}건", count);
+
         String encodedPassword = passwordEncoder.encode(DEFAULT_PASSWORD);
 
         for (String[] admin : INIT_ADMINS) {

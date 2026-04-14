@@ -186,7 +186,8 @@
   transition: background-color 0.15s;
 }
 
-.dropdownItem:hover {
+.dropdownItem:hover,
+.dropdownItemHighlighted {
   background-color: var(--color-border-subtle);
 }
 

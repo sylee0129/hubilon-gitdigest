@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, "/api/auth/login").permitAll()
                         .requestMatchers(POST, "/api/auth/refresh").permitAll()
+                        .requestMatchers(POST, "/api/users").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()

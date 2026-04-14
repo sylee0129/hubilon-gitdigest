@@ -19,6 +19,7 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
   const [members, setMembers] = useState<FolderMember[]>(folder?.members ?? [])
   const [searchQuery, setSearchQuery] = useState('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const searchRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -49,6 +50,7 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
     setDropdownOpen(true)
+    setHighlightedIndex(-1)
   }
 
   const handleSelectUser = (user: User) => {
@@ -56,6 +58,30 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
     setMembers((prev) => [...prev, { id: user.id, name: user.name, department: user.department }])
     setSearchQuery('')
     setDropdownOpen(false)
+    setHighlightedIndex(-1)
+  }
+
+  const filteredResults = searchResults?.filter((u) => !members.some((m) => m.id === u.id)) ?? []
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (highlightedIndex >= 0 && highlightedIndex < filteredResults.length) {
+        handleSelectUser(filteredResults[highlightedIndex])
+      }
+      return
+    }
+    if (!dropdownOpen || filteredResults.length === 0) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setHighlightedIndex((prev) => Math.min(prev + 1, filteredResults.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setHighlightedIndex((prev) => Math.max(prev - 1, 0))
+    } else if (e.key === 'Escape') {
+      setDropdownOpen(false)
+      setHighlightedIndex(-1)
+    }
   }
 
   const handleRemoveMember = (id: number) => {
@@ -83,8 +109,6 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
       })
     }
   }
-
-  const filteredResults = searchResults?.filter((u) => !members.some((m) => m.id === u.id)) ?? []
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -149,17 +173,18 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onFocus={() => searchQuery.length >= 2 && setDropdownOpen(true)}
+                  onKeyDown={handleSearchKeyDown}
                 />
                 {dropdownOpen && enableSearch && (
                   <div ref={dropdownRef} className={styles.dropdown}>
                     {filteredResults.length === 0 ? (
                       <div className={styles.dropdownEmpty}>검색 결과가 없습니다.</div>
                     ) : (
-                      filteredResults.map((user) => (
+                      filteredResults.map((user, idx) => (
                         <button
                           key={user.id}
                           type="button"
-                          className={styles.dropdownItem}
+                          className={`${styles.dropdownItem}${idx === highlightedIndex ? ` ${styles.dropdownItemHighlighted}` : ''}`}
                           onClick={() => handleSelectUser(user)}
                         >
                           <span className={styles.dropdownName}>{user.name}</span>

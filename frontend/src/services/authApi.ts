@@ -35,6 +35,9 @@ const authApi = {
     const res = await apiClient.get<ApiResponse<{ id: number; name: string; email: string; department: string | null; role: 'ADMIN' | 'USER' }>>('/auth/me')
     return res.data.data
   },
+  register: async (data: { name: string; email: string; password: string; department: string }): Promise<void> => {
+    await apiClient.post('/users', data)
+  },
 }
 
 export default authApi

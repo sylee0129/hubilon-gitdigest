@@ -109,3 +109,30 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.signupLink {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.signupLink a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signupLink a:hover {
+  text-decoration: underline;
+}
+
+.successMsg {
+  font-size: 13px;
+  color: var(--color-success, #22c55e);
+  background-color: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  margin-bottom: 12px;
+}
