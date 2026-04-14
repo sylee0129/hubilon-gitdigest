@@ -45,6 +45,20 @@ export const reportApi = {
     return res.data.data
   },
 
+  previewFolderAiSummary: async (payload: { folderId: number; startDate: string; endDate: string }): Promise<{ progressSummary: string; planSummary: string; aiSummaryFailed: boolean }> => {
+    const res = await apiClient.post<ApiResponse<{ progressSummary: string; planSummary: string; aiSummaryFailed: boolean }>>(
+      '/reports/folder-summary/ai-preview',
+      payload,
+      { timeout: 60_000 },
+    )
+    return res.data.data
+  },
+
+  createFolderSummary: async (payload: { folderId: number; startDate: string; endDate: string; progressSummary?: string | null; planSummary?: string | null }): Promise<FolderSummary> => {
+    const res = await apiClient.post<ApiResponse<FolderSummary>>('/reports/folder-summary', payload)
+    return res.data.data
+  },
+
   updateFolderSummary: async (id: number, payload: {
     summary?: string
     progressSummary?: string | null

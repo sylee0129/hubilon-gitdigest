@@ -1,6 +1,8 @@
 package com.hubilon.modules.report.adapter.in.web;
 
+import com.hubilon.modules.report.application.dto.FolderSummaryAiPreviewResult;
 import com.hubilon.modules.report.application.dto.FolderSummaryAiSummarizeCommand;
+import com.hubilon.modules.report.application.dto.FolderSummaryCreateCommand;
 import com.hubilon.modules.report.application.dto.FolderSummaryResult;
 import com.hubilon.modules.report.application.dto.FolderSummaryUpdateCommand;
 import org.springframework.stereotype.Component;
@@ -40,6 +42,24 @@ public class FolderSummaryWebMapper {
                 request.summary(),
                 request.progressSummary(),
                 request.planSummary()
+        );
+    }
+
+    public FolderSummaryCreateCommand toCreateCommand(FolderSummaryCreateRequest request) {
+        return new FolderSummaryCreateCommand(
+                request.folderId(),
+                request.startDate(),
+                request.endDate(),
+                request.progressSummary(),
+                request.planSummary()
+        );
+    }
+
+    public FolderSummaryAiPreviewResponse toPreviewResponse(FolderSummaryAiPreviewResult result) {
+        return new FolderSummaryAiPreviewResponse(
+                result.progressSummary(),
+                result.planSummary(),
+                result.aiSummaryFailed()
         );
     }
 }

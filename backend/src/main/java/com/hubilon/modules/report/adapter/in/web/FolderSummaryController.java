@@ -2,7 +2,9 @@ package com.hubilon.modules.report.adapter.in.web;
 
 import com.hubilon.common.response.Response;
 import com.hubilon.modules.report.application.dto.FolderSummaryQuery;
+import com.hubilon.modules.report.domain.port.in.FolderSummaryAiPreviewUseCase;
 import com.hubilon.modules.report.domain.port.in.FolderSummaryAiSummarizeUseCase;
+import com.hubilon.modules.report.domain.port.in.FolderSummaryCreateUseCase;
 import com.hubilon.modules.report.domain.port.in.FolderSummaryQueryUseCase;
 import com.hubilon.modules.report.domain.port.in.FolderSummaryUpdateUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +26,8 @@ public class FolderSummaryController {
 
     private final FolderSummaryQueryUseCase folderSummaryQueryUseCase;
     private final FolderSummaryAiSummarizeUseCase folderSummaryAiSummarizeUseCase;
+    private final FolderSummaryAiPreviewUseCase folderSummaryAiPreviewUseCase;
+    private final FolderSummaryCreateUseCase folderSummaryCreateUseCase;
     private final FolderSummaryUpdateUseCase folderSummaryUpdateUseCase;
     private final FolderSummaryWebMapper folderSummaryWebMapper;
 
@@ -52,7 +56,31 @@ public class FolderSummaryController {
         );
     }
 
-    @Operation(summary = "요약 수동 편집", description = "폴더 요약을 수동으로 편집합니다. 폴더 멤버만 편집 가능합니다.")
+    @Operation(summary = "AI 요약 미리보기", description = "AI 요약을 생성하되 저장하지 않고 내용만 반환합니다.")
+    @PostMapping("/ai-preview")
+    public Response<FolderSummaryAiPreviewResponse> previewAiSummary(
+            @Valid @RequestBody FolderSummaryAiSummarizeRequest request
+    ) {
+        return Response.ok(
+                folderSummaryWebMapper.toPreviewResponse(
+                        folderSummaryAiPreviewUseCase.preview(folderSummaryWebMapper.toCommand(request))
+                )
+        );
+    }
+
+    @Operation(summary = "폴더 요약 신규 생성", description = "폴더 요약을 새로 생성합니다.")
+    @PostMapping
+    public Response<FolderSummaryResponse> create(
+            @Valid @RequestBody FolderSummaryCreateRequest request
+    ) {
+        return Response.ok(
+                folderSummaryWebMapper.toResponse(
+                        folderSummaryCreateUseCase.create(folderSummaryWebMapper.toCreateCommand(request))
+                )
+        );
+    }
+
+    @Operation(summary = "요약 수동 편집", description = "폴더 요약을 수동으로 편집합니다.")
     @PutMapping("/{id}/summary")
     public Response<FolderSummaryResponse> updateSummary(
             @PathVariable Long id,

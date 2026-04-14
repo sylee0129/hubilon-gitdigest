@@ -10,7 +10,7 @@ interface UseFolderSummaryEditorReturn {
   isDirty: boolean
 }
 
-function stripSectionHeader(text: string | null | undefined): string {
+export function stripSectionHeader(text: string | null | undefined): string {
   if (!text) return ''
   return text
     .replace(/^\[(?:금주 진행사항|차주 진행계획)[^\]]*\]\s*\n?/, '')

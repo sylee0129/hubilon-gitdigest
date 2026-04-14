@@ -28,6 +28,25 @@ export function useGenerateFolderAiSummary() {
   })
 }
 
+export function usePreviewFolderAiSummary() {
+  return useMutation({
+    mutationFn: (payload: { folderId: number; startDate: string; endDate: string }) =>
+      reportApi.previewFolderAiSummary(payload),
+  })
+}
+
+export function useCreateFolderSummary() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { folderId: number; startDate: string; endDate: string; progressSummary?: string | null; planSummary?: string | null }) =>
+      reportApi.createFolderSummary(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['folder-summary'] })
+      void queryClient.invalidateQueries({ queryKey: ['reports'] })
+    },
+  })
+}
+
 export function useUpdateFolderSummary() {
   const queryClient = useQueryClient()
   return useMutation({

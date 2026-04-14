@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Report } from '../../types/report'
-import { useFolderSummary, useGenerateFolderAiSummary, useUpdateFolderSummary } from '../../hooks/useReports'
-import { useFolderSummaryEditor } from '../../hooks/useFolderSummaryEditor'
+import { useFolderSummary, usePreviewFolderAiSummary, useCreateFolderSummary, useUpdateFolderSummary } from '../../hooks/useReports'
+import { useFolderSummaryEditor, stripSectionHeader } from '../../hooks/useFolderSummaryEditor'
 import { useFolders } from '../../hooks/useFolders'
 import { useReportStore } from '../../stores/useReportStore'
 import Toast from '../common/Toast'
@@ -15,13 +15,16 @@ interface FolderReportPanelProps {
 export default function FolderReportPanel({ folderId, reports }: FolderReportPanelProps) {
   const { startDate, endDate } = useReportStore()
   const [isEditing, setIsEditing] = useState(false)
-  const [toastVisible, setToastVisible] = useState(false)
+  const [toast, setToast] = useState<{ visible: boolean; message: string }>({ visible: false, message: '' })
+  const showToast = (message: string) => setToast({ visible: true, message })
+  const hideToast = () => setToast(prev => ({ ...prev, visible: false }))
 
   const { data: folders } = useFolders()
   const folderName = folders?.find(f => f.id === folderId)?.name ?? ''
 
   const folderSummaryQuery = useFolderSummary({ folderId, startDate, endDate })
-  const generateFolderAiSummary = useGenerateFolderAiSummary()
+  const previewFolderAiSummary = usePreviewFolderAiSummary()
+  const createFolderSummary = useCreateFolderSummary()
   const updateFolderSummary = useUpdateFolderSummary()
 
   const folderSummary = folderSummaryQuery.data ?? null
@@ -35,17 +38,35 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
   ).size
 
   const handleSave = () => {
-    if (!folderSummary) return
-    updateFolderSummary.mutate(
-      {
-        id: folderSummary.id,
-        payload: {
+    if (folderSummary) {
+      updateFolderSummary.mutate(
+        {
+          id: folderSummary.id,
+          payload: {
+            progressSummary: progressDraft || null,
+            planSummary: planDraft || null,
+          },
+        },
+        {
+          onSuccess: () => setIsEditing(false),
+          onError: (err: Error) => showToast(err.message),
+        },
+      )
+    } else {
+      createFolderSummary.mutate(
+        {
+          folderId,
+          startDate,
+          endDate,
           progressSummary: progressDraft || null,
           planSummary: planDraft || null,
         },
-      },
-      { onSuccess: () => setIsEditing(false) },
-    )
+        {
+          onSuccess: () => setIsEditing(false),
+          onError: (err: Error) => showToast(err.message),
+        },
+      )
+    }
   }
 
   const handleCancel = () => {
@@ -54,13 +75,16 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
   }
 
   const handleGenerateAi = () => {
-    generateFolderAiSummary.mutate(
+    previewFolderAiSummary.mutate(
       { folderId, startDate, endDate },
       {
-        onSuccess: (updated) => {
+        onSuccess: (preview) => {
+          setProgressDraft(stripSectionHeader(preview.progressSummary))
+          setPlanDraft(stripSectionHeader(preview.planSummary))
           setIsEditing(true)
-          if (updated.aiSummaryFailed) setToastVisible(true)
+          if (preview.aiSummaryFailed) showToast('AI 요약 생성에 실패하여 기본 요약으로 대체되었습니다.')
         },
+        onError: (err: Error) => showToast(err.message),
       },
     )
   }
@@ -116,9 +140,9 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
   return (
     <>
       <Toast
-        message="AI 요약 생성에 실패하여 기본 요약으로 대체되었습니다."
-        visible={toastVisible}
-        onClose={() => setToastVisible(false)}
+        message={toast.message}
+        visible={toast.visible}
+        onClose={hideToast}
       />
       <aside className={styles.panel}>
         <div className={styles.panelHeader}>
@@ -144,16 +168,16 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
               <button
                 className={styles.cancelBtn}
                 onClick={handleCancel}
-                disabled={updateFolderSummary.isPending}
+                disabled={updateFolderSummary.isPending || createFolderSummary.isPending}
               >
                 취소
               </button>
               <button
                 className={styles.saveBtn}
                 onClick={handleSave}
-                disabled={updateFolderSummary.isPending || !folderSummary}
+                disabled={updateFolderSummary.isPending || createFolderSummary.isPending}
               >
-                {updateFolderSummary.isPending ? '저장 중...' : '저장'}
+                {(updateFolderSummary.isPending || createFolderSummary.isPending) ? '저장 중...' : '저장'}
               </button>
             </>
           ) : (
@@ -161,17 +185,14 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
               <button
                 className={styles.aiBtn}
                 onClick={handleGenerateAi}
-                disabled={generateFolderAiSummary.isPending}
+                disabled={previewFolderAiSummary.isPending}
               >
-                {generateFolderAiSummary.isPending ? '생성 중...' : '✨ AI 요약'}
+                {previewFolderAiSummary.isPending ? '생성 중...' : '✨ AI 요약'}
               </button>
               <button
                 className={styles.editBtn}
-                onClick={() => {
-                  if (!folderSummary) handleGenerateAi()
-                  else setIsEditing(true)
-                }}
-                disabled={generateFolderAiSummary.isPending}
+                onClick={() => setIsEditing(true)}
+                disabled={previewFolderAiSummary.isPending}
               >
                 편집
               </button>
