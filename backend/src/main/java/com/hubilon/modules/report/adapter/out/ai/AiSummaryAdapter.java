@@ -272,10 +272,10 @@ public class AiSummaryAdapter implements AiSummaryPort {
         String planRaw;
 
         if (planStart != -1 && planStart > progressStart) {
-            progressRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, progressStart, planStart)).stripTrailing();
-            planRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, planStart, lines.length)).stripTrailing();
+            progressRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, progressStart + 2, planStart)).stripTrailing();
+            planRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, planStart + 2, lines.length)).stripTrailing();
         } else {
-            progressRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, progressStart, lines.length)).stripTrailing();
+            progressRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, progressStart + 2, lines.length)).stripTrailing();
             planRaw = "(자동 추론 불가)";
         }
 

@@ -10,15 +10,22 @@ interface UseFolderSummaryEditorReturn {
   isDirty: boolean
 }
 
+function stripSectionHeader(text: string | null | undefined): string {
+  if (!text) return ''
+  return text
+    .replace(/^\[(?:금주 진행사항|차주 진행계획)[^\]]*\]\s*\n?/, '')
+    .replace(/^- [^\n]*\n?/, '')
+}
+
 export function useFolderSummaryEditor(
   folderSummary: FolderSummary | null,
 ): UseFolderSummaryEditorReturn {
-  const [progressDraft, setProgressDraft] = useState(folderSummary?.progressSummary ?? '')
-  const [planDraft, setPlanDraft] = useState(folderSummary?.planSummary ?? '')
+  const [progressDraft, setProgressDraft] = useState(stripSectionHeader(folderSummary?.progressSummary))
+  const [planDraft, setPlanDraft] = useState(stripSectionHeader(folderSummary?.planSummary))
 
   const reset = () => {
-    setProgressDraft(folderSummary?.progressSummary ?? '')
-    setPlanDraft(folderSummary?.planSummary ?? '')
+    setProgressDraft(stripSectionHeader(folderSummary?.progressSummary))
+    setPlanDraft(stripSectionHeader(folderSummary?.planSummary))
   }
 
   useEffect(() => {
@@ -27,8 +34,8 @@ export function useFolderSummaryEditor(
   }, [folderSummary?.id])
 
   const isDirty =
-    progressDraft !== (folderSummary?.progressSummary ?? '') ||
-    planDraft !== (folderSummary?.planSummary ?? '')
+    progressDraft !== stripSectionHeader(folderSummary?.progressSummary) ||
+    planDraft !== stripSectionHeader(folderSummary?.planSummary)
 
   return { progressDraft, planDraft, setProgressDraft, setPlanDraft, reset, isDirty }
 }

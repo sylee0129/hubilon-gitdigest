@@ -103,7 +103,7 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
 
         StringBuilder sb = new StringBuilder();
         sb.append("<h2>플랫폼개발실 | ").append(month).append("월 ").append(weekNumber).append("주</h2>\n");
-        sb.append("<table>\n");
+        sb.append("<table style=\"width: 100%;\">\n");
         sb.append("  <colgroup>\n");
         sb.append("    <col style=\"width: 8%;\" />\n");
         sb.append("    <col style=\"width: 14%;\" />\n");
