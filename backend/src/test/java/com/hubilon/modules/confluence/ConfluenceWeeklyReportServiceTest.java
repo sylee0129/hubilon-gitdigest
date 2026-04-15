@@ -202,7 +202,7 @@ class ConfluenceWeeklyReportServiceTest {
         void emptyRows() throws Exception {
             String xhtml = invokeXhtml(List.of(), START, END);
 
-            assertThat(xhtml).contains("<table>");
+            assertThat(xhtml).contains("<table ");
             assertThat(xhtml).contains("</table>");
             assertThat(xhtml).contains("<tbody>");
         }

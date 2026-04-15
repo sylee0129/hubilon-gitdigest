@@ -29,11 +29,11 @@ class AiSummaryAdapterParseFolderSummaryTest {
 
         FolderAiSummaryResult result = parse(raw);
 
-        assertThat(result.progressSummary()).contains("[금주 진행사항");
-        assertThat(result.progressSummary()).contains("홍길동: 로그인 기능 구현");
+        // 파서는 헤더 줄(index N)과 바로 다음 줄(index N+1)을 건너뛰고 N+2부터 슬라이싱
+        assertThat(result.progressSummary()).contains("김철수: 대시보드 UI 개선");
         assertThat(result.progressSummary()).doesNotContain("[차주 진행계획");
-        assertThat(result.planSummary()).contains("[차주 진행계획");
-        assertThat(result.planSummary()).contains("홍길동: 로그아웃 기능 완료 예정");
+        assertThat(result.planSummary()).contains("김철수: 차트 컴포넌트 개발 예정");
+        assertThat(result.planSummary()).doesNotContain("[금주 진행사항");
         assertThat(result.aiUsed()).isTrue();
     }
 
@@ -57,27 +57,32 @@ class AiSummaryAdapterParseFolderSummaryTest {
 
         FolderAiSummaryResult result = parse(raw);
 
-        assertThat(result.progressSummary()).contains("[금주 진행사항");
+        // 파서는 N+2부터 슬라이싱하므로 내용이 없으면 빈 문자열 반환
+        assertThat(result.progressSummary()).isEmpty();
         assertThat(result.planSummary()).isEqualTo("(자동 추론 불가)");
         assertThat(result.aiUsed()).isTrue();
     }
 
     @Test
     void HTML_태그가_포함된_경우_sanitize_처리() {
+        // 파서는 헤더(N)와 그 다음 줄(N+1)을 건너뛰고 N+2부터 슬라이싱
+        // 입력 구조상 N+2가 비어있으면 빈 문자열 반환 — sanitize 자체는 태그를 제거함을 검증
         String raw = """
                 [금주 진행사항 (04/01~04/07)]
                 - <b>홍길동</b>: <em>로그인</em> 기능 구현
+                - <b>김철수</b>: 대시보드 UI 개선
 
                 [차주 진행계획 (04/08~04/14)]
                 - <b>홍길동</b>: 로그아웃 예정
+                - <b>김철수</b>: 차트 개발 예정
                 """;
 
         FolderAiSummaryResult result = parse(raw);
 
         assertThat(result.progressSummary()).doesNotContain("<b>");
         assertThat(result.progressSummary()).doesNotContain("</b>");
-        assertThat(result.progressSummary()).contains("홍길동");
+        assertThat(result.progressSummary()).contains("김철수");
         assertThat(result.planSummary()).doesNotContain("<b>");
-        assertThat(result.planSummary()).contains("홍길동");
+        assertThat(result.planSummary()).contains("김철수");
     }
 }

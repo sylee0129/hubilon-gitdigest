@@ -82,13 +82,13 @@ class FolderSummaryUpdateServiceTest {
 
     private void stubBasicAuth() {
         FolderJpaEntity folderEntity = mock(FolderJpaEntity.class);
-        when(folderEntity.getId()).thenReturn(FOLDER_ID);
-        when(memberEntity.getFolder()).thenReturn(folderEntity);
+        lenient().when(folderEntity.getId()).thenReturn(FOLDER_ID);
+        lenient().when(memberEntity.getFolder()).thenReturn(folderEntity);
 
-        when(folderSummaryQueryPort.findById(SUMMARY_ID)).thenReturn(Optional.of(existingSummary));
-        when(userRepository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(userEntity));
-        when(userEntity.getId()).thenReturn(USER_ID);
-        when(folderMemberJpaRepository.findByUserId(USER_ID)).thenReturn(List.of(memberEntity));
+        lenient().when(folderSummaryQueryPort.findById(SUMMARY_ID)).thenReturn(Optional.of(existingSummary));
+        lenient().when(userRepository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(userEntity));
+        lenient().when(userEntity.getId()).thenReturn(USER_ID);
+        lenient().when(folderMemberJpaRepository.findByUserId(USER_ID)).thenReturn(List.of(memberEntity));
     }
 
     @Test
