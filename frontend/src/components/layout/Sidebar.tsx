@@ -583,6 +583,7 @@ export default function Sidebar({ width = 240 }: Props) {
             <div className={styles.stateMsg}>등록된 폴더가 없습니다.</div>
           )}
         </div>
+
       </aside>
 
       {isModalOpen && (

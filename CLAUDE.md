@@ -4,6 +4,7 @@
 업무 지시 전에 **프로젝트 루트의 `plan/`** 디렉토리에 `기능명_plan.md` 파일을 생성 후 진행 지시에 따라 작업합니다.
 - plan 파일 경로: `C:\dev\2026\claude\work-log-ai\plan\기능명_plan.md`
 - 절대경로 기준: 항상 프로젝트 루트(`C:\dev\2026\claude\work-log-ai`) 하위 `plan/` 폴더에 저장
+- **금지**: `EnterPlanMode` 툴 사용 금지 — 이 툴은 `~/.claude/plans/`에 저장됨. 반드시 `Write` 툴로 직접 파일 생성
 
 ---
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import type { Report } from '../../types/report'
 import { useFolderSummary, usePreviewFolderAiSummary, useCreateFolderSummary, useUpdateFolderSummary } from '../../hooks/useReports'
 import { useFolderSummaryEditor, stripSectionHeader } from '../../hooks/useFolderSummaryEditor'
@@ -43,8 +43,8 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
         {
           id: folderSummary.id,
           payload: {
-            progressSummary: progressDraft || null,
-            planSummary: planDraft || null,
+            progressSummary: progressDraft,
+            planSummary: planDraft,
           },
         },
         {
@@ -58,8 +58,8 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
           folderId,
           startDate,
           endDate,
-          progressSummary: progressDraft || null,
-          planSummary: planDraft || null,
+          progressSummary: progressDraft,
+          planSummary: planDraft,
         },
         {
           onSuccess: () => setIsEditing(false),

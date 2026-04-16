@@ -70,6 +70,7 @@ export default function Header() {
   const handleDashboard = () => {
     setSelectedFolder(null)
     setSelectedProject(null)
+    navigate('/')
   }
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -98,6 +99,7 @@ export default function Header() {
       <div className={styles.left}>
         <span className={styles.logo}>Hubilon <span className={styles.logoAccent}>GitDigest</span></span>
         <button className={styles.dashboardBtn} onClick={handleDashboard}>대시보드</button>
+        <button className={styles.dashboardBtn} onClick={() => navigate('/scheduler')}>주간보고 스케줄러</button>
       </div>
 
       <div className={styles.center}>

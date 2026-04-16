@@ -21,3 +21,7 @@ gitlab:
   oauth:
     redirect-uri: ${GITLAB_OAUTH_REDIRECT_URI:http://localhost:8090/api/oauth/gitlab/callback}
     frontend-origin: ${FRONTEND_ORIGIN:http://localhost:3300}
+
+scheduler:
+  weekly-report:
+    enabled: true
