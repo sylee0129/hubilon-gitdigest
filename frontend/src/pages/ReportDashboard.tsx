@@ -11,21 +11,33 @@ import styles from './ReportDashboard.module.css'
 
 const SIDEBAR_MIN = 160
 const SIDEBAR_MAX = 480
+const PANEL_MIN = 220
+const PANEL_MAX = 600
 
 export default function ReportDashboard() {
   const { startDate, endDate, activeTab, selectedProjectId, selectedFolderId, setSelectedFolder } = useReportStore()
   const { data: projects } = useProjects()
 
   const [sidebarWidth, setSidebarWidth] = useState(240)
-  const isResizing = useRef(false)
+  const [panelWidth, setPanelWidth] = useState(360)
+  const isResizing = useRef<'sidebar' | 'panel' | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
-      if (!isResizing.current) return
-      const next = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, e.clientX))
-      setSidebarWidth(next)
+      if (isResizing.current === 'sidebar') {
+        const next = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, e.clientX))
+        setSidebarWidth(next)
+      } else if (isResizing.current === 'panel') {
+        const container = containerRef.current
+        if (!container) return
+        const rect = container.getBoundingClientRect()
+        const fromRight = rect.right - e.clientX
+        const next = Math.min(PANEL_MAX, Math.max(PANEL_MIN, fromRight))
+        setPanelWidth(next)
+      }
     }
-    const onMouseUp = () => { isResizing.current = false }
+    const onMouseUp = () => { isResizing.current = null }
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
     return () => {
@@ -60,10 +72,10 @@ export default function ReportDashboard() {
 
         <div
           className={styles.resizeHandle}
-          onMouseDown={() => { isResizing.current = true }}
+          onMouseDown={() => { isResizing.current = 'sidebar' }}
         />
 
-        <main className={styles.main}>
+        <main className={styles.main} ref={containerRef}>
           {selectedFolderId == null && selectedProjectId == null ? (
             <div className={styles.dashboardWrapper}>
               <DashboardView onFolderSelect={(folderId) => setSelectedFolder(folderId)} />
@@ -120,10 +132,17 @@ export default function ReportDashboard() {
                 </div>
 
                 {selectedFolderId != null && activeTab === 'all' ? (
-                  <FolderReportPanel
-                    folderId={selectedFolderId}
-                    reports={reportsQuery.data ?? []}
-                  />
+                  <>
+                    <div
+                      className={styles.panelResizeHandle}
+                      onMouseDown={() => { isResizing.current = 'panel' }}
+                    />
+                    <FolderReportPanel
+                      folderId={selectedFolderId}
+                      reports={reportsQuery.data ?? []}
+                      width={panelWidth}
+                    />
+                  </>
                 ) : selectedProjectId == null ? (
                   <div className={styles.panelPlaceholder}>
                     <span className={styles.panelPlaceholderText}>

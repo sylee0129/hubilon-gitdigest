@@ -23,6 +23,19 @@
   background-color: var(--color-border);
 }
 
+.panelResizeHandle {
+  width: 4px;
+  cursor: col-resize;
+  background-color: transparent;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+  border-radius: 2px;
+}
+
+.panelResizeHandle:hover {
+  background-color: var(--color-border);
+}
+
 .main {
   flex: 1;
   display: flex;

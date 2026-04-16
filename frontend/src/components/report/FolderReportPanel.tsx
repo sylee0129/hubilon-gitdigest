@@ -10,9 +10,10 @@ import styles from './ReportPanel.module.css'
 interface FolderReportPanelProps {
   folderId: number
   reports: Report[]
+  width?: number
 }
 
-export default function FolderReportPanel({ folderId, reports }: FolderReportPanelProps) {
+export default function FolderReportPanel({ folderId, reports, width }: FolderReportPanelProps) {
   const { startDate, endDate } = useReportStore()
   const [isEditing, setIsEditing] = useState(false)
   const [toast, setToast] = useState<{ visible: boolean; message: string }>({ visible: false, message: '' })
@@ -144,7 +145,7 @@ export default function FolderReportPanel({ folderId, reports }: FolderReportPan
         visible={toast.visible}
         onClose={hideToast}
       />
-      <aside className={styles.panel}>
+      <aside className={styles.panel} style={width ? { width: `${width}px` } : undefined}>
         <div className={styles.panelHeader}>
           <div className={styles.panelTitle}>
             <span className={styles.panelIcon}>📁</span>

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -182,6 +182,7 @@ interface SortableFolderItemProps {
   onProjectClick: (id: number) => void
   onProjectDelete: (e: React.MouseEvent, id: number) => void
   onMoveToFolder: (id: number) => void
+  isCompleted?: boolean
 }
 
 function SortableFolderItem({
@@ -198,12 +199,14 @@ function SortableFolderItem({
   onProjectClick,
   onProjectDelete,
   onMoveToFolder,
+  isCompleted,
 }: SortableFolderItemProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: folder.id,
+    disabled: isCompleted ?? false,
   })
 
   const style = {
@@ -327,6 +330,7 @@ export default function Sidebar({ width = 240 }: Props) {
   const [assigningProjectId, setAssigningProjectId] = useState<number | null>(null)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<FolderCategory>>(new Set())
   const [deletingProjectId, setDeletingProjectId] = useState<number | null>(null)
+  const [isCompletedSectionOpen, setIsCompletedSectionOpen] = useState(false)
 
   const { data: projects, isLoading, isError } = useProjects()
   const { data: folders, isLoading: foldersLoading, isError: foldersError } = useFolders()
@@ -345,6 +349,13 @@ export default function Sidebar({ width = 240 }: Props) {
     setSelectedWorkProject,
     setSelectedFolder,
   } = useReportStore()
+
+  const completedFolders = useMemo(() =>
+    (folders ?? [])
+      .filter((f) => f.status === 'COMPLETED')
+      .sort((a, b) => a.name.localeCompare(b.name, 'ko')),
+    [folders]
+  )
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -527,13 +538,9 @@ export default function Sidebar({ width = 240 }: Props) {
             <>
               {CATEGORY_ORDER.map((cat) => {
                 const label = CATEGORY_LABELS[cat]
-                const STATUS_SORT: Record<string, number> = { IN_PROGRESS: 0, COMPLETED: 1 }
                 const items = folders
-                  .filter((f) => f.category === cat)
-                  .sort((a, b) =>
-                    STATUS_SORT[a.status] - STATUS_SORT[b.status] ||
-                    a.name.localeCompare(b.name, 'ko')
-                  )
+                  .filter((f) => f.category === cat && f.status === 'IN_PROGRESS')
+                  .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
                 if (items.length === 0) return null
                 const isCollapsed = collapsedCategories.has(cat)
                 return (
@@ -581,6 +588,50 @@ export default function Sidebar({ width = 240 }: Props) {
           )}
           {!foldersLoading && !foldersError && folders?.length === 0 && (
             <div className={styles.stateMsg}>등록된 폴더가 없습니다.</div>
+          )}
+
+          {completedFolders.length > 0 && (
+            <div className={styles.completedSection}>
+              <button
+                className={styles.completedSectionHeader}
+                onClick={() => setIsCompletedSectionOpen((v) => !v)}
+              >
+                <span className={styles.completedSectionLine} />
+                <span className={styles.completedSectionLabel}>
+                  완료됨 ({completedFolders.length})
+                </span>
+                <span className={styles.completedSectionArrow}>
+                  {isCompletedSectionOpen ? '▾' : '▸'}
+                </span>
+                <span className={styles.completedSectionLine} />
+              </button>
+
+              {isCompletedSectionOpen && (
+                <div className={styles.completedFolderList}>
+                  <SortableContext items={completedFolders.map((f) => f.id)} strategy={verticalListSortingStrategy}>
+                    {completedFolders.map((folder) => (
+                      <SortableFolderItem
+                        key={folder.id}
+                        folder={folder}
+                        isCompleted
+                        isExpanded={expandedFolderIds.has(folder.id)}
+                        isSelected={selectedFolderId === folder.id}
+                        onToggle={handleToggleFolder}
+                        onFolderSelect={handleFolderSelect}
+                        onEdit={handleEditFolder}
+                        onDelete={handleDeleteFolder}
+                        selectedWorkProjectId={selectedWorkProjectId}
+                        onWorkProjectClick={handleWorkProjectClick}
+                        assignedProjects={projects?.filter((p) => p.folderId === folder.id) ?? []}
+                        onProjectClick={handleProjectClick}
+                        onProjectDelete={handleDelete}
+                        onMoveToFolder={setAssigningProjectId}
+                      />
+                    ))}
+                  </SortableContext>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
