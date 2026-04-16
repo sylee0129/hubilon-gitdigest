@@ -6,6 +6,6 @@ public record UserRegisterCommand(
         String name,
         String email,
         String password,
-        String department,
+        Long teamId,
         User.Role role
 ) {}

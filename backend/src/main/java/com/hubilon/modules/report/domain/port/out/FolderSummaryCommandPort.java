@@ -5,4 +5,6 @@ import com.hubilon.modules.report.domain.model.FolderSummary;
 public interface FolderSummaryCommandPort {
 
     FolderSummary save(FolderSummary folderSummary);
+
+    void deleteByFolderId(Long folderId);
 }

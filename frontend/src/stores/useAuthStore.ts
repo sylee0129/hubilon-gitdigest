@@ -5,7 +5,8 @@ interface User {
   id: number
   name: string
   email: string
-  department: string | null
+  teamId: number | null
+  teamName: string | null
   role: 'ADMIN' | 'USER'
 }
 

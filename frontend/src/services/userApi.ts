@@ -7,7 +7,7 @@ export const userApi = {
     const res = await apiClient.get<ApiResponse<User[]>>('/users', { params: q ? { q } : undefined })
     return res.data.data
   },
-  create: async (payload: { name: string; email: string; password: string; department?: string }): Promise<User> => {
+  create: async (payload: { name: string; email: string; password: string; teamId?: number }): Promise<User> => {
     const res = await apiClient.post<ApiResponse<User>>('/users', payload)
     return res.data.data
   },

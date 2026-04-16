@@ -21,14 +21,14 @@ public class UserQueryService implements UserQueryUseCase {
     @Override
     public List<UserSearchResult> searchAll() {
         return userQueryPort.findAll().stream()
-                .map(u -> new UserSearchResult(u.getId(), u.getName(), u.getEmail(), u.getDepartment(), u.getRole()))
+                .map(u -> new UserSearchResult(u.getId(), u.getName(), u.getEmail(), u.getTeamId(), u.getTeamName(), u.getRole()))
                 .toList();
     }
 
     @Override
     public List<UserSearchResult> searchByQuery(String q) {
         return userQueryPort.findByQuery(q).stream()
-                .map(u -> new UserSearchResult(u.getId(), u.getName(), u.getEmail(), u.getDepartment(), u.getRole()))
+                .map(u -> new UserSearchResult(u.getId(), u.getName(), u.getEmail(), u.getTeamId(), u.getTeamName(), u.getRole()))
                 .toList();
     }
 

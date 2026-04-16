@@ -369,6 +369,10 @@
   color: var(--color-text-primary);
 }
 
+.workProjectItem:hover .menuBtn {
+  opacity: 1;
+}
+
 .workProjectActive {
   background-color: var(--color-primary-light) !important;
   color: var(--color-primary) !important;

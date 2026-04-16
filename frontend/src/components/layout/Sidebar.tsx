@@ -20,6 +20,7 @@ import { useReportStore } from '../../stores/useReportStore'
 import AddProjectModal from '../project/AddProjectModal'
 import AssignFolderModal from '../project/AssignFolderModal'
 import FolderModal from '../folder/FolderModal'
+import DeleteConfirmModal from '../common/DeleteConfirmModal'
 import type { Project } from '../../types/report'
 import type { Folder, WorkProjectItem } from '../../types/folder'
 import { STATUS_LABELS, CATEGORY_LABELS } from '../../types/folder'
@@ -109,6 +110,62 @@ function SortableProjectItem({ project, isActive, onProjectClick, onDelete, onMo
   )
 }
 
+// ─── 폴더 내 assigned 프로젝트 아이템 ────────────────────────────────────────
+
+interface AssignedProjectItemProps {
+  project: Project
+  onProjectClick: (id: number) => void
+  onProjectDelete: (e: React.MouseEvent, id: number) => void
+  onMoveToFolder: (id: number) => void
+}
+
+function AssignedProjectItem({ project, onProjectClick, onProjectDelete, onMoveToFolder }: AssignedProjectItemProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    if (menuOpen) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [menuOpen])
+
+  return (
+    <div className={styles.workProjectItem} onClick={() => onProjectClick(project.id)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onProjectClick(project.id)}>
+      <span className={styles.projectDot} />
+      <span className={styles.workProjectName}>{project.name}</span>
+      <div className={styles.menuWrapper} ref={menuRef} onClick={(e) => e.stopPropagation()}>
+        <button
+          className={styles.menuBtn}
+          onClick={(e) => { e.stopPropagation(); setMenuOpen((prev) => !prev) }}
+          title="메뉴"
+        >
+          ⋮
+        </button>
+        {menuOpen && (
+          <div className={styles.contextMenu}>
+            <button
+              className={styles.contextMenuItem}
+              onClick={() => { setMenuOpen(false); onMoveToFolder(project.id) }}
+            >
+              폴더 이동
+            </button>
+            <button
+              className={`${styles.contextMenuItem} ${styles.contextMenuItemDanger}`}
+              onClick={(e) => { setMenuOpen(false); onProjectDelete(e, project.id) }}
+            >
+              삭제
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── 폴더 아이템 ─────────────────────────────────────────────────────────────
 
 interface SortableFolderItemProps {
@@ -123,6 +180,8 @@ interface SortableFolderItemProps {
   onWorkProjectClick: (id: number) => void
   assignedProjects: Project[]
   onProjectClick: (id: number) => void
+  onProjectDelete: (e: React.MouseEvent, id: number) => void
+  onMoveToFolder: (id: number) => void
 }
 
 function SortableFolderItem({
@@ -137,6 +196,8 @@ function SortableFolderItem({
   onWorkProjectClick,
   assignedProjects,
   onProjectClick,
+  onProjectDelete,
+  onMoveToFolder,
 }: SortableFolderItemProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -213,14 +274,13 @@ function SortableFolderItem({
       {isExpanded && assignedProjects.length > 0 && (
         <div className={styles.workProjectList}>
           {assignedProjects.map((p) => (
-            <button
+            <AssignedProjectItem
               key={`proj-${p.id}`}
-              className={styles.workProjectItem}
-              onClick={() => onProjectClick(p.id)}
-            >
-              <span className={styles.projectDot} />
-              <span className={styles.workProjectName}>{p.name}</span>
-            </button>
+              project={p}
+              onProjectClick={onProjectClick}
+              onProjectDelete={onProjectDelete}
+              onMoveToFolder={onMoveToFolder}
+            />
           ))}
         </div>
       )}
@@ -266,6 +326,7 @@ export default function Sidebar({ width = 240 }: Props) {
   const [expandedFolderIds, setExpandedFolderIds] = useState<Set<number>>(new Set())
   const [assigningProjectId, setAssigningProjectId] = useState<number | null>(null)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<FolderCategory>>(new Set())
+  const [deletingProjectId, setDeletingProjectId] = useState<number | null>(null)
 
   const { data: projects, isLoading, isError } = useProjects()
   const { data: folders, isLoading: foldersLoading, isError: foldersError } = useFolders()
@@ -305,9 +366,19 @@ export default function Sidebar({ width = 240 }: Props) {
 
   const handleDelete = (e: React.MouseEvent, id: number) => {
     e.stopPropagation()
-    if (confirm('프로젝트를 삭제하시겠습니까?')) {
-      deleteProject.mutate(id)
-    }
+    setDeletingProjectId(id)
+  }
+
+  const handleConfirmDelete = () => {
+    if (deletingProjectId === null) return
+    deleteProject.mutate(deletingProjectId, {
+      onSuccess: () => {
+        if (selectedProjectId === deletingProjectId) {
+          setSelectedProject(null)
+        }
+        setDeletingProjectId(null)
+      },
+    })
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -496,6 +567,8 @@ export default function Sidebar({ width = 240 }: Props) {
                               onWorkProjectClick={handleWorkProjectClick}
                               assignedProjects={projects?.filter((p) => p.folderId === folder.id) ?? []}
                               onProjectClick={handleProjectClick}
+                              onProjectDelete={handleDelete}
+                              onMoveToFolder={setAssigningProjectId}
                             />
                           ))}
                         </SortableContext>
@@ -527,6 +600,16 @@ export default function Sidebar({ width = 240 }: Props) {
         <AssignFolderModal
           projectId={assigningProjectId}
           onClose={() => setAssigningProjectId(null)}
+        />
+      )}
+
+      {deletingProjectId !== null && (
+        <DeleteConfirmModal
+          title="프로젝트 삭제"
+          message={`'${projects?.find((p) => p.id === deletingProjectId)?.name ?? ''}' 프로젝트를 삭제하시겠습니까?\n연관된 보고서와 폴더 요약도 함께 삭제됩니다.`}
+          isPending={deleteProject.isPending}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setDeletingProjectId(null)}
         />
       )}
     </>

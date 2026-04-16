@@ -72,6 +72,11 @@ public class ReportPersistenceAdapter implements ReportCommandPort, ReportQueryP
         return reportJpaRepository.findExisting(projectId, startDate, endDate).map(this::toDomain);
     }
 
+    @Override
+    public void deleteByProjectId(Long projectId) {
+        reportJpaRepository.deleteByProjectId(projectId);
+    }
+
     private ReportJpaEntity buildEntity(Report report) {
         return ReportJpaEntity.builder()
                 .id(report.getId())

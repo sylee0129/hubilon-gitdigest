@@ -124,7 +124,7 @@ export async function exportWeeklyExcel(params: WeeklyExportParams): Promise<voi
   sheet.getRow(1).height = 22
   sheet.mergeCells('A1:E1')
   const titleCell = sheet.getCell('A1')
-  titleCell.value = `플랫폼개발실 | ${weekLabel}`
+  titleCell.value = `플랫폼개발팀 | ${weekLabel}`
   titleCell.font = FONT_TITLE
   titleCell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
   titleCell.fill = FILL_WHITE
@@ -238,7 +238,7 @@ export async function exportWeeklyExcel(params: WeeklyExportParams): Promise<voi
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `${weekLabelNoSpace}_주간보고_플랫폼개발실_${todayStr}.xlsx`
+  a.download = `${weekLabelNoSpace}_주간보고_플랫폼개발팀_${todayStr}.xlsx`
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)

@@ -1,7 +1,7 @@
 export interface FolderMember {
   id: number
   name: string
-  department?: string
+  teamName?: string
 }
 
 export interface WorkProjectItem {
@@ -24,7 +24,8 @@ export interface User {
   id: number
   name: string
   email: string
-  department?: string
+  teamId?: number
+  teamName?: string
   role?: string
 }
 

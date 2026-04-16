@@ -1,6 +1,7 @@
-import { useState, FormEvent } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import authApi from '../services/authApi'
+import { teamApi, type Team } from '../services/teamApi'
 import styles from './LoginPage.module.css'
 
 export default function SignupPage() {
@@ -9,17 +10,25 @@ export default function SignupPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [department, setDepartment] = useState('')
+  const [teamId, setTeamId] = useState<number | ''>('')
+  const [teams, setTeams] = useState<Team[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    teamApi.getTeams()
+      .then(setTeams)
+      .catch(() => setTeams([]))
+  }, [])
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (teamId === '') return
     setError(null)
     setLoading(true)
 
     try {
-      await authApi.register({ name, email, password, department })
+      await authApi.register({ name, email, password, teamId })
       navigate('/login', { state: { message: '회원가입이 완료됐습니다. 로그인해 주세요.' } })
     } catch (err) {
       setError(err instanceof Error ? err.message : '회원가입에 실패했습니다.')
@@ -82,16 +91,19 @@ export default function SignupPage() {
           </div>
 
           <div className={styles.fieldGroup}>
-            <label className={styles.label} htmlFor="department">팀</label>
-            <input
-              id="department"
-              type="text"
+            <label className={styles.label} htmlFor="teamId">팀</label>
+            <select
+              id="teamId"
               className={styles.input}
-              placeholder="예: 플랫폼개발팀"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
+              value={teamId}
+              onChange={(e) => setTeamId(Number(e.target.value))}
               required
-            />
+            >
+              <option value="">팀 선택</option>
+              {teams.map((t) => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
           </div>
 
           {error && <p className={styles.errorMsg}>{error}</p>}

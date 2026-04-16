@@ -7,5 +7,5 @@ public record UserRegisterRequest(
         @NotBlank String name,
         @Email @NotBlank String email,
         @NotBlank String password,
-        String department
+        Long teamId
 ) {}

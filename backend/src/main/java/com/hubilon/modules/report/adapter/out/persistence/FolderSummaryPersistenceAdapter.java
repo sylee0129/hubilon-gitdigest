@@ -48,6 +48,11 @@ public class FolderSummaryPersistenceAdapter implements FolderSummaryCommandPort
                 .map(this::toDomain);
     }
 
+    @Override
+    public void deleteByFolderId(Long folderId) {
+        folderSummaryJpaRepository.deleteByFolderId(folderId);
+    }
+
     private FolderSummaryJpaEntity buildEntity(FolderSummary folderSummary) {
         return FolderSummaryJpaEntity.builder()
                 .id(folderSummary.getId())

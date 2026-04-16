@@ -95,7 +95,7 @@ describe('getWeekOfMonth — 주차 계산 로직', () => {
     await exportWeeklyExcel({ rows: [], startDate: '2026-04-13', endDate: '2026-04-17' })
 
     expect(mockAnchor.download).toContain('04월3주')
-    expect(mockAnchor.download).toContain('주간보고_플랫폼개발실')
+    expect(mockAnchor.download).toContain('주간보고_플랫폼개발팀')
     expect(mockAnchor.download).toMatch(/\.xlsx$/)
   })
 

@@ -31,7 +31,7 @@ public class UserRegisterService implements UserRegisterUseCase {
                 .name(command.name())
                 .email(command.email())
                 .password(passwordEncoder.encode(command.password()))
-                .department(command.department())
+                .teamId(command.teamId())
                 .role(command.role() != null ? command.role() : User.Role.USER)
                 .build();
 
@@ -41,7 +41,8 @@ public class UserRegisterService implements UserRegisterUseCase {
                 saved.getId(),
                 saved.getName(),
                 saved.getEmail(),
-                saved.getDepartment(),
+                saved.getTeamId(),
+                saved.getTeamName(),
                 saved.getRole()
         );
     }

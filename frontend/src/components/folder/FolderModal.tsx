@@ -55,7 +55,7 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
 
   const handleSelectUser = (user: User) => {
     if (members.some((m) => m.id === user.id)) return
-    setMembers((prev) => [...prev, { id: user.id, name: user.name, department: user.department }])
+    setMembers((prev) => [...prev, { id: user.id, name: user.name, teamName: user.teamName }])
     setSearchQuery('')
     setDropdownOpen(false)
     setHighlightedIndex(-1)
@@ -188,8 +188,8 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
                           onClick={() => handleSelectUser(user)}
                         >
                           <span className={styles.dropdownName}>{user.name}</span>
-                          {user.department && (
-                            <span className={styles.dropdownDept}>{user.department}</span>
+                          {user.teamName && (
+                            <span className={styles.dropdownDept}>{user.teamName}</span>
                           )}
                         </button>
                       ))

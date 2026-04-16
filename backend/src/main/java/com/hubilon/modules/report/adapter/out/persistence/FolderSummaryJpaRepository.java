@@ -16,4 +16,6 @@ public interface FolderSummaryJpaRepository extends JpaRepository<FolderSummaryJ
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    void deleteByFolderId(Long folderId);
 }

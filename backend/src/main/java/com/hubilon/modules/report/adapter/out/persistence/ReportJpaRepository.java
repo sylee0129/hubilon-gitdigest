@@ -39,4 +39,6 @@ public interface ReportJpaRepository extends JpaRepository<ReportJpaEntity, Long
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    void deleteByProjectId(Long projectId);
 }

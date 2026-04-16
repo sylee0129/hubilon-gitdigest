@@ -8,7 +8,8 @@ interface LoginResponse {
     id: number
     name: string
     email: string
-    department: string | null
+    teamId: number | null
+    teamName: string | null
     role: 'ADMIN' | 'USER'
   }
 }
@@ -32,10 +33,10 @@ const authApi = {
     await apiClient.post('/auth/logout', { refreshToken })
   },
   me: async () => {
-    const res = await apiClient.get<ApiResponse<{ id: number; name: string; email: string; department: string | null; role: 'ADMIN' | 'USER' }>>('/auth/me')
+    const res = await apiClient.get<ApiResponse<{ id: number; name: string; email: string; teamId: number | null; teamName: string | null; role: 'ADMIN' | 'USER' }>>('/auth/me')
     return res.data.data
   },
-  register: async (data: { name: string; email: string; password: string; department: string }): Promise<void> => {
+  register: async (data: { name: string; email: string; password: string; teamId: number }): Promise<void> => {
     await apiClient.post('/users', data)
   },
 }

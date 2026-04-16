@@ -41,7 +41,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public Response<UserRegisterResult> register(@Valid @RequestBody UserRegisterRequest request) {
         UserRegisterCommand command = new UserRegisterCommand(
-                request.name(), request.email(), request.password(), request.department(), User.Role.USER
+                request.name(), request.email(), request.password(), request.teamId(), User.Role.USER
         );
         return Response.ok(userRegisterUseCase.register(command));
     }

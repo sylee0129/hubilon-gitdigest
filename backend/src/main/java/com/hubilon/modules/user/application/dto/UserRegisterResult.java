@@ -6,6 +6,7 @@ public record UserRegisterResult(
         Long id,
         String name,
         String email,
-        String department,
+        Long teamId,
+        String teamName,
         User.Role role
 ) {}

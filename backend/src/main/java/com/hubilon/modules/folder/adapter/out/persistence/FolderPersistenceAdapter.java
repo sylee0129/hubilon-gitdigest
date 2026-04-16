@@ -123,7 +123,7 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
     private FolderResult toResult(FolderJpaEntity entity) {
         List<FolderMemberResult> members = entity.getMembers().stream()
                 .map(m -> userRepository.findById(m.getUserId())
-                        .map(u -> new FolderMemberResult(u.getId(), u.getName(), u.getDepartment()))
+                        .map(u -> new FolderMemberResult(u.getId(), u.getName(), u.getTeam() != null ? u.getTeam().getName() : null))
                         .orElse(null))
                 .filter(m -> m != null)
                 .toList();

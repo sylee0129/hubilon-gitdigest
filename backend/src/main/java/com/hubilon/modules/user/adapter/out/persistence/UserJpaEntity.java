@@ -1,5 +1,6 @@
 package com.hubilon.modules.user.adapter.out.persistence;
 
+import com.hubilon.modules.team.adapter.out.persistence.TeamJpaEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,13 +37,14 @@ public class UserJpaEntity {
     @Column(nullable = false)
     private String password;
 
-    @Comment("부서")
-    private String department;
-
     @Comment("권한")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private TeamJpaEntity team;
 
     @CreatedDate
     @Column(updatable = false)
@@ -57,12 +59,12 @@ public class UserJpaEntity {
 
     @Builder
     public UserJpaEntity(Long id, String name, String email, String password,
-                         String department, Role role) {
+                         Role role, TeamJpaEntity team) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.department = department;
         this.role = role;
+        this.team = team;
     }
 }

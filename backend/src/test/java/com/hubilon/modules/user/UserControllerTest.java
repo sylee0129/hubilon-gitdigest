@@ -47,7 +47,7 @@ class UserControllerTest {
 
     @Test
     void 사용자_등록_성공() throws Exception {
-        UserRegisterRequest req = new UserRegisterRequest("홍길동", "hong@test.com", "pass1234!", "개발팀");
+        UserRegisterRequest req = new UserRegisterRequest("홍길동", "hong@test.com", "pass1234!", null);
 
         mockMvc.perform(post("/api/users")
                         .header("Authorization", token)
@@ -61,7 +61,7 @@ class UserControllerTest {
 
     @Test
     void 사용자_전체_목록_조회() throws Exception {
-        UserRegisterRequest req = new UserRegisterRequest("테스트유저", "testuser@test.com", "pass1234!", "QA팀");
+        UserRegisterRequest req = new UserRegisterRequest("테스트유저", "testuser@test.com", "pass1234!", null);
         mockMvc.perform(post("/api/users")
                 .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -76,7 +76,7 @@ class UserControllerTest {
 
     @Test
     void 사용자_이름_검색() throws Exception {
-        UserRegisterRequest req = new UserRegisterRequest("검색대상유저", "searchme@test.com", "pass1234!", "기획팀");
+        UserRegisterRequest req = new UserRegisterRequest("검색대상유저", "searchme@test.com", "pass1234!", null);
         mockMvc.perform(post("/api/users")
                 .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +92,7 @@ class UserControllerTest {
 
     @Test
     void 사용자_삭제_성공() throws Exception {
-        UserRegisterRequest req = new UserRegisterRequest("삭제유저", "delete@test.com", "pass1234!", "인사팀");
+        UserRegisterRequest req = new UserRegisterRequest("삭제유저", "delete@test.com", "pass1234!", null);
         String body = mockMvc.perform(post("/api/users")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -108,7 +108,7 @@ class UserControllerTest {
 
     @Test
     void 사용자_삭제후_재조회_없음() throws Exception {
-        UserRegisterRequest req = new UserRegisterRequest("삭제후재조회", "gone@test.com", "pass1234!", "총무팀");
+        UserRegisterRequest req = new UserRegisterRequest("삭제후재조회", "gone@test.com", "pass1234!", null);
         String body = mockMvc.perform(post("/api/users")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -129,7 +129,7 @@ class UserControllerTest {
 
     @Test
     void 사용자_등록_이메일_형식_오류() throws Exception {
-        UserRegisterRequest req = new UserRegisterRequest("잘못된이메일", "not-an-email", "pass1234!", "팀");
+        UserRegisterRequest req = new UserRegisterRequest("잘못된이메일", "not-an-email", "pass1234!", null);
 
         mockMvc.perform(post("/api/users")
                         .header("Authorization", token)

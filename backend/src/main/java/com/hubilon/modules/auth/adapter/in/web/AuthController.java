@@ -45,7 +45,8 @@ public class AuthController {
                         user.getId(),
                         user.getName(),
                         user.getEmail(),
-                        user.getDepartment(),
+                        user.getTeamId(),
+                        user.getTeamName(),
                         user.getRole()
                 )
         );
@@ -78,7 +79,8 @@ public class AuthController {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                user.getDepartment(),
+                user.getTeamId(),
+                user.getTeamName(),
                 user.getRole()
         ));
     }
