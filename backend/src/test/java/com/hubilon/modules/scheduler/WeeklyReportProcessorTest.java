@@ -1,5 +1,6 @@
 package com.hubilon.modules.scheduler;
 
+import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest.WeeklyReportRowDto;
 import com.hubilon.modules.folder.application.dto.FolderResult;
 import com.hubilon.modules.folder.domain.model.FolderCategory;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +46,10 @@ class WeeklyReportProcessorTest {
         return new FolderResult(1L, "개발팀 폴더", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, 0, null, null);
     }
 
+    private WeeklyReportRowDto sampleRow(String progressSummary, String planSummary) {
+        return new WeeklyReportRowDto("DEVELOPMENT", "개발팀 폴더", List.of(), progressSummary, planSummary);
+    }
+
     @Test
     void 수동_내용이_있으면_ManualUploadStrategy_실행() {
         FolderSummary summary = FolderSummary.builder()
@@ -55,14 +61,18 @@ class WeeklyReportProcessorTest {
                 .planSummary("다음 주 계획")
                 .build();
 
+        WeeklyReportRowDto expectedRow = sampleRow("이번 주 진행 내용", "다음 주 계획");
+
         when(folderSummaryQueryPort.findByFolderIdAndDateRange(1L, START, END))
                 .thenReturn(Optional.of(summary));
         when(manualUploadStrategy.execute(any(), eq(summary), eq(START), eq(END)))
-                .thenReturn("https://confluence.example.com/page/1");
+                .thenReturn(expectedRow);
 
-        String url = weeklyReportProcessor.process(sampleFolder(), START, END);
+        WeeklyReportRowDto row = weeklyReportProcessor.process(sampleFolder(), START, END);
 
-        assertThat(url).isEqualTo("https://confluence.example.com/page/1");
+        assertThat(row).isNotNull();
+        assertThat(row.progressSummary()).isEqualTo("이번 주 진행 내용");
+        assertThat(row.planSummary()).isEqualTo("다음 주 계획");
         verify(manualUploadStrategy).execute(any(), eq(summary), eq(START), eq(END));
         verify(aiUploadStrategy, never()).execute(any(), any(), any(), any());
     }
@@ -78,14 +88,17 @@ class WeeklyReportProcessorTest {
                 .planSummary("다음 주 계획")
                 .build();
 
+        WeeklyReportRowDto expectedRow = sampleRow("AI 생성 진행 내용", "다음 주 계획");
+
         when(folderSummaryQueryPort.findByFolderIdAndDateRange(1L, START, END))
                 .thenReturn(Optional.of(summary));
         when(aiUploadStrategy.execute(any(), eq(summary), eq(START), eq(END)))
-                .thenReturn("https://confluence.example.com/ai/1");
+                .thenReturn(expectedRow);
 
-        String url = weeklyReportProcessor.process(sampleFolder(), START, END);
+        WeeklyReportRowDto row = weeklyReportProcessor.process(sampleFolder(), START, END);
 
-        assertThat(url).isEqualTo("https://confluence.example.com/ai/1");
+        assertThat(row).isNotNull();
+        assertThat(row.progressSummary()).isEqualTo("AI 생성 진행 내용");
         verify(aiUploadStrategy).execute(any(), eq(summary), eq(START), eq(END));
         verify(manualUploadStrategy, never()).execute(any(), any(), any(), any());
     }
@@ -101,28 +114,33 @@ class WeeklyReportProcessorTest {
                 .planSummary(null) // null
                 .build();
 
+        WeeklyReportRowDto expectedRow = sampleRow("이번 주 진행 내용", "AI 생성 계획");
+
         when(folderSummaryQueryPort.findByFolderIdAndDateRange(1L, START, END))
                 .thenReturn(Optional.of(summary));
         when(aiUploadStrategy.execute(any(), eq(summary), eq(START), eq(END)))
-                .thenReturn("https://confluence.example.com/ai/2");
+                .thenReturn(expectedRow);
 
-        String url = weeklyReportProcessor.process(sampleFolder(), START, END);
+        WeeklyReportRowDto row = weeklyReportProcessor.process(sampleFolder(), START, END);
 
-        assertThat(url).isEqualTo("https://confluence.example.com/ai/2");
+        assertThat(row).isNotNull();
+        assertThat(row.planSummary()).isEqualTo("AI 생성 계획");
         verify(aiUploadStrategy).execute(any(), eq(summary), eq(START), eq(END));
         verify(manualUploadStrategy, never()).execute(any(), any(), any(), any());
     }
 
     @Test
     void FolderSummary가_없으면_AiUploadStrategy_실행_null_전달() {
+        WeeklyReportRowDto expectedRow = sampleRow("AI 생성 진행 내용", "AI 생성 계획");
+
         when(folderSummaryQueryPort.findByFolderIdAndDateRange(1L, START, END))
                 .thenReturn(Optional.empty());
         when(aiUploadStrategy.execute(any(), eq(null), eq(START), eq(END)))
-                .thenReturn("https://confluence.example.com/ai/new");
+                .thenReturn(expectedRow);
 
-        String url = weeklyReportProcessor.process(sampleFolder(), START, END);
+        WeeklyReportRowDto row = weeklyReportProcessor.process(sampleFolder(), START, END);
 
-        assertThat(url).isEqualTo("https://confluence.example.com/ai/new");
+        assertThat(row).isNotNull();
         verify(aiUploadStrategy).execute(any(), eq(null), eq(START), eq(END));
         verify(manualUploadStrategy, never()).execute(any(), any(), any(), any());
     }

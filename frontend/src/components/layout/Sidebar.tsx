@@ -23,7 +23,7 @@ import FolderModal from '../folder/FolderModal'
 import DeleteConfirmModal from '../common/DeleteConfirmModal'
 import type { Project } from '../../types/report'
 import type { Folder, WorkProjectItem } from '../../types/folder'
-import { STATUS_LABELS, CATEGORY_LABELS } from '../../types/folder'
+import { CATEGORY_LABELS } from '../../types/folder'
 import type { FolderOrderItem } from '../../services/folderApi'
 import styles from './Sidebar.module.css'
 
@@ -244,9 +244,6 @@ function SortableFolderItem({
           <span className={styles.folderArrow}>{isExpanded ? '▾' : '▸'}</span>
           <span className={styles.folderName}>{folder.name}</span>
         </button>
-        <span className={`${styles.statusBadge} ${folder.status === 'IN_PROGRESS' ? styles.statusInProgress : styles.statusCompleted}`}>
-          {STATUS_LABELS[folder.status]}
-        </span>
         <div className={styles.menuWrapper} ref={menuRef}>
           <button
             className={styles.menuBtn}
@@ -549,9 +546,10 @@ export default function Sidebar({ width = 240 }: Props) {
                       className={styles.categoryHeader}
                       onClick={() => toggleCategory(cat)}
                     >
-                      <span className={styles.categoryArrow}>{isCollapsed ? '▶' : '▼'}</span>
-                      <span className={styles.categoryLabel}>{label}</span>
-                      <span className={styles.categoryCount}>{items.length}</span>
+                      <span className={styles.completedSectionLine} />
+                      <span className={styles.categoryLabel}>{label} ({items.length})</span>
+                      <span className={styles.categoryArrow}>{isCollapsed ? '▸' : '▾'}</span>
+                      <span className={styles.completedSectionLine} />
                     </button>
                     {!isCollapsed && (
                       <DndContext

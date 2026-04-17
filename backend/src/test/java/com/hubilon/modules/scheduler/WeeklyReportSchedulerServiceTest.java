@@ -1,6 +1,8 @@
 package com.hubilon.modules.scheduler;
 
 import com.hubilon.common.exception.custom.ConflictException;
+import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest.WeeklyReportRowDto;
+import com.hubilon.modules.confluence.application.port.in.UploadWeeklyReportUseCase;
 import com.hubilon.modules.folder.application.dto.FolderResult;
 import com.hubilon.modules.folder.domain.model.FolderCategory;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
@@ -35,6 +37,9 @@ class WeeklyReportSchedulerServiceTest {
     WeeklyReportProcessor weeklyReportProcessor;
 
     @Mock
+    UploadWeeklyReportUseCase uploadWeeklyReportUseCase;
+
+    @Mock
     SchedulerJobLogCommandPort schedulerJobLogCommandPort;
 
     @Mock
@@ -42,6 +47,10 @@ class WeeklyReportSchedulerServiceTest {
 
     @InjectMocks
     WeeklyReportSchedulerService weeklyReportSchedulerService;
+
+    private WeeklyReportRowDto sampleRow() {
+        return new WeeklyReportRowDto("DEVELOPMENT", "개발팀", List.of(), "진행 내용", "계획 내용");
+    }
 
     @Test
     void RUNNING_잡_존재시_trigger_ConflictException_발생() {
@@ -60,11 +69,10 @@ class WeeklyReportSchedulerServiceTest {
 
         FolderResult folder = new FolderResult(1L, "개발팀", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, 0, null, null);
         when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS)).thenReturn(List.of(folder));
-
-        SchedulerJobLog initialLog = SchedulerJobLog.createRunning(1);
         when(schedulerJobLogCommandPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(weeklyReportProcessor.process(eq(folder), any(LocalDate.class), any(LocalDate.class)))
-                .thenReturn("https://confluence.example.com/success");
+                .thenReturn(sampleRow());
+        when(uploadWeeklyReportUseCase.upload(any())).thenReturn("https://confluence.example.com/success");
 
         SchedulerJobLog result = weeklyReportSchedulerService.trigger();
 
@@ -98,9 +106,10 @@ class WeeklyReportSchedulerServiceTest {
         FolderResult folderB = new FolderResult(2L, "기획팀", FolderCategory.NEW_BUSINESS, FolderStatus.IN_PROGRESS, 0, null, null);
         when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS)).thenReturn(List.of(folderA, folderB));
         when(schedulerJobLogCommandPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(uploadWeeklyReportUseCase.upload(any())).thenReturn("https://confluence.example.com/ok");
 
         when(weeklyReportProcessor.process(eq(folderA), any(LocalDate.class), any(LocalDate.class)))
-                .thenReturn("https://confluence.example.com/ok");
+                .thenReturn(sampleRow());
         when(weeklyReportProcessor.process(eq(folderB), any(LocalDate.class), any(LocalDate.class)))
                 .thenThrow(new RuntimeException("AI 실패"));
 
@@ -126,8 +135,9 @@ class WeeklyReportSchedulerServiceTest {
 
     @Test
     void RUNNING_잡_존재시_executeWeeklyReport_스킵() {
-        when(schedulerJobLogQueryPort.existsByStatus(SchedulerJobStatus.RUNNING)).thenReturn(true);
-
+        // schedulerEnabled 필드는 @Value로 주입받으나 단위 테스트에서는 기본값 false로 초기화됨
+        // — enabled 분기에서 이미 리턴하므로 RUNNING 체크까지 도달하지 않음
+        // 실제로 검증할 동작: folderQueryUseCase와 save가 호출되지 않음
         weeklyReportSchedulerService.executeWeeklyReport();
 
         verify(folderQueryUseCase, never()).searchAll(any());

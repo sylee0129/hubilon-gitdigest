@@ -261,24 +261,6 @@
   white-space: nowrap;
 }
 
-.statusBadge {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 1px 6px;
-  border-radius: 10px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.statusInProgress {
-  background-color: #dbeafe;
-  color: #1d4ed8;
-}
-
-.statusCompleted {
-  background-color: #f3f4f6;
-  color: #6b7280;
-}
 
 .menuWrapper {
   position: relative;
@@ -421,36 +403,26 @@
   align-items: center;
   gap: 6px;
   width: 100%;
-  padding: 4px 8px;
+  padding: 4px;
   background: none;
   border: none;
-  border-left: 2px solid #ddd;
   cursor: pointer;
-  color: #888;
+  color: var(--color-primary, #3b82f6);
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.03em;
 }
 
 .categoryHeader:hover {
-  color: #555;
-  border-left-color: #aaa;
+  color: var(--color-primary, #2563eb);
 }
 
 .categoryArrow {
-  font-size: 9px;
-  width: 10px;
+  font-size: 10px;
   flex-shrink: 0;
 }
 
 .categoryLabel {
-  flex: 1;
-  text-align: left;
-}
-
-.categoryCount {
-  font-size: 10px;
-  color: #bbb;
+  white-space: nowrap;
 }
 
 /* ─── 완료 통합 섹션 ─────────────────────────────────────────────────────── */
@@ -468,13 +440,15 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--color-text-tertiary);
+  color: #64748b;
   font-size: 11px;
   font-weight: 600;
+  background-color: rgba(148, 163, 184, 0.1);
+  border-radius: 4px;
 }
 
 .completedSectionHeader:hover {
-  color: var(--color-text-secondary);
+  color: #475569;
 }
 
 .completedSectionLine {

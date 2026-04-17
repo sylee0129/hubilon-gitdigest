@@ -40,7 +40,7 @@ public class WeeklyReportSchedulerService implements SchedulerTriggerUseCase {
     private final SchedulerJobLogCommandPort schedulerJobLogCommandPort;
     private final SchedulerJobLogQueryPort schedulerJobLogQueryPort;
 
-    @Scheduled(cron = "0 0 19 * * THU", zone = "Asia/Seoul")
+    @Scheduled(cron = "${scheduler.weekly-report.cron:0 0 19 * * THU}", zone = "Asia/Seoul")
     @SchedulerLock(name = "weeklyReport", lockAtLeastFor = "PT1H", lockAtMostFor = "PT2H")
     public void executeWeeklyReport() {
         if (!schedulerEnabled) {
