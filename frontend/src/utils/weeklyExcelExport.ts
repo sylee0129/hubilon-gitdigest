@@ -1,9 +1,8 @@
 import ExcelJS from 'exceljs'
-import { CATEGORY_LABELS } from '../types/folder'
-import type { Folder } from '../types/folder'
 
 export interface WeeklyReportRow {
-  category: Folder['category']
+  categoryId: number
+  categoryName: string
   folderName: string
   members: string[]
   progressSummary: string
@@ -15,8 +14,6 @@ export interface WeeklyExportParams {
   startDate: string  // YYYY-MM-DD
   endDate: string    // YYYY-MM-DD
 }
-
-const CATEGORY_ORDER: Folder['category'][] = ['DEVELOPMENT', 'NEW_BUSINESS', 'OTHER']
 
 function parseDate(dateStr: string): Date {
   const [y, m, d] = dateStr.split('-').map(Number)
@@ -84,9 +81,7 @@ const FILL_HEADER: ExcelJS.Fill = {
 export async function exportWeeklyExcel(params: WeeklyExportParams): Promise<void> {
   const { rows, startDate, endDate } = params
 
-  const sortedRows = [...rows].sort((a, b) =>
-    CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category)
-  )
+  const sortedRows = [...rows].sort((a, b) => a.categoryId - b.categoryId)
 
   const weekLabel = formatWeekLabel(startDate)
   const weekLabelNoSpace = formatWeekLabelNoSpace(startDate)
@@ -154,20 +149,21 @@ export async function exportWeeklyExcel(params: WeeklyExportParams): Promise<voi
 
   // --- 4행~: 데이터 ---
   // 카테고리별 병합 범위 계산
-  type CategoryGroup = { category: Folder['category']; startRow: number; endRow: number }
+  type CategoryGroup = { categoryId: number; categoryName: string; startRow: number; endRow: number }
   const categoryGroups: CategoryGroup[] = []
   let groupStart = 4
-  let prevCategory: Folder['category'] | null = null
+  let prevCategoryId: number | null = null
   sortedRows.forEach((row, i) => {
-    if (row.category !== prevCategory) {
-      if (prevCategory !== null) {
-        categoryGroups.push({ category: prevCategory, startRow: groupStart, endRow: 4 + i - 1 })
+    if (row.categoryId !== prevCategoryId) {
+      if (prevCategoryId !== null) {
+        const prevRow = sortedRows[i - 1]
+        categoryGroups.push({ categoryId: prevCategoryId, categoryName: prevRow.categoryName, startRow: groupStart, endRow: 4 + i - 1 })
       }
       groupStart = 4 + i
-      prevCategory = row.category
+      prevCategoryId = row.categoryId
     }
     if (i === sortedRows.length - 1) {
-      categoryGroups.push({ category: row.category, startRow: groupStart, endRow: 4 + i })
+      categoryGroups.push({ categoryId: row.categoryId, categoryName: row.categoryName, startRow: groupStart, endRow: 4 + i })
     }
   })
 
@@ -213,7 +209,7 @@ export async function exportWeeklyExcel(params: WeeklyExportParams): Promise<voi
     if (group.startRow === group.endRow) {
       // 단일 행 — 병합 없이 스타일만
       const cell = sheet.getCell(`A${group.startRow}`)
-      cell.value = CATEGORY_LABELS[group.category] ?? group.category
+      cell.value = group.categoryName
       cell.font = FONT_BOLD
       cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
       cell.fill = FILL_HEADER
@@ -222,7 +218,7 @@ export async function exportWeeklyExcel(params: WeeklyExportParams): Promise<voi
       // 복수 행 병합
       sheet.mergeCells(`A${group.startRow}:A${group.endRow}`)
       const cell = sheet.getCell(`A${group.startRow}`)
-      cell.value = CATEGORY_LABELS[group.category] ?? group.category
+      cell.value = group.categoryName
       cell.font = FONT_BOLD
       cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
       cell.fill = FILL_HEADER

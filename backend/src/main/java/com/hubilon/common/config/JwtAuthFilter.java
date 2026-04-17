@@ -1,6 +1,7 @@
 package com.hubilon.common.config;
 
 import com.hubilon.modules.auth.domain.port.out.TokenPort;
+import com.hubilon.modules.user.adapter.out.persistence.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final TokenPort tokenPort;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -30,11 +32,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(token) && tokenPort.validateToken(token)) {
             String email = tokenPort.extractEmail(token);
+            String role = userRepository.findByEmail(email)
+                    .map(u -> "ROLE_" + u.getRole().name())
+                    .orElse("ROLE_USER");
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             email,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                            List.of(new SimpleGrantedAuthority(role))
                     );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

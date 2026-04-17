@@ -1,5 +1,8 @@
 package com.hubilon.modules.folder.adapter.out.persistence;
 
+import com.hubilon.common.exception.custom.NotFoundException;
+import com.hubilon.modules.category.adapter.out.persistence.CategoryJpaEntity;
+import com.hubilon.modules.category.adapter.out.persistence.CategoryJpaRepository;
 import com.hubilon.modules.folder.application.dto.FolderMemberResult;
 import com.hubilon.modules.folder.application.dto.FolderReorderCommand;
 import com.hubilon.modules.folder.application.dto.FolderResult;
@@ -24,23 +27,27 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
 
     private final FolderJpaRepository folderJpaRepository;
     private final FolderMemberJpaRepository folderMemberJpaRepository;
+    private final CategoryJpaRepository categoryJpaRepository;
     private final UserRepository userRepository;
 
     @Override
     @Transactional
     public Folder save(Folder folder, List<Long> memberIds) {
+        CategoryJpaEntity categoryEntity = categoryJpaRepository.findById(folder.getCategoryId())
+                .orElseThrow(() -> new NotFoundException("카테고리를 찾을 수 없습니다. id=" + folder.getCategoryId()));
+
         FolderJpaEntity entity;
         if (folder.getId() != null) {
             entity = folderJpaRepository.findById(folder.getId())
                     .orElse(null);
             if (entity != null) {
                 entity.updateName(folder.getName());
-                entity.updateCategory(folder.getCategory());
+                entity.updateCategory(categoryEntity);
                 entity.updateStatus(folder.getStatus());
             } else {
                 entity = FolderJpaEntity.builder()
                         .name(folder.getName())
-                        .category(folder.getCategory())
+                        .category(categoryEntity)
                         .status(folder.getStatus())
                         .sortOrder(folder.getSortOrder())
                         .build();
@@ -48,7 +55,7 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
         } else {
             entity = FolderJpaEntity.builder()
                     .name(folder.getName())
-                    .category(folder.getCategory())
+                    .category(categoryEntity)
                     .status(folder.getStatus())
                     .sortOrder(folder.getSortOrder())
                     .build();
@@ -114,7 +121,8 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
         return Folder.builder()
                 .id(entity.getId())
                 .name(entity.getName())
-                .category(entity.getCategory())
+                .categoryId(entity.getCategory().getId())
+                .categoryName(entity.getCategory().getName())
                 .status(entity.getStatus())
                 .sortOrder(entity.getSortOrder())
                 .build();
@@ -134,8 +142,9 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
                 .toList();
 
         return new FolderResult(
-                entity.getId(), entity.getName(), entity.getCategory(), entity.getStatus(),
-                entity.getSortOrder(), members, workProjects
+                entity.getId(), entity.getName(),
+                entity.getCategory().getId(), entity.getCategory().getName(),
+                entity.getStatus(), entity.getSortOrder(), members, workProjects
         );
     }
 }

@@ -2,7 +2,6 @@ package com.hubilon.modules.scheduler;
 
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest.WeeklyReportRowDto;
 import com.hubilon.modules.folder.application.dto.FolderResult;
-import com.hubilon.modules.folder.domain.model.FolderCategory;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
 import com.hubilon.modules.report.domain.model.FolderSummary;
 import com.hubilon.modules.report.domain.port.out.FolderSummaryQueryPort;
@@ -43,7 +42,7 @@ class WeeklyReportProcessorTest {
     private static final LocalDate END = LocalDate.of(2026, 4, 20);
 
     private FolderResult sampleFolder() {
-        return new FolderResult(1L, "개발팀 폴더", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, 0, null, null);
+        return new FolderResult(1L, "개발팀 폴더", 1L, "개발", FolderStatus.IN_PROGRESS, 0, null, null);
     }
 
     private WeeklyReportRowDto sampleRow(String progressSummary, String planSummary) {

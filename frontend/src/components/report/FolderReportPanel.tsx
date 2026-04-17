@@ -148,8 +148,8 @@ export default function FolderReportPanel({ folderId, reports, width }: FolderRe
       <aside className={styles.panel} style={width ? { width: `${width}px` } : undefined}>
         <div className={styles.panelHeader}>
           <div className={styles.panelTitle}>
-            <span className={styles.panelIcon}>📁</span>
-            <span className={styles.panelTitleText}>폴더 보고서</span>
+            <span className={styles.panelIcon}>📋</span>
+            <span className={styles.panelTitleText}>주간보고</span>
           </div>
           {folderName && (
             <span className={styles.panelProject}>{folderName}</span>

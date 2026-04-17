@@ -5,6 +5,7 @@ dist/
 
 # Environment files
 .env.development
+.env.development.local
 .env.production
 .env.local
 
@@ -34,3 +35,15 @@ build/
 *.mv.db
 *.lock.db
 *.trace.db
+
+# Deploy artifacts
+deploy/backup/
+deploy/backend/*.jar
+deploy/backend/*.zip
+deploy/backend/*.war
+
+# Claude Code session data
+.claude/
+
+# OS dumps
+*.stackdump

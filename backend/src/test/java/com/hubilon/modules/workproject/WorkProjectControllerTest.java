@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.hubilon.modules.auth.adapter.out.jwt.JwtTokenAdapter;
 import com.hubilon.modules.folder.adapter.in.web.FolderCreateRequest;
-import com.hubilon.modules.folder.domain.model.FolderCategory;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
 import com.hubilon.modules.workproject.adapter.in.web.WorkProjectCreateRequest;
 import com.hubilon.modules.workproject.adapter.in.web.WorkProjectReorderRequest;
@@ -52,7 +51,7 @@ class WorkProjectControllerTest {
                 .build();
         token = "Bearer " + jwtTokenAdapter.generateAccessToken("test@hubilon.com");
 
-        FolderCreateRequest folderReq = new FolderCreateRequest("테스트폴더", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, List.of());
+        FolderCreateRequest folderReq = new FolderCreateRequest("테스트폴더", 1L, FolderStatus.IN_PROGRESS, List.of());
         String folderBody = mockMvc.perform(post("/api/folders")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)

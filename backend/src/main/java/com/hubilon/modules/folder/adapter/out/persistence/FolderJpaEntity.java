@@ -1,6 +1,6 @@
 package com.hubilon.modules.folder.adapter.out.persistence;
 
-import com.hubilon.modules.folder.domain.model.FolderCategory;
+import com.hubilon.modules.category.adapter.out.persistence.CategoryJpaEntity;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -34,10 +34,10 @@ public class FolderJpaEntity {
     @Column(nullable = false)
     private String name;
 
-    @Comment("구분")
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private FolderCategory category;
+    @Comment("카테고리")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryJpaEntity category;
 
     @Comment("상태")
     @Enumerated(EnumType.STRING)
@@ -62,7 +62,7 @@ public class FolderJpaEntity {
     private LocalDateTime updatedAt;
 
     @Builder
-    public FolderJpaEntity(Long id, String name, FolderCategory category, FolderStatus status, int sortOrder) {
+    public FolderJpaEntity(Long id, String name, CategoryJpaEntity category, FolderStatus status, int sortOrder) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -76,7 +76,7 @@ public class FolderJpaEntity {
         this.name = name;
     }
 
-    public void updateCategory(FolderCategory category) {
+    public void updateCategory(CategoryJpaEntity category) {
         this.category = category;
     }
 

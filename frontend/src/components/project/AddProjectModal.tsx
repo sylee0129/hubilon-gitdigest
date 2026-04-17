@@ -239,7 +239,7 @@ export default function AddProjectModal({ onClose }: Props) {
                 className={styles.submitBtn}
                 disabled={createProject.isPending}
               >
-                {createProject.isPending ? '추가 중...' : '프로젝트 추가'}
+                {createProject.isPending ? '추가 중...' : 'GitLab 프로젝트 추가'}
               </button>
             )}
           </div>

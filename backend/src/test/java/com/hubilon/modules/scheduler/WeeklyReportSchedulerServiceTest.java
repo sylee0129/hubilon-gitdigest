@@ -4,7 +4,6 @@ import com.hubilon.common.exception.custom.ConflictException;
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest.WeeklyReportRowDto;
 import com.hubilon.modules.confluence.application.port.in.UploadWeeklyReportUseCase;
 import com.hubilon.modules.folder.application.dto.FolderResult;
-import com.hubilon.modules.folder.domain.model.FolderCategory;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
 import com.hubilon.modules.folder.domain.port.in.FolderQueryUseCase;
 import com.hubilon.modules.scheduler.application.service.WeeklyReportProcessor;
@@ -67,7 +66,7 @@ class WeeklyReportSchedulerServiceTest {
     void 모두_성공시_finalizeStatus_SUCCESS() {
         when(schedulerJobLogQueryPort.existsByStatus(SchedulerJobStatus.RUNNING)).thenReturn(false);
 
-        FolderResult folder = new FolderResult(1L, "개발팀", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, 0, null, null);
+        FolderResult folder = new FolderResult(1L, "개발팀", 1L, "개발", FolderStatus.IN_PROGRESS, 0, null, null);
         when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS)).thenReturn(List.of(folder));
         when(schedulerJobLogCommandPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(weeklyReportProcessor.process(eq(folder), any(LocalDate.class), any(LocalDate.class)))
@@ -85,7 +84,7 @@ class WeeklyReportSchedulerServiceTest {
     void 모두_실패시_finalizeStatus_FAIL() {
         when(schedulerJobLogQueryPort.existsByStatus(SchedulerJobStatus.RUNNING)).thenReturn(false);
 
-        FolderResult folder = new FolderResult(2L, "기획팀", FolderCategory.NEW_BUSINESS, FolderStatus.IN_PROGRESS, 0, null, null);
+        FolderResult folder = new FolderResult(2L, "기획팀", 2L, "신사업", FolderStatus.IN_PROGRESS, 0, null, null);
         when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS)).thenReturn(List.of(folder));
         when(schedulerJobLogCommandPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(weeklyReportProcessor.process(eq(folder), any(LocalDate.class), any(LocalDate.class)))
@@ -102,8 +101,8 @@ class WeeklyReportSchedulerServiceTest {
     void 일부_성공_일부_실패시_finalizeStatus_PARTIAL_FAIL() {
         when(schedulerJobLogQueryPort.existsByStatus(SchedulerJobStatus.RUNNING)).thenReturn(false);
 
-        FolderResult folderA = new FolderResult(1L, "개발팀", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, 0, null, null);
-        FolderResult folderB = new FolderResult(2L, "기획팀", FolderCategory.NEW_BUSINESS, FolderStatus.IN_PROGRESS, 0, null, null);
+        FolderResult folderA = new FolderResult(1L, "개발팀", 1L, "개발", FolderStatus.IN_PROGRESS, 0, null, null);
+        FolderResult folderB = new FolderResult(2L, "기획팀", 2L, "신사업", FolderStatus.IN_PROGRESS, 0, null, null);
         when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS)).thenReturn(List.of(folderA, folderB));
         when(schedulerJobLogCommandPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(uploadWeeklyReportUseCase.upload(any())).thenReturn("https://confluence.example.com/ok");

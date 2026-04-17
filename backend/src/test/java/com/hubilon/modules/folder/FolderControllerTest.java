@@ -6,7 +6,6 @@ import com.hubilon.modules.auth.adapter.out.jwt.JwtTokenAdapter;
 import com.hubilon.modules.folder.adapter.in.web.FolderCreateRequest;
 import com.hubilon.modules.folder.adapter.in.web.FolderReorderRequest;
 import com.hubilon.modules.folder.adapter.in.web.FolderUpdateRequest;
-import com.hubilon.modules.folder.domain.model.FolderCategory;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,7 @@ class FolderControllerTest {
 
     @Test
     void 폴더_생성_성공() throws Exception {
-        FolderCreateRequest req = new FolderCreateRequest("개발폴더", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, List.of());
+        FolderCreateRequest req = new FolderCreateRequest("개발폴더", 1L, FolderStatus.IN_PROGRESS, List.of());
 
         mockMvc.perform(post("/api/folders")
                         .header("Authorization", token)
@@ -62,12 +61,12 @@ class FolderControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.name").value("개발폴더"))
-                .andExpect(jsonPath("$.data.category").value("DEVELOPMENT"));
+                .andExpect(jsonPath("$.data.categoryId").value(1));
     }
 
     @Test
     void 폴더_목록_조회() throws Exception {
-        FolderCreateRequest req = new FolderCreateRequest("조회테스트폴더", FolderCategory.OTHER, FolderStatus.IN_PROGRESS, List.of());
+        FolderCreateRequest req = new FolderCreateRequest("조회테스트폴더", 3L, FolderStatus.IN_PROGRESS, List.of());
         mockMvc.perform(post("/api/folders")
                 .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -91,7 +90,7 @@ class FolderControllerTest {
 
     @Test
     void 폴더_수정_성공() throws Exception {
-        FolderCreateRequest createReq = new FolderCreateRequest("수정전폴더", FolderCategory.OTHER, FolderStatus.IN_PROGRESS, List.of());
+        FolderCreateRequest createReq = new FolderCreateRequest("수정전폴더", 3L, FolderStatus.IN_PROGRESS, List.of());
         String createBody = mockMvc.perform(post("/api/folders")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -100,7 +99,7 @@ class FolderControllerTest {
 
         Long id = objectMapper.readTree(createBody).path("data").path("id").asLong();
 
-        FolderUpdateRequest updateReq = new FolderUpdateRequest("수정후폴더", FolderCategory.NEW_BUSINESS, FolderStatus.COMPLETED, List.of());
+        FolderUpdateRequest updateReq = new FolderUpdateRequest("수정후폴더", 2L, FolderStatus.COMPLETED, List.of());
         mockMvc.perform(put("/api/folders/" + id)
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +111,7 @@ class FolderControllerTest {
 
     @Test
     void 폴더_삭제_성공() throws Exception {
-        FolderCreateRequest req = new FolderCreateRequest("삭제테스트폴더", FolderCategory.OTHER, FolderStatus.IN_PROGRESS, List.of());
+        FolderCreateRequest req = new FolderCreateRequest("삭제테스트폴더", 3L, FolderStatus.IN_PROGRESS, List.of());
         String body = mockMvc.perform(post("/api/folders")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -128,8 +127,8 @@ class FolderControllerTest {
 
     @Test
     void 폴더_순서변경_성공() throws Exception {
-        FolderCreateRequest req1 = new FolderCreateRequest("폴더A", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, List.of());
-        FolderCreateRequest req2 = new FolderCreateRequest("폴더B", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, List.of());
+        FolderCreateRequest req1 = new FolderCreateRequest("폴더A", 1L, FolderStatus.IN_PROGRESS, List.of());
+        FolderCreateRequest req2 = new FolderCreateRequest("폴더B", 1L, FolderStatus.IN_PROGRESS, List.of());
 
         String body1 = mockMvc.perform(post("/api/folders")
                         .header("Authorization", token)
@@ -160,7 +159,7 @@ class FolderControllerTest {
 
     @Test
     void 폴더_생성_이름_빈값_실패() throws Exception {
-        FolderCreateRequest req = new FolderCreateRequest("", FolderCategory.DEVELOPMENT, FolderStatus.IN_PROGRESS, List.of());
+        FolderCreateRequest req = new FolderCreateRequest("", 1L, FolderStatus.IN_PROGRESS, List.of());
 
         mockMvc.perform(post("/api/folders")
                         .header("Authorization", token)

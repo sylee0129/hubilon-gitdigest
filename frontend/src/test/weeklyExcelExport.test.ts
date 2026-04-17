@@ -113,9 +113,9 @@ describe('exportWeeklyExcel — 데이터 행 렌더링', () => {
   it('카테고리 순서: DEVELOPMENT → NEW_BUSINESS → OTHER', async () => {
     await exportWeeklyExcel({
       rows: [
-        { category: 'OTHER', folderName: '기타프로젝트', members: ['C'], progressSummary: '', planSummary: '' },
-        { category: 'DEVELOPMENT', folderName: '개발프로젝트', members: ['A'], progressSummary: '', planSummary: '' },
-        { category: 'NEW_BUSINESS', folderName: '신사업프로젝트', members: ['B'], progressSummary: '', planSummary: '' },
+        { categoryId: 3, categoryName: '기타', folderName: '기타프로젝트', members: ['C'], progressSummary: '', planSummary: '' },
+        { categoryId: 1, categoryName: '개발', folderName: '개발프로젝트', members: ['A'], progressSummary: '', planSummary: '' },
+        { categoryId: 2, categoryName: '신사업', folderName: '신사업프로젝트', members: ['B'], progressSummary: '', planSummary: '' },
       ],
       startDate: '2026-04-13',
       endDate: '2026-04-17',
@@ -128,7 +128,7 @@ describe('exportWeeklyExcel — 데이터 행 렌더링', () => {
 
   it('members 배열이 줄바꿈으로 합쳐진다 (E열)', async () => {
     await exportWeeklyExcel({
-      rows: [{ category: 'DEVELOPMENT', folderName: '팀프로젝트', members: ['홍길동', '김철수'], progressSummary: '', planSummary: '' }],
+      rows: [{ categoryId: 1, categoryName: '개발', folderName: '팀프로젝트', members: ['홍길동', '김철수'], progressSummary: '', planSummary: '' }],
       startDate: '2026-04-13',
       endDate: '2026-04-17',
     })
@@ -137,7 +137,7 @@ describe('exportWeeklyExcel — 데이터 행 렌더링', () => {
 
   it('C열이 금주 진행사항, D열이 차주 계획이다', async () => {
     await exportWeeklyExcel({
-      rows: [{ category: 'DEVELOPMENT', folderName: '프로젝트', members: ['홍길동'], progressSummary: 'API 구현', planSummary: '테스트 예정' }],
+      rows: [{ categoryId: 1, categoryName: '개발', folderName: '프로젝트', members: ['홍길동'], progressSummary: 'API 구현', planSummary: '테스트 예정' }],
       startDate: '2026-04-13',
       endDate: '2026-04-17',
     })

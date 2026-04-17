@@ -34,13 +34,15 @@ const mockFolders = [
   {
     id: 1,
     name: '개발프로젝트',
-    category: 'DEVELOPMENT' as const,
+    categoryId: 1,
+    categoryName: '개발',
     members: [{ name: '홍길동' }],
   },
   {
     id: 2,
     name: '신사업프로젝트',
-    category: 'NEW_BUSINESS' as const,
+    categoryId: 2,
+    categoryName: '신사업',
     members: [{ name: '김철수' }],
   },
 ]

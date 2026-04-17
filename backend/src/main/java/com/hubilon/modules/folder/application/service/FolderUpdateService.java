@@ -28,7 +28,7 @@ public class FolderUpdateService implements FolderUpdateUseCase {
         Folder folder = Folder.builder()
                 .id(id)
                 .name(command.name())
-                .category(command.category())
+                .categoryId(command.categoryId())
                 .status(command.status())
                 .sortOrder(existing.sortOrder())
                 .build();

@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect, type FormEvent } from 'react'
 import { useCreateFolder, useUpdateFolder } from '../../hooks/useFolders'
+import { useCategories } from '../../hooks/useCategories'
 import { useUsers } from '../../hooks/useUsers'
 import type { Folder, FolderMember, User } from '../../types/folder'
-import { CATEGORY_LABELS, STATUS_LABELS } from '../../types/folder'
+import { STATUS_LABELS } from '../../types/folder'
 import styles from './FolderModal.module.css'
 
 interface FolderModalProps {
@@ -13,8 +14,10 @@ interface FolderModalProps {
 export default function FolderModal({ onClose, folder }: FolderModalProps) {
   const isEdit = folder !== undefined
 
+  const { data: categories } = useCategories()
+
   const [name, setName] = useState(folder?.name ?? '')
-  const [category, setCategory] = useState<Folder['category']>(folder?.category ?? 'DEVELOPMENT')
+  const [categoryId, setCategoryId] = useState<number>(folder?.categoryId ?? 0)
   const [status, setStatus] = useState<Folder['status']>(folder?.status ?? 'IN_PROGRESS')
   const [members, setMembers] = useState<FolderMember[]>(folder?.members ?? [])
   const [searchQuery, setSearchQuery] = useState('')
@@ -22,6 +25,13 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const searchRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // categories 로드 후 기본값 설정
+  useEffect(() => {
+    if (!isEdit && categoryId === 0 && categories && categories.length > 0) {
+      setCategoryId(categories[0].id)
+    }
+  }, [categories, isEdit, categoryId])
 
   const debouncedQuery = useDebounce(searchQuery, 300)
   const enableSearch = debouncedQuery.length >= 2
@@ -92,7 +102,7 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
     e.preventDefault()
     const payload = {
       name,
-      category,
+      categoryId,
       status,
       memberIds: members.map((m) => m.id),
     }
@@ -114,22 +124,22 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>{isEdit ? '폴더 수정' : '폴더 추가'}</h2>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <h2 className={styles.title}>{isEdit ? '폴더 수정' : '프로젝트 추가'}</h2>
+          <button className={styles.closeBtn} onClick={onClose}>x</button>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          {/* 구분 */}
+          {/* 카테고리 */}
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="category">구분</label>
+            <label className={styles.label} htmlFor="category">카테고리</label>
             <select
               id="category"
               className={styles.select}
-              value={category}
-              onChange={(e) => setCategory(e.target.value as Folder['category'])}
+              value={categoryId}
+              onChange={(e) => setCategoryId(Number(e.target.value))}
             >
-              {(Object.keys(CATEGORY_LABELS) as Folder['category'][]).map((key) => (
-                <option key={key} value={key}>{CATEGORY_LABELS[key]}</option>
+              {(categories ?? []).map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
             </select>
           </div>
@@ -160,7 +170,7 @@ export default function FolderModal({ onClose, folder }: FolderModalProps) {
                     className={styles.chipRemove}
                     onClick={() => handleRemoveMember(m.id)}
                   >
-                    ×
+                    x
                   </button>
                 </span>
               ))}

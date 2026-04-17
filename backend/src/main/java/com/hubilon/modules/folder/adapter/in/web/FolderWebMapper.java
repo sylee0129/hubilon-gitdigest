@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 public class FolderWebMapper {
 
     public FolderCreateCommand toCreateCommand(FolderCreateRequest req) {
-        return new FolderCreateCommand(req.name(), req.category(), req.status(), req.memberIds());
+        return new FolderCreateCommand(req.name(), req.categoryId(), req.status(), req.memberIds());
     }
 
     public FolderUpdateCommand toUpdateCommand(FolderUpdateRequest req) {
-        return new FolderUpdateCommand(req.name(), req.category(), req.status(), req.memberIds());
+        return new FolderUpdateCommand(req.name(), req.categoryId(), req.status(), req.memberIds());
     }
 
     public FolderReorderCommand toReorderCommand(FolderReorderRequest req) {
@@ -27,8 +27,8 @@ public class FolderWebMapper {
 
     public FolderResponse toResponse(FolderResult result) {
         return new FolderResponse(
-                result.id(), result.name(), result.category(), result.status(),
-                result.sortOrder(), result.members(), result.workProjects()
+                result.id(), result.name(), result.categoryId(), result.categoryName(),
+                result.status(), result.sortOrder(), result.members(), result.workProjects()
         );
     }
 }

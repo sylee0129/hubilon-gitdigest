@@ -4,14 +4,14 @@ import type { Folder } from '../types/folder'
 
 export interface FolderCreatePayload {
   name: string
-  category: Folder['category']
+  categoryId: number
   status: Folder['status']
   memberIds: number[]
 }
 
 export interface FolderUpdatePayload {
   name: string
-  category: Folder['category']
+  categoryId: number
   status: Folder['status']
   memberIds: number[]
 }

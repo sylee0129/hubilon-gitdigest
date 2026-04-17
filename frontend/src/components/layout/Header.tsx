@@ -63,15 +63,10 @@ function generateWeeks(): WeekOption[] {
 }
 
 export default function Header() {
-  const { startDate, endDate, setCustomRange, setThisWeek, setPrevWeek, setNextWeek, setSelectedFolder, setSelectedProject } = useReportStore()
+  const { startDate, endDate, setCustomRange, setThisWeek, setPrevWeek, setNextWeek } = useReportStore()
   const { download, loading: excelLoading } = useWeeklyExcelDownload()
   const { upload, loading: confluenceLoading, disabled } = useWeeklyConfluenceUpload()
 
-  const handleDashboard = () => {
-    setSelectedFolder(null)
-    setSelectedProject(null)
-    navigate('/')
-  }
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
@@ -98,8 +93,6 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.left}>
         <span className={styles.logo}>Hubilon <span className={styles.logoAccent}>GitDigest</span></span>
-        <button className={styles.dashboardBtn} onClick={handleDashboard}>대시보드</button>
-        <button className={styles.dashboardBtn} onClick={() => navigate('/scheduler')}>주간보고 스케줄러</button>
       </div>
 
       <div className={styles.center}>

@@ -1,6 +1,5 @@
 package com.hubilon.modules.folder.application.dto;
 
-import com.hubilon.modules.folder.domain.model.FolderCategory;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
 
 import java.util.List;
@@ -8,7 +7,8 @@ import java.util.List;
 public record FolderResult(
         Long id,
         String name,
-        FolderCategory category,
+        Long categoryId,
+        String categoryName,
         FolderStatus status,
         int sortOrder,
         List<FolderMemberResult> members,

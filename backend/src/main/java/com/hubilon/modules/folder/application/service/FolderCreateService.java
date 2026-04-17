@@ -26,7 +26,7 @@ public class FolderCreateService implements FolderCreateUseCase {
     public FolderResult create(FolderCreateCommand command) {
         Folder folder = Folder.builder()
                 .name(command.name())
-                .category(command.category())
+                .categoryId(command.categoryId())
                 .status(command.status() != null ? command.status() : FolderStatus.IN_PROGRESS)
                 .sortOrder(0)
                 .build();

@@ -7,6 +7,41 @@
   overflow-y: auto;
 }
 
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 12px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+}
+
+.navItem:hover {
+  background-color: var(--color-border-subtle);
+  color: var(--color-text-primary);
+}
+
+.navIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
 .addBtn {
   display: flex;
   align-items: center;
@@ -396,18 +431,44 @@
 /* 카테고리 그룹 */
 .categoryGroup {
   margin-bottom: 8px;
+  position: relative;
+}
+
+.categoryEditBtn {
+  display: none;
+  position: absolute;
+  right: 4px;
+  top: 2px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  padding: 2px 4px;
+  border-radius: var(--radius-button);
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s;
+  line-height: 1;
+}
+
+.categoryGroup:hover .categoryEditBtn {
+  display: block;
+}
+
+.categoryEditBtn:hover {
+  color: var(--color-primary);
+  background-color: var(--color-border-subtle);
 }
 
 .categoryHeader {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   width: 100%;
   padding: 4px;
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--color-primary, #3b82f6);
+  color: var(--color-text-secondary, #6b7280);
   font-size: 11px;
   font-weight: 600;
 }
@@ -421,8 +482,32 @@
   flex-shrink: 0;
 }
 
+.categoryFolderIconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+
+
 .categoryLabel {
   white-space: nowrap;
+  line-height: 1;
+  align-self: center;
+}
+
+.categoryCount {
+  color: var(--color-text-secondary);
+  font-weight: normal;
+  font-size: 12px;
+  margin-left: 2px;
+  flex-shrink: 0;
+  line-height: 1;
+  align-self: center;
 }
 
 /* ─── 완료 통합 섹션 ─────────────────────────────────────────────────────── */

@@ -14,7 +14,8 @@ import static lombok.AccessLevel.PROTECTED;
 public class Folder {
     private Long id;
     private String name;
-    private FolderCategory category;
+    private Long categoryId;
+    private String categoryName;
     private FolderStatus status;
     private int sortOrder;
 }

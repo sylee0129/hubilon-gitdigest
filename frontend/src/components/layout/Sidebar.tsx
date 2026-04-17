@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   DndContext,
   closestCenter,
@@ -16,14 +17,15 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { useProjects, useDeleteProject, useReorderProjects } from '../../hooks/useProjects'
 import { useFolders, useDeleteFolder, useReorderFolders } from '../../hooks/useFolders'
+import { useCategories } from '../../hooks/useCategories'
 import { useReportStore } from '../../stores/useReportStore'
 import AddProjectModal from '../project/AddProjectModal'
 import AssignFolderModal from '../project/AssignFolderModal'
 import FolderModal from '../folder/FolderModal'
+import CategoryModal from '../folder/CategoryModal'
 import DeleteConfirmModal from '../common/DeleteConfirmModal'
 import type { Project } from '../../types/report'
-import type { Folder, WorkProjectItem } from '../../types/folder'
-import { CATEGORY_LABELS } from '../../types/folder'
+import type { Folder, WorkProjectItem, Category } from '../../types/folder'
 import type { FolderOrderItem } from '../../services/folderApi'
 import styles from './Sidebar.module.css'
 
@@ -79,7 +81,6 @@ function SortableProjectItem({ project, isActive, onProjectClick, onDelete, onMo
       >
         ⠿
       </span>
-      <span className={styles.projectDot} />
       <span className={styles.projectName}>{project.name}</span>
       <div className={styles.menuWrapper} ref={menuRef} onClick={(e) => e.stopPropagation()}>
         <button
@@ -135,7 +136,6 @@ function AssignedProjectItem({ project, onProjectClick, onProjectDelete, onMoveT
 
   return (
     <div className={styles.workProjectItem} onClick={() => onProjectClick(project.id)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onProjectClick(project.id)}>
-      <span className={styles.projectDot} />
       <span className={styles.workProjectName}>{project.name}</span>
       <div className={styles.menuWrapper} ref={menuRef} onClick={(e) => e.stopPropagation()}>
         <button
@@ -296,7 +296,6 @@ function SortableFolderItem({
                 className={`${styles.workProjectItem} ${selectedWorkProjectId === wp.id ? styles.workProjectActive : ''}`}
                 onClick={() => onWorkProjectClick(wp.id)}
               >
-                <span className={styles.workProjectDot} />
                 <span className={styles.workProjectName}>{wp.name}</span>
               </button>
             ))}
@@ -312,25 +311,26 @@ function SortableFolderItem({
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 
-const CATEGORY_ORDER = ['DEVELOPMENT', 'NEW_BUSINESS', 'OTHER'] as const
-type FolderCategory = typeof CATEGORY_ORDER[number]
-
 interface Props {
   width?: number
 }
 
 export default function Sidebar({ width = 240 }: Props) {
+  const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false)
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
   const [editingFolder, setEditingFolder] = useState<Folder | undefined>(undefined)
+  const [editingCategory, setEditingCategory] = useState<Category | undefined>(undefined)
   const [expandedFolderIds, setExpandedFolderIds] = useState<Set<number>>(new Set())
   const [assigningProjectId, setAssigningProjectId] = useState<number | null>(null)
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<FolderCategory>>(new Set())
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<number>>(new Set())
   const [deletingProjectId, setDeletingProjectId] = useState<number | null>(null)
   const [isCompletedSectionOpen, setIsCompletedSectionOpen] = useState(false)
 
   const { data: projects, isLoading, isError } = useProjects()
   const { data: folders, isLoading: foldersLoading, isError: foldersError } = useFolders()
+  const { data: categories } = useCategories()
   const deleteProject = useDeleteProject()
   const deleteFolder = useDeleteFolder()
   const reorderProjects = useReorderProjects()
@@ -399,12 +399,12 @@ export default function Sidebar({ width = 240 }: Props) {
     reorderProjects.mutate(reordered.map((p) => p.id))
   }
 
-  const handleFolderDragEnd = (event: DragEndEvent, category: FolderCategory) => {
+  const handleFolderDragEnd = (event: DragEndEvent, categoryId: number) => {
     const { active, over } = event
     if (!over || active.id === over.id || !folders) return
 
     const categoryFolders = folders
-      .filter((f) => f.category === category)
+      .filter((f) => f.categoryId === categoryId)
       .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
     const oldIndex = categoryFolders.findIndex((f) => f.id === active.id)
     const newIndex = categoryFolders.findIndex((f) => f.id === over.id)
@@ -413,10 +413,10 @@ export default function Sidebar({ width = 240 }: Props) {
     reorderFolders.mutate(orders)
   }
 
-  const toggleCategory = (cat: FolderCategory) => {
+  const toggleCategory = (catId: number) => {
     setCollapsedCategories((prev) => {
       const next = new Set(prev)
-      next.has(cat) ? next.delete(cat) : next.add(cat)
+      next.has(catId) ? next.delete(catId) : next.add(catId)
       return next
     })
   }
@@ -470,16 +470,76 @@ export default function Sidebar({ width = 240 }: Props) {
     setEditingFolder(undefined)
   }
 
+  const handleOpenCategoryModal = () => {
+    setEditingCategory(undefined)
+    setIsCategoryModalOpen(true)
+  }
+
+  const handleEditCategory = (category: Category) => {
+    setEditingCategory(category)
+    setIsCategoryModalOpen(true)
+  }
+
+  const handleCloseCategoryModal = () => {
+    setIsCategoryModalOpen(false)
+    setEditingCategory(undefined)
+  }
+
   return (
     <>
       <aside className={styles.sidebar} style={{ width: `${width}px`, minWidth: `${width}px` }}>
-        <button className={styles.addBtn} onClick={() => setIsModalOpen(true)}>
-          + 프로젝트 추가
-        </button>
+        <nav className={styles.navList}>
+          <button
+            className={styles.navItem}
+            onClick={() => { setSelectedFolder(null); setSelectedProject(null); navigate('/') }}
+          >
+            <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor"/>
+              <rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor"/>
+              <rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/>
+              <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/>
+            </svg>
+            대시보드
+          </button>
+          <button
+            className={styles.navItem}
+            onClick={() => navigate('/scheduler')}
+          >
+            <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1" y="3" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M5 1v4M11 1v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M1 7h14" stroke="currentColor" strokeWidth="1.5"/>
+              <circle cx="5.5" cy="10.5" r="1" fill="currentColor"/>
+              <circle cx="8" cy="10.5" r="1" fill="currentColor"/>
+              <circle cx="10.5" cy="10.5" r="1" fill="currentColor"/>
+            </svg>
+            주간보고 스케줄러
+          </button>
+          {import.meta.env.VITE_CONFLUENCE_URL && (
+            <a
+              className={styles.navItem}
+              href={import.meta.env.VITE_CONFLUENCE_URL as string}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 3.5C2 2.67 2.67 2 3.5 2h9C13.33 2 14 2.67 14 3.5v9c0 .83-.67 1.5-1.5 1.5h-9C2.67 14 2 13.33 2 12.5v-9z" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M5.5 10.5 8 5.5l2.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M6.3 9h3.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              Confluence
+            </a>
+          )}
+        </nav>
 
         <div className={styles.divider} />
 
-        <div className={styles.sectionLabel}>Projects</div>
+        <div className={styles.folderSectionHeader}>
+          <div className={styles.sectionLabel}>Projects</div>
+          <button className={styles.addFolderBtn} onClick={() => setIsModalOpen(true)}>
+            + GitLab 프로젝트 추가
+          </button>
+        </div>
 
         <nav className={styles.projectList}>
           {isLoading && (
@@ -519,9 +579,14 @@ export default function Sidebar({ width = 240 }: Props) {
 
         <div className={styles.folderSectionHeader}>
           <div className={styles.sectionLabel}>Folders</div>
-          <button className={styles.addFolderBtn} onClick={handleOpenFolderModal}>
-            + 폴더 추가
-          </button>
+          <div className={styles.addBtnGroup}>
+            <button className={styles.addFolderBtn} onClick={handleOpenCategoryModal}>
+              + 카테고리 추가
+            </button>
+            <button className={styles.addFolderBtn} onClick={handleOpenFolderModal}>
+              + 프로젝트 추가
+            </button>
+          </div>
         </div>
 
         <div className={styles.folderSection}>
@@ -531,57 +596,69 @@ export default function Sidebar({ width = 240 }: Props) {
           {foldersError && (
             <div className={styles.errorMsg}>폴더를 불러오지 못했습니다.</div>
           )}
-          {folders && (
+          {folders && categories && (
             <>
-              {CATEGORY_ORDER.map((cat) => {
-                const label = CATEGORY_LABELS[cat]
-                const items = folders
-                  .filter((f) => f.category === cat && f.status === 'IN_PROGRESS')
-                  .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
-                if (items.length === 0) return null
-                const isCollapsed = collapsedCategories.has(cat)
-                return (
-                  <div key={cat} className={styles.categoryGroup}>
-                    <button
-                      className={styles.categoryHeader}
-                      onClick={() => toggleCategory(cat)}
-                    >
-                      <span className={styles.completedSectionLine} />
-                      <span className={styles.categoryLabel}>{label} ({items.length})</span>
-                      <span className={styles.categoryArrow}>{isCollapsed ? '▸' : '▾'}</span>
-                      <span className={styles.completedSectionLine} />
-                    </button>
-                    {!isCollapsed && (
-                      <DndContext
-                        sensors={folderSensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={(e) => handleFolderDragEnd(e, cat)}
+              {categories
+                .slice()
+                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .map((cat) => {
+                  const items = folders
+                    .filter((f) => f.categoryId === cat.id && f.status === 'IN_PROGRESS')
+                    .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+                  if (items.length === 0) return null
+                  const isCollapsed = collapsedCategories.has(cat.id)
+                  return (
+                    <div key={cat.id} className={styles.categoryGroup}>
+                      <button
+                        className={styles.categoryHeader}
+                        onClick={() => toggleCategory(cat.id)}
                       >
-                        <SortableContext items={items.map((f) => f.id)} strategy={verticalListSortingStrategy}>
-                          {items.map((folder) => (
-                            <SortableFolderItem
-                              key={folder.id}
-                              folder={folder}
-                              isExpanded={expandedFolderIds.has(folder.id)}
-                              isSelected={selectedFolderId === folder.id}
-                              onToggle={handleToggleFolder}
-                              onFolderSelect={handleFolderSelect}
-                              onEdit={handleEditFolder}
-                              onDelete={handleDeleteFolder}
-                              selectedWorkProjectId={selectedWorkProjectId}
-                              onWorkProjectClick={handleWorkProjectClick}
-                              assignedProjects={projects?.filter((p) => p.folderId === folder.id) ?? []}
-                              onProjectClick={handleProjectClick}
-                              onProjectDelete={handleDelete}
-                              onMoveToFolder={setAssigningProjectId}
-                            />
-                          ))}
-                        </SortableContext>
-                      </DndContext>
-                    )}
-                  </div>
-                )
-              })}
+                        <span className={styles.categoryFolderIconWrap}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                            <path d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/>
+                          </svg>
+                        </span>
+                        <span className={styles.categoryLabel}>{cat.name}</span>
+                        <span className={styles.categoryCount}>({items.length})</span>
+                      </button>
+                      <button
+                        className={styles.categoryEditBtn}
+                        onClick={(e) => { e.stopPropagation(); handleEditCategory(cat) }}
+                        title="카테고리 수정"
+                      >
+                        ✎
+                      </button>
+                      {!isCollapsed && (
+                        <DndContext
+                          sensors={folderSensors}
+                          collisionDetection={closestCenter}
+                          onDragEnd={(e) => handleFolderDragEnd(e, cat.id)}
+                        >
+                          <SortableContext items={items.map((f) => f.id)} strategy={verticalListSortingStrategy}>
+                            {items.map((folder) => (
+                              <SortableFolderItem
+                                key={folder.id}
+                                folder={folder}
+                                isExpanded={expandedFolderIds.has(folder.id)}
+                                isSelected={selectedFolderId === folder.id}
+                                onToggle={handleToggleFolder}
+                                onFolderSelect={handleFolderSelect}
+                                onEdit={handleEditFolder}
+                                onDelete={handleDeleteFolder}
+                                selectedWorkProjectId={selectedWorkProjectId}
+                                onWorkProjectClick={handleWorkProjectClick}
+                                assignedProjects={projects?.filter((p) => p.folderId === folder.id) ?? []}
+                                onProjectClick={handleProjectClick}
+                                onProjectDelete={handleDelete}
+                                onMoveToFolder={setAssigningProjectId}
+                              />
+                            ))}
+                          </SortableContext>
+                        </DndContext>
+                      )}
+                    </div>
+                  )
+                })}
             </>
           )}
           {!foldersLoading && !foldersError && folders?.length === 0 && (
@@ -646,6 +723,14 @@ export default function Sidebar({ width = 240 }: Props) {
         />
       )}
 
+      {isCategoryModalOpen && (
+        <CategoryModal
+          isOpen={isCategoryModalOpen}
+          onClose={handleCloseCategoryModal}
+          initialCategory={editingCategory}
+        />
+      )}
+
       {assigningProjectId !== null && (
         <AssignFolderModal
           projectId={assigningProjectId}
@@ -665,4 +750,3 @@ export default function Sidebar({ width = 240 }: Props) {
     </>
   )
 }
-
