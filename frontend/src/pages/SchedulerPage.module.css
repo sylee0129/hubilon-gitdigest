@@ -5,13 +5,6 @@
   background-color: var(--color-bg);
 }
 
-.body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  flex-direction: column;
-}
-
 .backBtn {
   align-self: flex-start;
   margin: 16px 32px 0;

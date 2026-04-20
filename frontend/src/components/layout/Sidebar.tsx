@@ -19,6 +19,7 @@ import { useProjects, useDeleteProject, useReorderProjects } from '../../hooks/u
 import { useFolders, useDeleteFolder, useReorderFolders } from '../../hooks/useFolders'
 import { useCategories } from '../../hooks/useCategories'
 import { useReportStore } from '../../stores/useReportStore'
+import { useSidebarStore } from '../../stores/sidebarStore'
 import AddProjectModal from '../project/AddProjectModal'
 import AssignFolderModal from '../project/AssignFolderModal'
 import FolderModal from '../folder/FolderModal'
@@ -317,6 +318,7 @@ interface Props {
 
 export default function Sidebar({ width = 240 }: Props) {
   const navigate = useNavigate()
+  const { isCollapsed, toggleSidebar } = useSidebarStore()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false)
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
@@ -485,9 +487,25 @@ export default function Sidebar({ width = 240 }: Props) {
     setEditingCategory(undefined)
   }
 
+  const sidebarStyle = isCollapsed
+    ? { width: '48px', minWidth: '48px' }
+    : { width: `${width}px`, minWidth: `${Math.max(160, width)}px` }
+
   return (
     <>
-      <aside className={styles.sidebar} style={{ width: `${width}px`, minWidth: `${width}px` }}>
+      <aside className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : ''}`} style={sidebarStyle}>
+        <div className={styles.toggleRow}>
+          <button
+            className={styles.toggleBtn}
+            onClick={toggleSidebar}
+            title={isCollapsed ? '사이드바 펼치기' : '사이드바 접기'}
+          >
+            {isCollapsed ? '→' : '←'}
+          </button>
+        </div>
+
+        {!isCollapsed && (
+          <>
         <nav className={styles.navList}>
           <button
             className={styles.navItem}
@@ -709,7 +727,8 @@ export default function Sidebar({ width = 240 }: Props) {
             </div>
           )}
         </div>
-
+          </>
+        )}
       </aside>
 
       {isModalOpen && (

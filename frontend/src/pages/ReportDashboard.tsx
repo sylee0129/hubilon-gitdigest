@@ -3,14 +3,12 @@ import { useReportStore } from '../stores/useReportStore'
 import { useReports } from '../hooks/useReports'
 import { useProjects } from '../hooks/useProjects'
 import Header from '../components/layout/Header'
-import Sidebar from '../components/layout/Sidebar'
+import SidebarLayout from '../components/layout/SidebarLayout'
 import ReportCard from '../components/report/ReportCard'
 import FolderReportPanel from '../components/report/FolderReportPanel'
 import DashboardView from '../components/dashboard/DashboardView'
 import styles from './ReportDashboard.module.css'
 
-const SIDEBAR_MIN = 160
-const SIDEBAR_MAX = 480
 const PANEL_MIN = 220
 const PANEL_MAX = 600
 
@@ -18,17 +16,13 @@ export default function ReportDashboard() {
   const { startDate, endDate, activeTab, selectedProjectId, selectedFolderId, setSelectedFolder } = useReportStore()
   const { data: projects } = useProjects()
 
-  const [sidebarWidth, setSidebarWidth] = useState(240)
   const [panelWidth, setPanelWidth] = useState(360)
-  const isResizing = useRef<'sidebar' | 'panel' | null>(null)
+  const isPanelResizing = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
-      if (isResizing.current === 'sidebar') {
-        const next = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, e.clientX))
-        setSidebarWidth(next)
-      } else if (isResizing.current === 'panel') {
+      if (isPanelResizing.current) {
         const container = containerRef.current
         if (!container) return
         const rect = container.getBoundingClientRect()
@@ -37,7 +31,7 @@ export default function ReportDashboard() {
         setPanelWidth(next)
       }
     }
-    const onMouseUp = () => { isResizing.current = null }
+    const onMouseUp = () => { isPanelResizing.current = false }
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
     return () => {
@@ -67,14 +61,7 @@ export default function ReportDashboard() {
     <div className={styles.layout}>
       <Header />
 
-      <div className={styles.body}>
-        <Sidebar width={sidebarWidth} />
-
-        <div
-          className={styles.resizeHandle}
-          onMouseDown={() => { isResizing.current = 'sidebar' }}
-        />
-
+      <SidebarLayout>
         <main className={styles.main} ref={containerRef}>
           {selectedFolderId == null && selectedProjectId == null ? (
             <div className={styles.dashboardWrapper}>
@@ -135,7 +122,7 @@ export default function ReportDashboard() {
                   <>
                     <div
                       className={styles.panelResizeHandle}
-                      onMouseDown={() => { isResizing.current = 'panel' }}
+                      onMouseDown={() => { isPanelResizing.current = true }}
                     />
                     <FolderReportPanel
                       folderId={selectedFolderId}
@@ -146,7 +133,7 @@ export default function ReportDashboard() {
                 ) : selectedProjectId == null ? (
                   <div className={styles.panelPlaceholder}>
                     <span className={styles.panelPlaceholderText}>
-                      사업을 선택하면 AI 요약 보고서가 여기에 생성됩니다.
+                      프로젝트를 선택하면 AI 요약 보고서가 여기에 생성됩니다.
                     </span>
                   </div>
                 ) : null}
@@ -155,7 +142,7 @@ export default function ReportDashboard() {
             </>
           )}
         </main>
-      </div>
+      </SidebarLayout>
     </div>
   )
 }

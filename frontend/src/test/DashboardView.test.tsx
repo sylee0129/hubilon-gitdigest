@@ -76,7 +76,7 @@ describe('DashboardView', () => {
     expect(screen.getByText('10')).toBeInTheDocument()
     expect(screen.getByText('4')).toBeInTheDocument()
     expect(screen.getByText('7')).toBeInTheDocument()
-    expect(screen.getByText('총 사업')).toBeInTheDocument()
+    expect(screen.getByText('전체')).toBeInTheDocument()
     expect(screen.getByText('진행중')).toBeInTheDocument()
     expect(screen.getByText('금일 커밋')).toBeInTheDocument()
   })
@@ -131,6 +131,6 @@ describe('DashboardView', () => {
 
     render(wrapper(<DashboardView onFolderSelect={onFolderSelect} />))
     expect(screen.getByText('Hubilon GitDigest')).toBeInTheDocument()
-    expect(screen.getByText('전체 사업 현황 대시보드')).toBeInTheDocument()
+    expect(screen.getByText('전체 프로젝트 현황 대시보드')).toBeInTheDocument()
   })
 })

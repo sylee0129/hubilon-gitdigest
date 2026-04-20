@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Header from '../components/layout/Header'
+import SidebarLayout from '../components/layout/SidebarLayout'
 import Toast from '../components/common/Toast'
 import { schedulerApi, type SchedulerLog, type SchedulerLogDetail, type SchedulerStatus } from '../services/schedulerApi'
 import styles from './SchedulerPage.module.css'
@@ -216,7 +217,7 @@ export default function SchedulerPage() {
     <div className={styles.layout}>
       <Header />
 
-      <div className={styles.body}>
+      <SidebarLayout>
         <main className={styles.main}>
           <div className={styles.pageHeader}>
             <h1 className={styles.pageTitle}>주간보고 스케줄러</h1>
@@ -314,7 +315,7 @@ export default function SchedulerPage() {
             </>
           )}
         </main>
-      </div>
+      </SidebarLayout>
 
       {selectedDetail && (
         <DetailModal

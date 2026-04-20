@@ -5,24 +5,6 @@
   background-color: var(--color-bg);
 }
 
-.body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-.resizeHandle {
-  width: 4px;
-  cursor: col-resize;
-  background-color: transparent;
-  flex-shrink: 0;
-  transition: background-color 0.15s;
-}
-
-.resizeHandle:hover {
-  background-color: var(--color-border);
-}
-
 .panelResizeHandle {
   width: 4px;
   cursor: col-resize;

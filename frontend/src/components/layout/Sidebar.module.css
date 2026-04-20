@@ -1,10 +1,54 @@
 .sidebar {
-  background-color: var(--color-sidebar);
-  border-right: 1px solid var(--color-border);
+  background-color: #FFFFFF;
+  border-right: 1px solid #e5e7eb;
+  box-shadow: 1px 0 4px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-  padding: 20px 12px;
+  padding: 12px 12px 20px;
   overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sidebarCollapsed {
+  padding: 12px 4px;
+  overflow: hidden;
+}
+
+/* ─── 토글 버튼 행 ──────────────────────────────────────────────────────── */
+
+.toggleRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.sidebarCollapsed .toggleRow {
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.toggleBtn:hover {
+  background-color: var(--color-border-subtle);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
 }
 
 .navList {
