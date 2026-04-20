@@ -9,4 +9,6 @@ public interface ProjectJpaRepository extends JpaRepository<ProjectJpaEntity, Lo
     List<ProjectJpaEntity> findAllByOrderBySortOrderAsc();
 
     List<ProjectJpaEntity> findByFolderIdOrderBySortOrderAsc(Long folderId);
+
+    List<ProjectJpaEntity> findAllByTeamIdOrderBySortOrderAsc(Long teamId);
 }

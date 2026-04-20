@@ -19,8 +19,8 @@ public class ProjectSearchService implements ProjectSearchUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ProjectSearchResult> searchAll() {
-        return projectQueryPort.findAll().stream()
+    public List<ProjectSearchResult> searchAll(Long teamId) {
+        return projectQueryPort.findAll(teamId).stream()
                 .map(projectAppMapper::toSearchResult)
                 .toList();
     }

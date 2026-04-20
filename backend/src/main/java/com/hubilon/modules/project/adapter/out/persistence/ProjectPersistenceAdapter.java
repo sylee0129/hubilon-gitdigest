@@ -29,8 +29,8 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
     }
 
     @Override
-    public List<Project> findAll() {
-        return projectJpaRepository.findAllByOrderBySortOrderAsc().stream()
+    public List<Project> findAll(Long teamId) {
+        return projectJpaRepository.findAllByTeamIdOrderBySortOrderAsc(teamId).stream()
                 .map(this::toDomain)
                 .toList();
     }
@@ -75,6 +75,7 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
                 .gitlabProjectId(project.getGitlabProjectId())
                 .sortOrder(project.getSortOrder())
                 .folderId(project.getFolderId())
+                .teamId(project.getTeamId())
                 .build();
     }
 
@@ -88,6 +89,7 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
                 .gitlabProjectId(entity.getGitlabProjectId())
                 .sortOrder(entity.getSortOrder())
                 .folderId(entity.getFolderId())
+                .teamId(entity.getTeamId())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();

@@ -6,5 +6,6 @@ public record ProjectRegisterCommand(
         String gitlabUrl,
         Long gitlabProjectId,
         String accessToken,
-        AuthType authType
+        AuthType authType,
+        Long teamId
 ) {}

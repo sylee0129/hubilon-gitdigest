@@ -54,7 +54,10 @@ public class ReportAnalyzeService implements ReportAnalyzeUseCase {
                     .orElseThrow(() -> new NotFoundException("프로젝트를 찾을 수 없습니다. id=" + command.projectId()));
             return List.of(project);
         }
-        return projectQueryPort.findAll();
+        if (command.teamId() != null) {
+            return projectQueryPort.findAll(command.teamId());
+        }
+        return List.of();
     }
 
     private ReportResult analyzeProject(Project project, ReportAnalyzeCommand command) {

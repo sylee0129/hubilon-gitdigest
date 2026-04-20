@@ -7,9 +7,14 @@ public record ReportAnalyzeCommand(
         Long projectId,
         List<Long> projectIds,
         LocalDate startDate,
-        LocalDate endDate
+        LocalDate endDate,
+        Long teamId
 ) {
     public ReportAnalyzeCommand(Long projectId, LocalDate startDate, LocalDate endDate) {
-        this(projectId, null, startDate, endDate);
+        this(projectId, null, startDate, endDate, null);
+    }
+
+    public ReportAnalyzeCommand(Long projectId, List<Long> projectIds, LocalDate startDate, LocalDate endDate) {
+        this(projectId, projectIds, startDate, endDate, null);
     }
 }

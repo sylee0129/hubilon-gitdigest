@@ -1,10 +1,12 @@
 package com.hubilon.modules.report.adapter.in.web;
 
 import com.hubilon.common.response.Response;
+import com.hubilon.common.security.SecurityUtils;
 import com.hubilon.modules.report.application.dto.ReportAnalyzeCommand;
 import com.hubilon.modules.report.domain.port.in.ReportAiSummarizeUseCase;
 import com.hubilon.modules.report.domain.port.in.ReportAnalyzeUseCase;
 import com.hubilon.modules.report.domain.port.in.ReportSummaryUpdateUseCase;
+import com.hubilon.modules.user.domain.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +27,7 @@ public class ReportController {
     private final ReportAiSummarizeUseCase reportAiSummarizeUseCase;
     private final ReportSummaryUpdateUseCase reportSummaryUpdateUseCase;
     private final ReportWebMapper reportWebMapper;
+    private final SecurityUtils securityUtils;
 
     @Operation(summary = "주간 분석 결과 조회",
             description = "GitLab 커밋/변경파일 조회 후 AI 요약을 생성하여 반환합니다. 이미 DB에 있으면 캐시를 반환합니다.")
@@ -38,7 +41,9 @@ public class ReportController {
         if (projectIds != null && projectIds.isEmpty()) {
             return Response.ok(List.of());
         }
-        ReportAnalyzeCommand command = new ReportAnalyzeCommand(projectId, projectIds, startDate, endDate);
+        User currentUser = securityUtils.getCurrentUser();
+        Long teamId = currentUser.getTeamId();
+        ReportAnalyzeCommand command = new ReportAnalyzeCommand(projectId, projectIds, startDate, endDate, teamId);
         List<ReportResponse> responses = reportAnalyzeUseCase.analyze(command).stream()
                 .map(reportWebMapper::toResponse)
                 .toList();

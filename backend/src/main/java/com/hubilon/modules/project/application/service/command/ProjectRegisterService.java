@@ -47,6 +47,7 @@ public class ProjectRegisterService implements ProjectRegisterUseCase {
                 .accessToken(command.accessToken())
                 .authType(command.authType())
                 .gitlabProjectId(gitlabProjectId)
+                .teamId(command.teamId())
                 .build();
 
         Project saved = projectCommandPort.save(project);

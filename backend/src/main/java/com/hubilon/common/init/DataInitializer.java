@@ -37,7 +37,8 @@ public class DataInitializer implements ApplicationRunner {
             new String[]{"강보경", "bokyeong0113@hubilon.com"},
             new String[]{"최지수", "gsuchoi@hubilon.com"},
             new String[]{"이수연", "suyeon129@hubilon.com"},
-            new String[]{"김미진", "mijinkim@hubilon.com"}
+            new String[]{"김미진", "mijinkim@hubilon.com"},
+            new String[]{"테스트", "test@hubilon.com"}
     );
 
     @Override
@@ -60,6 +61,13 @@ public class DataInitializer implements ApplicationRunner {
                 team.getId()
         );
         log.info("초기 사용자 팀 정보 업데이트 완료: {}건", count);
+
+        // 3. 기존 projects team_id 업데이트
+        int projectCount = jdbcTemplate.update(
+                "UPDATE projects SET team_id = ? WHERE team_id IS NULL",
+                team.getId()
+        );
+        log.info("초기 프로젝트 팀 정보 업데이트 완료: {}건", projectCount);
 
         // 3. 초기 관리자 계정 생성
         String encodedPassword = passwordEncoder.encode(DEFAULT_PASSWORD);

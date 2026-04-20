@@ -20,6 +20,7 @@ import { useFolders, useDeleteFolder, useReorderFolders } from '../../hooks/useF
 import { useCategories } from '../../hooks/useCategories'
 import { useReportStore } from '../../stores/useReportStore'
 import { useSidebarStore } from '../../stores/sidebarStore'
+import { useAuthStore } from '../../stores/useAuthStore'
 import AddProjectModal from '../project/AddProjectModal'
 import AssignFolderModal from '../project/AssignFolderModal'
 import FolderModal from '../folder/FolderModal'
@@ -319,6 +320,7 @@ interface Props {
 export default function Sidebar({ width = 240 }: Props) {
   const navigate = useNavigate()
   const { isCollapsed, toggleSidebar } = useSidebarStore()
+  const teamId = useAuthStore((s) => s.user?.teamId)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false)
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
@@ -560,35 +562,41 @@ export default function Sidebar({ width = 240 }: Props) {
         </div>
 
         <nav className={styles.projectList}>
-          {isLoading && (
-            <div className={styles.stateMsg}>불러오는 중...</div>
-          )}
-          {isError && (
-            <div className={styles.errorMsg}>프로젝트를 불러오지 못했습니다.</div>
-          )}
-          {projects && (
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              {(() => {
-                const unassignedProjects = projects.filter((p) => !p.folderId)
-                return (
-                  <SortableContext items={unassignedProjects.map((p) => p.id)} strategy={verticalListSortingStrategy}>
-                    {unassignedProjects.map((project) => (
-                      <SortableProjectItem
-                        key={project.id}
-                        project={project}
-                        isActive={selectedProjectId === project.id && activeTab === 'individual'}
-                        onProjectClick={handleProjectClick}
-                        onDelete={handleDelete}
-                        onMoveToFolder={setAssigningProjectId}
-                      />
-                    ))}
-                  </SortableContext>
-                )
-              })()}
-            </DndContext>
-          )}
-          {!isLoading && !isError && projects?.filter((p) => !p.folderId).length === 0 && (
-            <div className={styles.stateMsg}>등록된 프로젝트가 없습니다.</div>
+          {teamId == null ? (
+            <div className={styles.stateMsg}>팀에 배정되지 않았습니다.</div>
+          ) : (
+            <>
+              {isLoading && (
+                <div className={styles.stateMsg}>불러오는 중...</div>
+              )}
+              {isError && (
+                <div className={styles.errorMsg}>프로젝트를 불러오지 못했습니다.</div>
+              )}
+              {projects && (
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                  {(() => {
+                    const unassignedProjects = projects.filter((p) => !p.folderId)
+                    return (
+                      <SortableContext items={unassignedProjects.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+                        {unassignedProjects.map((project) => (
+                          <SortableProjectItem
+                            key={project.id}
+                            project={project}
+                            isActive={selectedProjectId === project.id && activeTab === 'individual'}
+                            onProjectClick={handleProjectClick}
+                            onDelete={handleDelete}
+                            onMoveToFolder={setAssigningProjectId}
+                          />
+                        ))}
+                      </SortableContext>
+                    )
+                  })()}
+                </DndContext>
+              )}
+              {!isLoading && !isError && projects?.filter((p) => !p.folderId).length === 0 && (
+                <div className={styles.stateMsg}>등록된 프로젝트가 없습니다.</div>
+              )}
+            </>
           )}
         </nav>
 

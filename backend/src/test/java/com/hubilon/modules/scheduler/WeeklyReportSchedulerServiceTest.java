@@ -58,7 +58,7 @@ class WeeklyReportSchedulerServiceTest {
         assertThatThrownBy(() -> weeklyReportSchedulerService.trigger())
                 .isInstanceOf(ConflictException.class);
 
-        verify(folderQueryUseCase, never()).searchAll(any());
+        verify(folderQueryUseCase, never()).searchAll(any(), any());
         verify(schedulerJobLogCommandPort, never()).save(any());
     }
 
@@ -67,7 +67,7 @@ class WeeklyReportSchedulerServiceTest {
         when(schedulerJobLogQueryPort.existsByStatus(SchedulerJobStatus.RUNNING)).thenReturn(false);
 
         FolderResult folder = new FolderResult(1L, "개발팀", 1L, "개발", FolderStatus.IN_PROGRESS, 0, null, null);
-        when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS)).thenReturn(List.of(folder));
+        when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS, null)).thenReturn(List.of(folder));
         when(schedulerJobLogCommandPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(weeklyReportProcessor.process(eq(folder), any(LocalDate.class), any(LocalDate.class)))
                 .thenReturn(sampleRow());
@@ -85,7 +85,7 @@ class WeeklyReportSchedulerServiceTest {
         when(schedulerJobLogQueryPort.existsByStatus(SchedulerJobStatus.RUNNING)).thenReturn(false);
 
         FolderResult folder = new FolderResult(2L, "기획팀", 2L, "신사업", FolderStatus.IN_PROGRESS, 0, null, null);
-        when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS)).thenReturn(List.of(folder));
+        when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS, null)).thenReturn(List.of(folder));
         when(schedulerJobLogCommandPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(weeklyReportProcessor.process(eq(folder), any(LocalDate.class), any(LocalDate.class)))
                 .thenThrow(new RuntimeException("Confluence API 오류"));
@@ -103,7 +103,7 @@ class WeeklyReportSchedulerServiceTest {
 
         FolderResult folderA = new FolderResult(1L, "개발팀", 1L, "개발", FolderStatus.IN_PROGRESS, 0, null, null);
         FolderResult folderB = new FolderResult(2L, "기획팀", 2L, "신사업", FolderStatus.IN_PROGRESS, 0, null, null);
-        when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS)).thenReturn(List.of(folderA, folderB));
+        when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS, null)).thenReturn(List.of(folderA, folderB));
         when(schedulerJobLogCommandPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(uploadWeeklyReportUseCase.upload(any())).thenReturn("https://confluence.example.com/ok");
 
@@ -122,7 +122,7 @@ class WeeklyReportSchedulerServiceTest {
     @Test
     void 폴더_없으면_SUCCESS_상태() {
         when(schedulerJobLogQueryPort.existsByStatus(SchedulerJobStatus.RUNNING)).thenReturn(false);
-        when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS)).thenReturn(List.of());
+        when(folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS, null)).thenReturn(List.of());
         when(schedulerJobLogCommandPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         SchedulerJobLog result = weeklyReportSchedulerService.trigger();
@@ -139,7 +139,7 @@ class WeeklyReportSchedulerServiceTest {
         // 실제로 검증할 동작: folderQueryUseCase와 save가 호출되지 않음
         weeklyReportSchedulerService.executeWeeklyReport();
 
-        verify(folderQueryUseCase, never()).searchAll(any());
+        verify(folderQueryUseCase, never()).searchAll(any(), any());
         verify(schedulerJobLogCommandPort, never()).save(any());
     }
 }

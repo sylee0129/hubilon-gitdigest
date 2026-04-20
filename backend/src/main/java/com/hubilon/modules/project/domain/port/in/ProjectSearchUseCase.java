@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ProjectSearchUseCase {
 
-    List<ProjectSearchResult> searchAll();
+    List<ProjectSearchResult> searchAll(Long teamId);
 }

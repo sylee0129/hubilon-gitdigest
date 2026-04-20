@@ -30,6 +30,7 @@ public class ProjectMoveFolderService implements ProjectMoveFolderUseCase {
                 .gitlabProjectId(existing.getGitlabProjectId())
                 .sortOrder(existing.getSortOrder())
                 .folderId(folderId)
+                .teamId(existing.getTeamId())
                 .build();
         projectCommandPort.save(updated);
     }

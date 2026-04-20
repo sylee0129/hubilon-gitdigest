@@ -8,12 +8,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProjectWebMapper {
 
-    public ProjectRegisterCommand toCommand(ProjectRegisterRequest request) {
+    public ProjectRegisterCommand toCommand(ProjectRegisterRequest request, Long teamId) {
         return new ProjectRegisterCommand(
                 request.gitlabUrl(),
                 request.gitlabProjectId(),
                 request.accessToken(),
-                request.authType()
+                request.authType(),
+                teamId
         );
     }
 

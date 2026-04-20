@@ -51,7 +51,7 @@ class WorkProjectControllerTest {
                 .build();
         token = "Bearer " + jwtTokenAdapter.generateAccessToken("test@hubilon.com");
 
-        FolderCreateRequest folderReq = new FolderCreateRequest("테스트폴더", 1L, FolderStatus.IN_PROGRESS, List.of());
+        FolderCreateRequest folderReq = new FolderCreateRequest("테스트폴더", 1L, FolderStatus.IN_PROGRESS, List.of(), null);
         String folderBody = mockMvc.perform(post("/api/folders")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)

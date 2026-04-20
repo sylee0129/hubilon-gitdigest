@@ -50,6 +50,10 @@ public class ProjectJpaEntity {
     @Column(name = "folder_id")
     private Long folderId;
 
+    @Comment("소속 팀")
+    @Column(name = "team_id")
+    private Long teamId;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -63,7 +67,7 @@ public class ProjectJpaEntity {
 
     @Builder
     public ProjectJpaEntity(Long id, String name, String gitlabUrl, String accessToken,
-                             AuthType authType, Long gitlabProjectId, int sortOrder, Long folderId) {
+                             AuthType authType, Long gitlabProjectId, int sortOrder, Long folderId, Long teamId) {
         this.id = id;
         this.name = name;
         this.gitlabUrl = gitlabUrl;
@@ -72,6 +76,7 @@ public class ProjectJpaEntity {
         this.gitlabProjectId = gitlabProjectId;
         this.sortOrder = sortOrder;
         this.folderId = folderId;
+        this.teamId = teamId;
     }
 
     public void updateSortOrder(int sortOrder) {

@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface ProjectQueryPort {
 
-    List<Project> findAll();
+    List<Project> findAll(Long teamId);
 
     Optional<Project> findById(Long id);
 

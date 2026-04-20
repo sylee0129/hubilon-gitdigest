@@ -17,6 +17,7 @@ public class Project {
     private Long gitlabProjectId;
     private int sortOrder;
     private Long folderId;
+    private Long teamId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
