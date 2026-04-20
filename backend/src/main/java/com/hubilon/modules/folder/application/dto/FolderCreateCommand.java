@@ -8,5 +8,6 @@ public record FolderCreateCommand(
         String name,
         Long categoryId,
         FolderStatus status,
-        List<Long> memberIds
+        List<Long> memberIds,
+        Long teamId
 ) {}

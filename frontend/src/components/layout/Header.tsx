@@ -152,7 +152,10 @@ export default function Header() {
         >
           {confluenceLoading ? '업로드 중…' : 'Confluence 업로드'}
         </button>
-        <span className={styles.userName}>{user?.name ?? '사용자'}</span>
+        <span className={styles.userName}>
+          {user?.teamName && <span className={styles.teamName}>{user.teamName}</span>}
+          {user?.name ?? '사용자'}
+        </span>
         <button className={styles.logoutBtn} onClick={() => void handleLogout()}>로그아웃</button>
       </div>
     </header>

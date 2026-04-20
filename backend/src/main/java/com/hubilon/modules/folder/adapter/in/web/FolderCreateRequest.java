@@ -10,5 +10,6 @@ public record FolderCreateRequest(
         @NotBlank String name,
         @NotNull Long categoryId,
         FolderStatus status,
-        List<Long> memberIds
+        List<Long> memberIds,
+        Long teamId
 ) {}

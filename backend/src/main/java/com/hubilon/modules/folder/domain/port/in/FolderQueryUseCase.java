@@ -6,5 +6,5 @@ import com.hubilon.modules.folder.domain.model.FolderStatus;
 import java.util.List;
 
 public interface FolderQueryUseCase {
-    List<FolderResult> searchAll(FolderStatus status);
+    List<FolderResult> searchAll(FolderStatus status, Long teamId);
 }

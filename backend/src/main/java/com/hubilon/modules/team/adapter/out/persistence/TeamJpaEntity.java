@@ -26,6 +26,9 @@ public class TeamJpaEntity {
     @Column(unique = true, nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private Long deptId;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -34,8 +37,9 @@ public class TeamJpaEntity {
     private LocalDateTime updatedAt;
 
     @Builder
-    public TeamJpaEntity(Long id, String name) {
+    public TeamJpaEntity(Long id, String name, Long deptId) {
         this.id = id;
         this.name = name;
+        this.deptId = deptId;
     }
 }

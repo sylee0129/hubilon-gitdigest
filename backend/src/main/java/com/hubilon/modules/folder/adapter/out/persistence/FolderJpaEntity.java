@@ -2,6 +2,7 @@ package com.hubilon.modules.folder.adapter.out.persistence;
 
 import com.hubilon.modules.category.adapter.out.persistence.CategoryJpaEntity;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
+import com.hubilon.modules.team.adapter.out.persistence.TeamJpaEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,6 +49,11 @@ public class FolderJpaEntity {
     @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
     private int sortOrder;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    @Comment("소속 팀")
+    private TeamJpaEntity team;
+
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<FolderMemberJpaEntity> members = new HashSet<>();
 
@@ -62,12 +68,13 @@ public class FolderJpaEntity {
     private LocalDateTime updatedAt;
 
     @Builder
-    public FolderJpaEntity(Long id, String name, CategoryJpaEntity category, FolderStatus status, int sortOrder) {
+    public FolderJpaEntity(Long id, String name, CategoryJpaEntity category, FolderStatus status, int sortOrder, TeamJpaEntity team) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.status = status;
         this.sortOrder = sortOrder;
+        this.team = team;
         this.members = new HashSet<>();
         this.workProjects = new ArrayList<>();
     }
@@ -91,5 +98,9 @@ public class FolderJpaEntity {
     public void updateMembers(Set<FolderMemberJpaEntity> newMembers) {
         this.members.clear();
         this.members.addAll(newMembers);
+    }
+
+    public void updateTeam(TeamJpaEntity team) {
+        this.team = team;
     }
 }

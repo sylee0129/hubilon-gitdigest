@@ -10,5 +10,6 @@ public record FolderUpdateRequest(
         @NotBlank String name,
         @NotNull Long categoryId,
         @NotNull FolderStatus status,
-        List<Long> memberIds
+        List<Long> memberIds,
+        Long teamId
 ) {}

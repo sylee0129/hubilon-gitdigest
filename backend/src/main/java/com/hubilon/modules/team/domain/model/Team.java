@@ -15,4 +15,5 @@ public class Team {
 
     private Long id;
     private String name;
+    private Long deptId;
 }

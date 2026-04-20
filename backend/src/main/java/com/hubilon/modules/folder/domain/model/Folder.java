@@ -18,4 +18,5 @@ public class Folder {
     private String categoryName;
     private FolderStatus status;
     private int sortOrder;
+    private Long teamId;
 }

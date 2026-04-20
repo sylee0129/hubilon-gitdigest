@@ -18,4 +18,10 @@ public interface FolderJpaRepository extends JpaRepository<FolderJpaEntity, Long
 
     @Query("SELECT DISTINCT f FROM FolderJpaEntity f LEFT JOIN FETCH f.category LEFT JOIN FETCH f.members LEFT JOIN FETCH f.workProjects WHERE f.id = :id")
     Optional<FolderJpaEntity> findWithDetailsById(@Param("id") Long id);
+
+    @Query("SELECT DISTINCT f FROM FolderJpaEntity f LEFT JOIN FETCH f.category LEFT JOIN FETCH f.members LEFT JOIN FETCH f.workProjects WHERE f.team.id = :teamId ORDER BY f.sortOrder ASC")
+    List<FolderJpaEntity> findAllWithDetailsByTeamId(@Param("teamId") Long teamId);
+
+    @Query("SELECT DISTINCT f FROM FolderJpaEntity f LEFT JOIN FETCH f.category LEFT JOIN FETCH f.members LEFT JOIN FETCH f.workProjects WHERE f.team.id = :teamId AND f.status = :status ORDER BY f.sortOrder ASC")
+    List<FolderJpaEntity> findAllWithDetailsByTeamIdAndStatus(@Param("teamId") Long teamId, @Param("status") FolderStatus status);
 }

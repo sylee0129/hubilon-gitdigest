@@ -1,11 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { folderApi, type FolderCreatePayload, type FolderUpdatePayload, type FolderOrderItem } from '../services/folderApi'
+import { useAuthStore } from '../stores/useAuthStore'
 import type { Folder } from '../types/folder'
 
 export function useFolders(status?: Folder['status']) {
+  const teamId = useAuthStore((s) => s.user?.teamId)
   return useQuery({
-    queryKey: ['folders', status],
+    queryKey: ['folders', status, teamId],
     queryFn: () => folderApi.getAll(status),
+    enabled: teamId != null,
   })
 }
 

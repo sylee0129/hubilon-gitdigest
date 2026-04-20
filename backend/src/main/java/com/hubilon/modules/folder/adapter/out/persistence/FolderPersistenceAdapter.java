@@ -11,6 +11,8 @@ import com.hubilon.modules.folder.domain.model.Folder;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
 import com.hubilon.modules.folder.domain.port.out.FolderCommandPort;
 import com.hubilon.modules.folder.domain.port.out.FolderQueryPort;
+import com.hubilon.modules.team.adapter.out.persistence.TeamJpaEntity;
+import com.hubilon.modules.team.adapter.out.persistence.TeamRepository;
 import com.hubilon.modules.user.adapter.out.persistence.UserRepository;
 import com.hubilon.modules.user.domain.port.out.UserFolderMemberPort;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +31,18 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
     private final FolderMemberJpaRepository folderMemberJpaRepository;
     private final CategoryJpaRepository categoryJpaRepository;
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
 
     @Override
     @Transactional
     public Folder save(Folder folder, List<Long> memberIds) {
         CategoryJpaEntity categoryEntity = categoryJpaRepository.findById(folder.getCategoryId())
                 .orElseThrow(() -> new NotFoundException("카테고리를 찾을 수 없습니다. id=" + folder.getCategoryId()));
+
+        TeamJpaEntity teamEntity = folder.getTeamId() != null
+                ? teamRepository.findById(folder.getTeamId())
+                        .orElseThrow(() -> new NotFoundException("팀을 찾을 수 없습니다. id=" + folder.getTeamId()))
+                : null;
 
         FolderJpaEntity entity;
         if (folder.getId() != null) {
@@ -44,12 +52,14 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
                 entity.updateName(folder.getName());
                 entity.updateCategory(categoryEntity);
                 entity.updateStatus(folder.getStatus());
+                entity.updateTeam(teamEntity);
             } else {
                 entity = FolderJpaEntity.builder()
                         .name(folder.getName())
                         .category(categoryEntity)
                         .status(folder.getStatus())
                         .sortOrder(folder.getSortOrder())
+                        .team(teamEntity)
                         .build();
             }
         } else {
@@ -58,6 +68,7 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
                     .category(categoryEntity)
                     .status(folder.getStatus())
                     .sortOrder(folder.getSortOrder())
+                    .team(teamEntity)
                     .build();
         }
         FolderJpaEntity saved = folderJpaRepository.saveAndFlush(entity);
@@ -85,10 +96,17 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
     }
 
     @Override
-    public List<FolderResult> findAllWithDetails(FolderStatus status) {
-        List<FolderJpaEntity> entities = status != null
-                ? folderJpaRepository.findAllWithDetailsByStatus(status)
-                : folderJpaRepository.findAllWithDetails();
+    public List<FolderResult> findAllWithDetails(FolderStatus status, Long teamId) {
+        List<FolderJpaEntity> entities;
+        if (teamId != null && status != null) {
+            entities = folderJpaRepository.findAllWithDetailsByTeamIdAndStatus(teamId, status);
+        } else if (teamId != null) {
+            entities = folderJpaRepository.findAllWithDetailsByTeamId(teamId);
+        } else if (status != null) {
+            entities = folderJpaRepository.findAllWithDetailsByStatus(status);
+        } else {
+            entities = folderJpaRepository.findAllWithDetails();
+        }
         return entities.stream().map(this::toResult).toList();
     }
 
@@ -125,6 +143,7 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
                 .categoryName(entity.getCategory().getName())
                 .status(entity.getStatus())
                 .sortOrder(entity.getSortOrder())
+                .teamId(entity.getTeam() != null ? entity.getTeam().getId() : null)
                 .build();
     }
 

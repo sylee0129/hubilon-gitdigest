@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FolderQueryPort {
-    List<FolderResult> findAllWithDetails(FolderStatus status);
+    List<FolderResult> findAllWithDetails(FolderStatus status, Long teamId);
     Optional<FolderResult> findWithDetailsById(Long id);
     boolean existsById(Long id);
     int countWorkProjectsByFolderId(Long folderId);

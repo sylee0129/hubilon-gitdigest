@@ -18,7 +18,7 @@ export default function DashboardView({ onFolderSelect }: DashboardViewProps) {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Hubilon GitDigest</h1>
-        <p className={styles.subtitle}>전체 사업 현황 대시보드</p>
+        <p className={styles.subtitle}>전체 프로젝트 현황 대시보드</p>
       </div>
 
       {/* 통계 카드 */}
@@ -43,7 +43,7 @@ export default function DashboardView({ onFolderSelect }: DashboardViewProps) {
             <div className={styles.statCard}>
               <span className={styles.statBadge}>전체</span>
               <span className={styles.statNumber}>{data?.totalFolderCount ?? 0}</span>
-              <span className={styles.statLabel}>총 사업</span>
+              <span className={styles.statLabel}>총 프로젝트</span>
             </div>
             <div className={styles.statCard}>
               <span className={`${styles.statBadge} ${styles.statBadgeActive}`}>진행</span>
@@ -61,7 +61,7 @@ export default function DashboardView({ onFolderSelect }: DashboardViewProps) {
 
       {/* 최근 활성 폴더 */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>최근 업데이트 사업 (24시간)</h2>
+        <h2 className={styles.sectionTitle}>최근 업데이트 프로젝트 (24시간)</h2>
 
         {isLoading ? (
           <div className={styles.listSkeleton}>
@@ -96,7 +96,7 @@ export default function DashboardView({ onFolderSelect }: DashboardViewProps) {
       <div className={styles.guide}>
         <span className={styles.guideIcon}>💡</span>
         <p className={styles.guideText}>
-          분석할 사업 폴더나 개별 프로젝트를 왼쪽 사이드바에서 선택하여
+          분석할 프로젝트 폴더나 세부 프로젝트를 왼쪽 사이드바에서 선택하여
           상세 이력과 AI 보고서를 확인하세요.
         </p>
       </div>

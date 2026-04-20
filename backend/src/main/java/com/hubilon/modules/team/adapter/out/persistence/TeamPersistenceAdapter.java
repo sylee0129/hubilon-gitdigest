@@ -26,10 +26,18 @@ public class TeamPersistenceAdapter implements TeamQueryPort {
                 .toList();
     }
 
+    @Override
+    public List<Team> findByDeptId(Long deptId) {
+        return teamRepository.findByDeptId(deptId).stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
     private Team toDomain(TeamJpaEntity entity) {
         return Team.builder()
                 .id(entity.getId())
                 .name(entity.getName())
+                .deptId(entity.getDeptId())
                 .build();
     }
 }

@@ -31,6 +31,7 @@ public class FolderUpdateService implements FolderUpdateUseCase {
                 .categoryId(command.categoryId())
                 .status(command.status())
                 .sortOrder(existing.sortOrder())
+                .teamId(command.teamId())
                 .build();
         folderCommandPort.save(folder, command.memberIds() != null ? command.memberIds() : List.of());
         return folderQueryPort.findWithDetailsById(id)

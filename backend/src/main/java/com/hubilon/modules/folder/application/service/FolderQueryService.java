@@ -18,7 +18,7 @@ public class FolderQueryService implements FolderQueryUseCase {
     private final FolderQueryPort folderQueryPort;
 
     @Override
-    public List<FolderResult> searchAll(FolderStatus status) {
-        return folderQueryPort.findAllWithDetails(status);
+    public List<FolderResult> searchAll(FolderStatus status, Long teamId) {
+        return folderQueryPort.findAllWithDetails(status, teamId);
     }
 }

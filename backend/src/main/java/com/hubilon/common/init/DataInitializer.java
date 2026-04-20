@@ -1,5 +1,7 @@
 package com.hubilon.common.init;
 
+import com.hubilon.modules.department.adapter.out.persistence.DepartmentJpaEntity;
+import com.hubilon.modules.department.adapter.out.persistence.DepartmentRepository;
 import com.hubilon.modules.team.adapter.out.persistence.TeamJpaEntity;
 import com.hubilon.modules.team.adapter.out.persistence.TeamRepository;
 import com.hubilon.modules.user.domain.model.User;
@@ -26,9 +28,11 @@ public class DataInitializer implements ApplicationRunner {
     private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
     private final TeamRepository teamRepository;
+    private final DepartmentRepository departmentRepository;
 
     private static final String DEFAULT_PASSWORD = "hubilon1!";
     private static final String DEFAULT_TEAM_NAME = "플랫폼개발팀";
+    private static final String DEFAULT_DEPT_NAME = "플랫폼개발실";
 
     private static final List<String[]> INIT_ADMINS = List.of(
             new String[]{"이광호", "khlee@hubilon.com"},
@@ -44,32 +48,46 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        // 1. 팀 생성
+        // 1. 실(Department) 생성
+        DepartmentJpaEntity dept = departmentRepository.findAll().stream()
+                .filter(d -> DEFAULT_DEPT_NAME.equals(d.getName()))
+                .findFirst()
+                .orElseGet(() -> {
+                    DepartmentJpaEntity newDept = DepartmentJpaEntity.builder()
+                            .name(DEFAULT_DEPT_NAME)
+                            .build();
+                    DepartmentJpaEntity saved = departmentRepository.save(newDept);
+                    log.info("기본 실 생성: {}", DEFAULT_DEPT_NAME);
+                    return saved;
+                });
+
+        // 2. 팀 생성
         TeamJpaEntity team = teamRepository.findByName(DEFAULT_TEAM_NAME)
                 .orElseGet(() -> {
                     TeamJpaEntity newTeam = TeamJpaEntity.builder()
                             .name(DEFAULT_TEAM_NAME)
+                            .deptId(dept.getId())
                             .build();
                     TeamJpaEntity saved = teamRepository.save(newTeam);
                     log.info("기본 팀 생성: {}", DEFAULT_TEAM_NAME);
                     return saved;
                 });
 
-        // 2. 기존 사용자 team_id 업데이트
+        // 3. 기존 사용자 team_id 업데이트
         int count = jdbcTemplate.update(
                 "UPDATE users SET team_id = ? WHERE team_id IS NULL",
                 team.getId()
         );
         log.info("초기 사용자 팀 정보 업데이트 완료: {}건", count);
 
-        // 3. 기존 projects team_id 업데이트
+        // 4. 기존 projects team_id 업데이트
         int projectCount = jdbcTemplate.update(
                 "UPDATE projects SET team_id = ? WHERE team_id IS NULL",
                 team.getId()
         );
         log.info("초기 프로젝트 팀 정보 업데이트 완료: {}건", projectCount);
 
-        // 3. 초기 관리자 계정 생성
+        // 5. 초기 관리자 계정 생성
         String encodedPassword = passwordEncoder.encode(DEFAULT_PASSWORD);
 
         for (String[] admin : INIT_ADMINS) {

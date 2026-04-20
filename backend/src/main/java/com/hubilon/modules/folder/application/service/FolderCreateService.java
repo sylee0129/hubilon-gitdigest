@@ -29,6 +29,7 @@ public class FolderCreateService implements FolderCreateUseCase {
                 .categoryId(command.categoryId())
                 .status(command.status() != null ? command.status() : FolderStatus.IN_PROGRESS)
                 .sortOrder(0)
+                .teamId(command.teamId())
                 .build();
         Folder saved = folderCommandPort.save(folder, command.memberIds() != null ? command.memberIds() : List.of());
         return folderQueryPort.findWithDetailsById(saved.getId())
