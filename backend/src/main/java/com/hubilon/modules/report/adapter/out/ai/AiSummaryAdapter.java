@@ -47,14 +47,22 @@ public class AiSummaryAdapter implements AiSummaryPort {
 
     @Override
     public FolderAiSummaryResult summarizeFolder(List<CommitInfo> commits, LocalDate startDate, LocalDate endDate, String folderName) {
+        int commitCount = commits == null ? 0 : commits.size();
+        log.info("[AI요약] 시작: folderName={}, commitCount={}, aiEnabled={}", folderName, commitCount, aiEnabled);
+
         if (commits == null || commits.isEmpty()) {
+            log.info("[AI요약] 커밋 없음 → 기본값 반환: folderName={}", folderName);
             return new FolderAiSummaryResult("진행사항 없음", "진행사항 확인", true);
         }
 
         if (aiEnabled) {
-            return callFolderLlmApi(commits, startDate, endDate, folderName);
+            log.info("[AI요약] Gemini API 호출: folderName={}, model={}", folderName, model);
+            FolderAiSummaryResult result = callFolderLlmApi(commits, startDate, endDate, folderName);
+            log.info("[AI요약] Gemini 완료: folderName={}, aiUsed={}", folderName, result.aiUsed());
+            return result;
         }
 
+        log.info("[AI요약] aiEnabled=false → stub 사용: folderName={}", folderName);
         return stubSummarizeFolder(commits, folderName);
     }
 

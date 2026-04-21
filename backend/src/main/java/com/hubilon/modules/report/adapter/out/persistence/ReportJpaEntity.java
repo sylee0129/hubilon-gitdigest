@@ -42,12 +42,10 @@ public class ReportJpaEntity {
     private LocalDate endDate;
 
     @Comment("AI 생성 요약")
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String aiSummary;
 
     @Comment("수동 편집 요약")
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String manualSummary;
 

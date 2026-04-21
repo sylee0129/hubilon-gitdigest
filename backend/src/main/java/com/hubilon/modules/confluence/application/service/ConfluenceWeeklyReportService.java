@@ -11,11 +11,16 @@ import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceSpaceCon
 import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceTeamConfigJpaEntity;
 import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceTeamConfigRepository;
 import com.hubilon.modules.confluence.application.port.in.UploadWeeklyReportUseCase;
+import com.hubilon.modules.report.application.dto.FolderSummaryAiSummarizeCommand;
+import com.hubilon.modules.report.domain.model.FolderSummary;
+import com.hubilon.modules.report.domain.port.in.FolderSummaryAiSummarizeUseCase;
+import com.hubilon.modules.report.domain.port.out.FolderSummaryQueryPort;
 import com.hubilon.modules.team.adapter.out.persistence.TeamJpaEntity;
 import com.hubilon.modules.team.adapter.out.persistence.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -33,7 +38,10 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
     private final ConfluenceTeamConfigRepository teamConfigRepository;
     private final ConfluenceClientCache confluenceClientCache;
     private final CategoryQueryPort categoryQueryPort;
+    private final FolderSummaryQueryPort folderSummaryQueryPort;
+    private final FolderSummaryAiSummarizeUseCase folderSummaryAiSummarizeUseCase;
 
+    @Transactional
     @Override
     public String upload(WeeklyConfluenceRequest request) {
         Long teamId = request.teamId();
@@ -62,10 +70,11 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         LocalDate endDate = LocalDate.parse(request.endDate());
 
         CategoryMeta categoryMeta = loadCategoryMeta();
-        String pageTitle = buildPageTitle(startDate);
-        String xhtml = buildXhtml(request.rows(), startDate, endDate, categoryMeta);
+        List<WeeklyReportRowDto> rows = resolveRowSummaries(request.rows(), startDate, endDate);
+        String pageTitle = buildPageTitle(startDate, team.getName());
+        String xhtml = buildXhtml(rows, startDate, endDate, categoryMeta, team.getName());
 
-        return client.findPageByTitle(spaceKey, pageTitle)
+        return client.findPageByTitle(spaceKey, parentPageId, pageTitle)
                 .map(page -> {
                     log.info("Confluence 페이지 수정: title={}, id={}", pageTitle, page.id());
                     return client.updatePage(page.id(), page.version() + 1, pageTitle, xhtml);
@@ -74,6 +83,43 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
                     log.info("Confluence 페이지 생성: title={}, parentId={}", pageTitle, parentPageId);
                     return client.createPage(spaceKey, parentPageId, pageTitle, xhtml);
                 });
+    }
+
+    private List<WeeklyReportRowDto> resolveRowSummaries(List<WeeklyReportRowDto> rows, LocalDate startDate, LocalDate endDate) {
+        return rows.stream().map(row -> {
+            if (row.folderId() == null) {
+                log.info("[Confluence] folderId 없음, 요청값 그대로 사용: folderName={}", row.folderName());
+                return row;
+            }
+
+            FolderSummary summary = folderSummaryQueryPort
+                    .findByFolderIdAndDateRange(row.folderId(), startDate, endDate)
+                    .map(existing -> {
+                        log.info("[Confluence] folder_summary DB 조회 성공: folderId={}, folderName={}", row.folderId(), row.folderName());
+                        return existing;
+                    })
+                    .orElseGet(() -> {
+                        log.info("[Confluence] folder_summary 없음 → AI 요약 생성 시작: folderId={}, folderName={}, period={} ~ {}",
+                                row.folderId(), row.folderName(), startDate, endDate);
+                        var result = folderSummaryAiSummarizeUseCase.summarize(
+                                new FolderSummaryAiSummarizeCommand(row.folderId(), startDate, endDate));
+                        log.info("[Confluence] AI 요약 생성 완료: folderId={}, aiSummaryFailed={}", row.folderId(), result.aiSummaryFailed());
+                        return FolderSummary.builder()
+                                .progressSummary(result.progressSummary())
+                                .planSummary(result.planSummary())
+                                .build();
+                    });
+
+            return new WeeklyReportRowDto(
+                    row.folderId(),
+                    row.categoryId(),
+                    row.categoryName(),
+                    row.folderName(),
+                    row.members(),
+                    summary.getProgressSummary(),
+                    summary.getPlanSummary()
+            );
+        }).toList();
     }
 
     private CategoryMeta loadCategoryMeta() {
@@ -85,15 +131,15 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         return new CategoryMeta(order, label);
     }
 
-    private String buildPageTitle(LocalDate startDate) {
+    private String buildPageTitle(LocalDate startDate, String teamName) {
         int dayOfMonth = startDate.getDayOfMonth();
         int firstDayOfWeekValue = startDate.withDayOfMonth(1).getDayOfWeek().getValue() % 7;
         int weekNumber = (int) Math.ceil((dayOfMonth + firstDayOfWeekValue) / 7.0);
-        return startDate.getMonthValue() + "월_" + weekNumber + "주차_주간보고";
+        return startDate.getMonthValue() + "월_" + weekNumber + "주차_" + teamName + "_주간보고";
     }
 
     private String buildXhtml(List<WeeklyReportRowDto> rows, LocalDate startDate, LocalDate endDate,
-                               CategoryMeta categoryMeta) {
+                               CategoryMeta categoryMeta, String teamName) {
         int month = startDate.getMonthValue();
         int dayOfMonth = startDate.getDayOfMonth();
         int firstDayOfWeekValue = startDate.withDayOfMonth(1).getDayOfWeek().getValue() % 7;
@@ -119,7 +165,7 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<h2>플랫폼개발팀 | ").append(month).append("월 ").append(weekNumber).append("주</h2>\n");
+        sb.append("<h2>").append(escape(teamName)).append(" | ").append(month).append("월 ").append(weekNumber).append("주</h2>\n");
         sb.append("<table style=\"width: 100%;\">\n");
         sb.append("  <colgroup>\n");
         sb.append("    <col style=\"width: 8%;\" />\n");
@@ -182,7 +228,7 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
     }
 
     private String formatMDD(LocalDate date) {
-        return date.getMonthValue() + "." + String.format("%02d", date.getDayOfMonth());
+        return date.getMonthValue() + "/" + String.format("%02d", date.getDayOfMonth());
     }
 
     private String escape(String text) {

@@ -39,13 +39,15 @@ public class ConfluenceApiClient {
         return baseUrl;
     }
 
-    public Optional<ConfluencePage> findPageByTitle(String spaceKey, String title) {
+    public Optional<ConfluencePage> findPageByTitle(String spaceKey, String parentPageId, String title) {
         try {
+            String cql = String.format("title=\"%s\" AND space=\"%s\" AND ancestor=%s",
+                    title.replace("\"", "\\\""), spaceKey, parentPageId);
+
             String response = restClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/wiki/rest/api/content")
-                            .queryParam("spaceKey", spaceKey)
-                            .queryParam("title", title)
+                            .path("/wiki/rest/api/content/search")
+                            .queryParam("cql", cql)
                             .queryParam("expand", "version")
                             .build())
                     .retrieve()

@@ -35,6 +35,7 @@ public class AiUploadStrategy implements WeeklyReportUploadStrategy {
                 : folder.members().stream().map(FolderMemberResult::name).toList();
 
         return new WeeklyReportRowDto(
+                folder.id(),
                 folder.categoryId(),
                 folder.categoryName(),
                 folder.name(),

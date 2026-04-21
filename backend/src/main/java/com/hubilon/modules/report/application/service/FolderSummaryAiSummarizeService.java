@@ -74,8 +74,8 @@ public class FolderSummaryAiSummarizeService implements FolderSummaryAiSummarize
                 .orElse("폴더 #" + command.folderId());
 
         // 5. AI 요약 생성
-        log.info("Generating folder AI summary for folderId={}, period={} ~ {}",
-                command.folderId(), command.startDate(), command.endDate());
+        log.info("[FolderSummary] AI 요약 요청: folderId={}, folderName={}, projectCount={}, commitCount={}, period={} ~ {}",
+                command.folderId(), folderName, projects.size(), allCommits.size(), command.startDate(), command.endDate());
         FolderAiSummaryResult aiResult = aiSummaryPort.summarizeFolder(
                 allCommits, command.startDate(), command.endDate(), folderName);
 
@@ -118,6 +118,9 @@ public class FolderSummaryAiSummarizeService implements FolderSummaryAiSummarize
         }
 
         FolderSummary saved = folderSummaryCommandPort.save(toSave);
+        log.info("[FolderSummary] 저장 완료: folderId={}, aiSummaryFailed={}, progressSummary 길이={}",
+                command.folderId(), saved.isAiSummaryFailed(),
+                saved.getProgressSummary() == null ? 0 : saved.getProgressSummary().length());
         return folderSummaryAppMapper.toResult(saved);
     }
 }

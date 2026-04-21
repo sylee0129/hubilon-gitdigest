@@ -38,7 +38,6 @@ public class CommitInfoJpaEntity {
     private LocalDateTime committedAt;
 
     @Comment("커밋 메시지")
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String message;
 

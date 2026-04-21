@@ -9,6 +9,7 @@ public record WeeklyConfluenceRequest(
         String endDate
 ) {
     public record WeeklyReportRowDto(
+            Long folderId,
             Long categoryId,
             String categoryName,
             String folderName,

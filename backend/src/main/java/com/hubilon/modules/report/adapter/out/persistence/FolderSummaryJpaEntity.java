@@ -54,7 +54,6 @@ public class FolderSummaryJpaEntity {
     private int uniqueContributorCount;
 
     @Comment("요약 내용")
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String summary;
 
@@ -67,12 +66,10 @@ public class FolderSummaryJpaEntity {
     private boolean aiSummaryFailed;
 
     @Comment("금주 진행사항")
-    @Lob
     @Column(columnDefinition = "TEXT", name = "progress_summary")
     private String progressSummary;
 
     @Comment("차주 진행계획")
-    @Lob
     @Column(columnDefinition = "TEXT", name = "plan_summary")
     private String planSummary;
 

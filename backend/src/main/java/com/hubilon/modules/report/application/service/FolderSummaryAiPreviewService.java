@@ -15,6 +15,7 @@ import com.hubilon.modules.report.domain.port.out.ReportQueryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class FolderSummaryAiPreviewService implements FolderSummaryAiPreviewUseC
     private final AiSummaryPort aiSummaryPort;
     private final FolderJpaRepository folderJpaRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public FolderSummaryAiPreviewResult preview(FolderSummaryAiSummarizeCommand command) {
         if (command.startDate() == null || command.endDate() == null) {

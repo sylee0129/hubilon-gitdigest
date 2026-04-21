@@ -19,6 +19,7 @@ export async function buildWeeklyReportRows(
     const folder = folders[i]
     const summary = result.value
     rows.push({
+      folderId: folder.id,
       categoryId: folder.categoryId,
       categoryName: folder.categoryName,
       folderName: folder.name,

@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs'
 
 export interface WeeklyReportRow {
+  folderId?: number
   categoryId: number
   categoryName: string
   folderName: string
