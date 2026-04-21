@@ -42,11 +42,11 @@ class WeeklyReportProcessorTest {
     private static final LocalDate END = LocalDate.of(2026, 4, 20);
 
     private FolderResult sampleFolder() {
-        return new FolderResult(1L, "개발팀 폴더", 1L, "개발", FolderStatus.IN_PROGRESS, 0, null, null);
+        return new FolderResult(1L, "개발팀 폴더", 1L, "개발", FolderStatus.IN_PROGRESS, 0, 1L, null, null);
     }
 
     private WeeklyReportRowDto sampleRow(String progressSummary, String planSummary) {
-        return new WeeklyReportRowDto("DEVELOPMENT", "개발팀 폴더", List.of(), progressSummary, planSummary);
+        return new WeeklyReportRowDto(1L, "개발", "개발팀 폴더", List.of(), progressSummary, planSummary);
     }
 
     @Test
@@ -83,7 +83,7 @@ class WeeklyReportProcessorTest {
                 .folderId(1L)
                 .startDate(START)
                 .endDate(END)
-                .progressSummary("") // 비어있음
+                .progressSummary("")
                 .planSummary("다음 주 계획")
                 .build();
 
@@ -110,7 +110,7 @@ class WeeklyReportProcessorTest {
                 .startDate(START)
                 .endDate(END)
                 .progressSummary("이번 주 진행 내용")
-                .planSummary(null) // null
+                .planSummary(null)
                 .build();
 
         WeeklyReportRowDto expectedRow = sampleRow("이번 주 진행 내용", "AI 생성 계획");

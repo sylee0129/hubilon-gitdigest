@@ -4,6 +4,7 @@ import type { WeeklyReportRow } from '../utils/weeklyExcelExport'
 
 export const confluenceApi = {
   uploadWeeklyReport: async (params: {
+    teamId: number
     rows: WeeklyReportRow[]
     startDate: string
     endDate: string

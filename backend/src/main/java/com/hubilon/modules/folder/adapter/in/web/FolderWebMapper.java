@@ -28,7 +28,8 @@ public class FolderWebMapper {
     public FolderResponse toResponse(FolderResult result) {
         return new FolderResponse(
                 result.id(), result.name(), result.categoryId(), result.categoryName(),
-                result.status(), result.sortOrder(), result.members(), result.workProjects()
+                result.status(), result.sortOrder(), result.teamId(),
+                result.members(), result.workProjects()
         );
     }
 }

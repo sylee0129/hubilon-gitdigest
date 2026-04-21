@@ -3,7 +3,6 @@ package com.hubilon.modules.scheduler.application.service;
 import com.hubilon.common.exception.custom.ConflictException;
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest;
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest.WeeklyReportRowDto;
-
 import com.hubilon.modules.confluence.application.port.in.UploadWeeklyReportUseCase;
 import com.hubilon.modules.folder.application.dto.FolderResult;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
@@ -23,7 +22,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -67,12 +68,16 @@ public class WeeklyReportSchedulerService implements SchedulerTriggerUseCase {
         LocalDate endDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.FRIDAY));
         LocalDate startDate = endDate.minusDays(6);
 
-        List<WeeklyReportRowDto> successRows = new ArrayList<>();
+        // teamId → rows 그룹핑
+        Map<Long, List<WeeklyReportRowDto>> rowsByTeam = new LinkedHashMap<>();
 
         for (FolderResult folder : folders) {
             try {
                 WeeklyReportRowDto row = weeklyReportProcessor.process(folder, startDate, endDate);
-                successRows.add(row);
+                Long teamId = folder.teamId();
+                if (teamId != null) {
+                    rowsByTeam.computeIfAbsent(teamId, k -> new ArrayList<>()).add(row);
+                }
                 jobLog.recordSuccess(folder.id(), folder.name(), null);
             } catch (Exception e) {
                 log.warn("폴더 처리 실패: folderId={}, folderName={}, error={}", folder.id(), folder.name(), e.getMessage());
@@ -80,14 +85,19 @@ public class WeeklyReportSchedulerService implements SchedulerTriggerUseCase {
             }
         }
 
-        if (!successRows.isEmpty()) {
+        // 팀별 Confluence 업로드
+        for (Map.Entry<Long, List<WeeklyReportRowDto>> entry : rowsByTeam.entrySet()) {
+            Long teamId = entry.getKey();
+            List<WeeklyReportRowDto> successRows = entry.getValue();
+            if (successRows.isEmpty()) continue;
             try {
                 WeeklyConfluenceRequest confluenceRequest = new WeeklyConfluenceRequest(
-                        successRows, startDate.toString(), endDate.toString());
+                        teamId, successRows, startDate.toString(), endDate.toString());
                 String pageUrl = uploadWeeklyReportUseCase.upload(confluenceRequest);
                 jobLog.updateSuccessUrls(pageUrl);
+                log.info("Confluence 업로드 성공: teamId={}, pageUrl={}", teamId, pageUrl);
             } catch (Exception e) {
-                log.error("Confluence 업로드 실패: {}", e.getMessage());
+                log.error("Confluence 업로드 실패: teamId={}, error={}", teamId, e.getMessage());
                 jobLog.markSuccessAsFailed(e.getMessage());
             }
         }

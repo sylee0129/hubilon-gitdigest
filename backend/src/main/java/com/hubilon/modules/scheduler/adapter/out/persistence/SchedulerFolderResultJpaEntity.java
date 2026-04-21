@@ -36,7 +36,7 @@ public class SchedulerFolderResultJpaEntity {
 
     @Comment("에러 메시지 (실패 시)")
     @Lob
-    @Column(name = "error_message", columnDefinition = "LONGTEXT")
+    @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
 
     @Comment("Confluence 페이지 URL")

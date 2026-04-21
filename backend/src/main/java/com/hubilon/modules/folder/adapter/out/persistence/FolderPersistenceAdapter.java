@@ -163,7 +163,9 @@ public class FolderPersistenceAdapter implements FolderCommandPort, FolderQueryP
         return new FolderResult(
                 entity.getId(), entity.getName(),
                 entity.getCategory().getId(), entity.getCategory().getName(),
-                entity.getStatus(), entity.getSortOrder(), members, workProjects
+                entity.getStatus(), entity.getSortOrder(),
+                entity.getTeam() != null ? entity.getTeam().getId() : null,
+                members, workProjects
         );
     }
 }

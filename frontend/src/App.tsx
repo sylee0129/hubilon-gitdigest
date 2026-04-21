@@ -3,6 +3,7 @@ import ReportDashboard from './pages/ReportDashboard'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import SchedulerPage from './pages/SchedulerPage'
+import ConfluenceAdminPage from './pages/admin/confluence/ConfluenceAdminPage'
 import ProtectedRoute from './components/common/ProtectedRoute'
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<ReportDashboard />} />
           <Route path="/scheduler" element={<SchedulerPage />} />
+          <Route path="/admin/confluence" element={<ConfluenceAdminPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -550,6 +550,17 @@ export default function Sidebar({ width = 240 }: Props) {
               Confluence
             </a>
           )}
+          <button
+            className={styles.navItem}
+            onClick={() => navigate('/admin/confluence')}
+          >
+            <svg className={styles.navIcon} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z" fill="currentColor" fillOpacity=".15" stroke="currentColor" strokeWidth="1.2"/>
+              <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+              <path d="M6.5 9.5h3M8 9.5v3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+            </svg>
+            Confluence 설정
+          </button>
         </nav>
 
         <div className={styles.divider} />

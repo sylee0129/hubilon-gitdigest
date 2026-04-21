@@ -1,83 +1,99 @@
 package com.hubilon.modules.confluence.application.service;
 
-import com.hubilon.common.exception.custom.ExternalServiceException;
 import com.hubilon.common.exception.custom.NotFoundException;
+import com.hubilon.modules.category.domain.model.Category;
+import com.hubilon.modules.category.domain.port.out.CategoryQueryPort;
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest;
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest.WeeklyReportRowDto;
 import com.hubilon.modules.confluence.adapter.out.external.ConfluenceApiClient;
-import com.hubilon.modules.confluence.adapter.out.external.ConfluenceApiClient.ConfluencePage;
+import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceSpaceConfigJpaEntity;
+import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceSpaceConfigRepository;
+import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceTeamConfigJpaEntity;
+import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceTeamConfigRepository;
 import com.hubilon.modules.confluence.application.port.in.UploadWeeklyReportUseCase;
-import com.hubilon.modules.confluence.config.ConfluenceProperties;
+import com.hubilon.modules.team.adapter.out.persistence.TeamJpaEntity;
+import com.hubilon.modules.team.adapter.out.persistence.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase {
 
-    private static final Map<String, Integer> CATEGORY_ORDER = Map.of(
-            "DEVELOPMENT", 1,
-            "NEW_BUSINESS", 2,
-            "OTHER", 3
-    );
+    private record CategoryMeta(Map<Long, Integer> order, Map<Long, String> label) {}
 
-    private static final Map<String, String> CATEGORY_LABEL = Map.of(
-            "DEVELOPMENT", "개발사업",
-            "NEW_BUSINESS", "신규추진사업",
-            "OTHER", "기타"
-    );
-
-    private final ConfluenceProperties properties;
-    private final ConfluenceApiClient confluenceApiClient;
+    private final TeamRepository teamRepository;
+    private final ConfluenceSpaceConfigRepository spaceConfigRepository;
+    private final ConfluenceTeamConfigRepository teamConfigRepository;
+    private final ConfluenceClientCache confluenceClientCache;
+    private final CategoryQueryPort categoryQueryPort;
 
     @Override
     public String upload(WeeklyConfluenceRequest request) {
+        Long teamId = request.teamId();
+        if (teamId == null) {
+            throw new NotFoundException("teamId가 필요합니다.");
+        }
+
+        TeamJpaEntity team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new NotFoundException("팀을 찾을 수 없습니다. teamId=" + teamId));
+        Long deptId = team.getDeptId();
+
+        ConfluenceSpaceConfigJpaEntity spaceConfig = spaceConfigRepository.findByDeptId(deptId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Confluence Space 설정이 없습니다. deptId=" + deptId));
+
+        ConfluenceApiClient client = confluenceClientCache.get(deptId);
+
+        ConfluenceTeamConfigJpaEntity teamConfig = teamConfigRepository.findByTeamId(teamId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Confluence Team 설정이 없습니다. teamId=" + teamId));
+
+        String spaceKey = spaceConfig.getSpaceKey();
+        String parentPageId = teamConfig.getParentPageId();
+
         LocalDate startDate = LocalDate.parse(request.startDate());
         LocalDate endDate = LocalDate.parse(request.endDate());
 
-        String parentId;
-        if (properties.parentPageId() != null && !properties.parentPageId().isBlank()) {
-            parentId = properties.parentPageId();
-        } else {
-            parentId = confluenceApiClient
-                    .findPageByTitle(properties.spaceKey(), properties.parentPageTitle())
-                    .map(ConfluencePage::id)
-                    .orElseThrow(() -> new NotFoundException(
-                            "Confluence 상위 페이지를 찾을 수 없습니다: " + properties.parentPageTitle()
-                    ));
-        }
-
+        CategoryMeta categoryMeta = loadCategoryMeta();
         String pageTitle = buildPageTitle(startDate);
-        String xhtml = buildXhtml(request.rows(), startDate, endDate);
+        String xhtml = buildXhtml(request.rows(), startDate, endDate, categoryMeta);
 
-        return confluenceApiClient.findPageByTitle(properties.spaceKey(), pageTitle)
+        return client.findPageByTitle(spaceKey, pageTitle)
                 .map(page -> {
                     log.info("Confluence 페이지 수정: title={}, id={}", pageTitle, page.id());
-                    return confluenceApiClient.updatePage(page.id(), page.version() + 1, pageTitle, xhtml);
+                    return client.updatePage(page.id(), page.version() + 1, pageTitle, xhtml);
                 })
                 .orElseGet(() -> {
-                    log.info("Confluence 페이지 생성: title={}, parentId={}", pageTitle, parentId);
-                    return confluenceApiClient.createPage(properties.spaceKey(), parentId, pageTitle, xhtml);
+                    log.info("Confluence 페이지 생성: title={}, parentId={}", pageTitle, parentPageId);
+                    return client.createPage(spaceKey, parentPageId, pageTitle, xhtml);
                 });
+    }
+
+    private CategoryMeta loadCategoryMeta() {
+        List<Category> categories = categoryQueryPort.findAllOrderBySortOrder();
+        Map<Long, Integer> order = categories.stream()
+                .collect(Collectors.toMap(Category::getId, Category::getSortOrder));
+        Map<Long, String> label = categories.stream()
+                .collect(Collectors.toMap(Category::getId, Category::getName));
+        return new CategoryMeta(order, label);
     }
 
     private String buildPageTitle(LocalDate startDate) {
         int dayOfMonth = startDate.getDayOfMonth();
-        int firstDayOfWeekValue = startDate.withDayOfMonth(1).getDayOfWeek().getValue() % 7; // 0=Sunday
+        int firstDayOfWeekValue = startDate.withDayOfMonth(1).getDayOfWeek().getValue() % 7;
         int weekNumber = (int) Math.ceil((dayOfMonth + firstDayOfWeekValue) / 7.0);
         return startDate.getMonthValue() + "월_" + weekNumber + "주차_주간보고";
     }
 
-    private String buildXhtml(List<WeeklyReportRowDto> rows, LocalDate startDate, LocalDate endDate) {
+    private String buildXhtml(List<WeeklyReportRowDto> rows, LocalDate startDate, LocalDate endDate,
+                               CategoryMeta categoryMeta) {
         int month = startDate.getMonthValue();
         int dayOfMonth = startDate.getDayOfMonth();
         int firstDayOfWeekValue = startDate.withDayOfMonth(1).getDayOfWeek().getValue() % 7;
@@ -91,14 +107,15 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         String nextStartMDD = formatMDD(nextStart);
         String nextEndMDD = formatMDD(nextEnd);
 
-        // 카테고리 정렬 후 그룹핑
         List<WeeklyReportRowDto> sorted = rows.stream()
-                .sorted(Comparator.comparingInt(r -> CATEGORY_ORDER.getOrDefault(r.category(), 99)))
+                .sorted(Comparator.comparingInt(r ->
+                        r.categoryId() != null ? categoryMeta.order().getOrDefault(r.categoryId(), 99) : 99))
                 .toList();
 
-        Map<String, List<WeeklyReportRowDto>> grouped = new LinkedHashMap<>();
+        Map<Long, List<WeeklyReportRowDto>> grouped = new LinkedHashMap<>();
         for (WeeklyReportRowDto row : sorted) {
-            grouped.computeIfAbsent(row.category(), k -> new java.util.ArrayList<>()).add(row);
+            Long key = row.categoryId() != null ? row.categoryId() : -1L;
+            grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(row);
         }
 
         StringBuilder sb = new StringBuilder();
@@ -113,7 +130,6 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         sb.append("  </colgroup>\n");
         sb.append("  <tbody>\n");
 
-        // 헤더 행
         sb.append("    <tr>\n");
         sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\">사업구분</th>\n");
         sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\">프로젝트명</th>\n");
@@ -124,11 +140,20 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\">담당자</th>\n");
         sb.append("    </tr>\n");
 
-        // 데이터 행
-        for (Map.Entry<String, List<WeeklyReportRowDto>> entry : grouped.entrySet()) {
-            String category = entry.getKey();
+        for (Map.Entry<Long, List<WeeklyReportRowDto>> entry : grouped.entrySet()) {
+            Long categoryId = entry.getKey();
             List<WeeklyReportRowDto> categoryRows = entry.getValue();
-            String label = CATEGORY_LABEL.getOrDefault(category, escape(category));
+
+            String label;
+            if (categoryId == -1L) {
+                WeeklyReportRowDto first = categoryRows.get(0);
+                label = first.categoryName() != null ? first.categoryName() : "기타";
+            } else {
+                WeeklyReportRowDto first = categoryRows.get(0);
+                label = categoryMeta.label().getOrDefault(categoryId,
+                        first.categoryName() != null ? first.categoryName() : "기타");
+            }
+
             int rowspan = categoryRows.size();
 
             for (int i = 0; i < categoryRows.size(); i++) {

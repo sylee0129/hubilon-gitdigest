@@ -1,34 +1,14 @@
--- ShedLock: 분산 스케줄러 락 테이블
-CREATE TABLE IF NOT EXISTS shedlock (
-    name       VARCHAR(64)  NOT NULL,
-    lock_until TIMESTAMP(3) NOT NULL,
-    locked_at  TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    locked_by  VARCHAR(255) NOT NULL,
-    PRIMARY KEY (name)
-);
+-- 초기 부서 데이터
+INSERT INTO departments (name) VALUES ('플랫폼개발실'), ('서비스개발실'), ('솔루션연구소');
 
--- 스케줄러 잡 실행 로그
-CREATE TABLE IF NOT EXISTS scheduler_job_logs (
-    id                 BIGINT      NOT NULL AUTO_INCREMENT,
-    executed_at        TIMESTAMP   NOT NULL,
-    status             VARCHAR(20) NOT NULL,
-    total_folder_count INT         NOT NULL DEFAULT 0,
-    success_count      INT         NOT NULL DEFAULT 0,
-    fail_count         INT         NOT NULL DEFAULT 0,
-    created_at         TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
-);
+-- 초기 카테고리 데이터
+INSERT INTO categories (name, sort_order) VALUES ('개발사업', 0), ('신규추진사업', 1), ('기타', 2);
 
--- 스케줄러 폴더별 처리 결과
-CREATE TABLE IF NOT EXISTS scheduler_folder_results (
-    id                  BIGINT       NOT NULL AUTO_INCREMENT,
-    job_log_id          BIGINT       NOT NULL,
-    folder_id           BIGINT       NOT NULL,
-    folder_name         VARCHAR(255) NOT NULL,
-    success             BOOLEAN      NOT NULL,
-    error_message       LONGTEXT,
-    confluence_page_url VARCHAR(500),
-    PRIMARY KEY (id),
-    CONSTRAINT fk_sfr_job_log FOREIGN KEY (job_log_id)
-        REFERENCES scheduler_job_logs (id) ON DELETE CASCADE
-);
+-- 초기 팀 데이터
+INSERT INTO teams (name, dept_id) VALUES
+    ('플랫폼개발팀',  (SELECT id FROM departments WHERE name = '플랫폼개발실')),
+    ('서비스개발1팀', (SELECT id FROM departments WHERE name = '서비스개발실')),
+    ('서비스개발2팀', (SELECT id FROM departments WHERE name = '서비스개발실')),
+    ('서비스개발3팀', (SELECT id FROM departments WHERE name = '서비스개발실')),
+    ('솔루션개발1팀', (SELECT id FROM departments WHERE name = '솔루션연구소')),
+    ('솔루션개발2팀', (SELECT id FROM departments WHERE name = '솔루션연구소'));

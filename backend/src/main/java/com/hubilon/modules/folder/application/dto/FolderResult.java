@@ -11,6 +11,7 @@ public record FolderResult(
         String categoryName,
         FolderStatus status,
         int sortOrder,
+        Long teamId,
         List<FolderMemberResult> members,
         List<WorkProjectResult> workProjects
 ) {}

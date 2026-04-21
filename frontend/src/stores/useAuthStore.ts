@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import authApi from '../services/authApi'
-import { queryClient } from '../main'
+import { queryClient } from '../queryClient'
 
 interface User {
   id: number
