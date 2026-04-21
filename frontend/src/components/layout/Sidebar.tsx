@@ -22,6 +22,7 @@ import { useReportStore } from '../../stores/useReportStore'
 import { useSidebarStore } from '../../stores/sidebarStore'
 import { useAuthStore } from '../../stores/useAuthStore'
 import AddProjectModal from '../project/AddProjectModal'
+import AddGitHubProjectModal from '../project/AddGitHubProjectModal'
 import AssignFolderModal from '../project/AssignFolderModal'
 import FolderModal from '../folder/FolderModal'
 import CategoryModal from '../folder/CategoryModal'
@@ -322,6 +323,7 @@ export default function Sidebar({ width = 240 }: Props) {
   const { isCollapsed, toggleSidebar } = useSidebarStore()
   const teamId = useAuthStore((s) => s.user?.teamId)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isGitHubModalOpen, setIsGitHubModalOpen] = useState(false)
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false)
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
   const [editingFolder, setEditingFolder] = useState<Folder | undefined>(undefined)
@@ -570,6 +572,9 @@ export default function Sidebar({ width = 240 }: Props) {
           <button className={styles.addFolderBtn} onClick={() => setIsModalOpen(true)}>
             + GitLab 프로젝트 추가
           </button>
+          <button className={styles.addFolderBtn} onClick={() => setIsGitHubModalOpen(true)}>
+            + GitHub 프로젝트 추가
+          </button>
         </div>
 
         <nav className={styles.projectList}>
@@ -752,6 +757,10 @@ export default function Sidebar({ width = 240 }: Props) {
 
       {isModalOpen && (
         <AddProjectModal onClose={() => setIsModalOpen(false)} />
+      )}
+
+      {isGitHubModalOpen && (
+        <AddGitHubProjectModal onClose={() => setIsGitHubModalOpen(false)} />
       )}
 
       {isFolderModalOpen && (

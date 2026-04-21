@@ -31,6 +31,7 @@ public class ProjectMoveFolderService implements ProjectMoveFolderUseCase {
                 .sortOrder(existing.getSortOrder())
                 .folderId(folderId)
                 .teamId(existing.getTeamId())
+                .gitProvider(existing.getGitProvider())
                 .build();
         projectCommandPort.save(updated);
     }

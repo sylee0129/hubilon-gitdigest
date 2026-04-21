@@ -18,6 +18,7 @@ public class Project {
     private int sortOrder;
     private Long folderId;
     private Long teamId;
+    private GitProvider gitProvider;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

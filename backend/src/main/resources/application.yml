@@ -33,6 +33,13 @@ gitlab:
     redirect-uri: ${GITLAB_OAUTH_REDIRECT_URI:http://localhost:8080/api/oauth/gitlab/callback}
     frontend-origin: ${FRONTEND_ORIGIN:http://localhost:3000}
 
+github:
+  oauth:
+    client-id: ${GITHUB_OAUTH_CLIENT_ID}
+    client-secret: ${GITHUB_OAUTH_CLIENT_SECRET}
+    redirect-uri: ${GITHUB_OAUTH_REDIRECT_URI:http://localhost:8080/api/oauth/github/callback}
+    frontend-origin: ${FRONTEND_ORIGIN:http://localhost:3000}
+
 ai:
   summary:
     enabled: true

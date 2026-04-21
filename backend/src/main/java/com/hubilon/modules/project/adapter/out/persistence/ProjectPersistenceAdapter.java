@@ -76,6 +76,7 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
                 .sortOrder(project.getSortOrder())
                 .folderId(project.getFolderId())
                 .teamId(project.getTeamId())
+                .gitProvider(project.getGitProvider())
                 .build();
     }
 
@@ -90,6 +91,7 @@ public class ProjectPersistenceAdapter implements ProjectCommandPort, ProjectQue
                 .sortOrder(entity.getSortOrder())
                 .folderId(entity.getFolderId())
                 .teamId(entity.getTeamId())
+                .gitProvider(entity.getGitProvider())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();

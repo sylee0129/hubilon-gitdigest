@@ -3,18 +3,21 @@ package com.hubilon.modules.project.adapter.in.web;
 import com.hubilon.modules.project.application.dto.ProjectRegisterCommand;
 import com.hubilon.modules.project.application.dto.ProjectRegisterResult;
 import com.hubilon.modules.project.application.dto.ProjectSearchResult;
+import com.hubilon.modules.project.domain.model.GitProvider;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProjectWebMapper {
 
     public ProjectRegisterCommand toCommand(ProjectRegisterRequest request, Long teamId) {
+        GitProvider gitProvider = request.gitProvider() != null ? request.gitProvider() : GitProvider.GITLAB;
         return new ProjectRegisterCommand(
                 request.gitlabUrl(),
                 request.gitlabProjectId(),
                 request.accessToken(),
                 request.authType(),
-                teamId
+                teamId,
+                gitProvider
         );
     }
 

@@ -9,28 +9,42 @@ import com.hubilon.modules.report.application.mapper.ReportAppMapper;
 import com.hubilon.modules.report.domain.model.CommitInfo;
 import com.hubilon.modules.report.domain.model.Report;
 import com.hubilon.modules.report.domain.port.in.ReportAnalyzeUseCase;
-import com.hubilon.modules.report.domain.port.out.GitLabPort;
+import com.hubilon.modules.project.domain.model.GitProvider;
+import com.hubilon.modules.report.domain.port.out.GitCommitPort;
 import com.hubilon.modules.report.domain.port.out.ReportCommandPort;
 import com.hubilon.modules.report.domain.port.out.ReportQueryPort;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ReportAnalyzeService implements ReportAnalyzeUseCase {
 
     private final ProjectQueryPort projectQueryPort;
     private final ReportQueryPort reportQueryPort;
     private final ReportCommandPort reportCommandPort;
-    private final GitLabPort gitLabPort;
+    private final Map<GitProvider, GitCommitPort> commitPortMap;
     private final ReportAppMapper reportAppMapper;
+
+    public ReportAnalyzeService(List<GitCommitPort> commitPorts,
+                                 ProjectQueryPort projectQueryPort,
+                                 ReportQueryPort reportQueryPort,
+                                 ReportCommandPort reportCommandPort,
+                                 ReportAppMapper reportAppMapper) {
+        this.commitPortMap = commitPorts.stream()
+                .collect(Collectors.toMap(GitCommitPort::supports, p -> p));
+        this.projectQueryPort = projectQueryPort;
+        this.reportQueryPort = reportQueryPort;
+        this.reportCommandPort = reportCommandPort;
+        this.reportAppMapper = reportAppMapper;
+    }
 
     @Transactional
     @Override
@@ -74,10 +88,15 @@ public class ReportAnalyzeService implements ReportAnalyzeUseCase {
             }
         }
 
-        // GitLab에서 커밋 조회
-        log.info("Fetching commits from GitLab for project={}, period={} ~ {}",
-                project.getId(), command.startDate(), command.endDate());
-        List<CommitInfo> commits = gitLabPort.fetchCommits(
+        // Git provider에 따라 커밋 조회
+        GitProvider provider = project.getGitProvider() != null ? project.getGitProvider() : GitProvider.GITLAB;
+        GitCommitPort commitPort = commitPortMap.get(provider);
+        if (commitPort == null) {
+            throw new IllegalStateException("지원하지 않는 Git provider: " + provider);
+        }
+        log.info("Fetching commits from {} for project={}, period={} ~ {}",
+                provider, project.getId(), command.startDate(), command.endDate());
+        List<CommitInfo> commits = commitPort.fetchCommits(
                 project.getGitlabProjectId(),
                 project.getGitlabUrl(),
                 project.getAccessToken(),

@@ -48,6 +48,7 @@ export interface CreateProjectRequest {
   gitlabProjectId?: number
   accessToken?: string
   authType: 'PAT' | 'OAUTH'
+  gitProvider?: 'GITLAB' | 'GITHUB'
 }
 
 export interface UpdateSummaryRequest {

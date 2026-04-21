@@ -48,7 +48,7 @@ class WeeklyReportSchedulerServiceTest {
     WeeklyReportSchedulerService weeklyReportSchedulerService;
 
     private WeeklyReportRowDto sampleRow() {
-        return new WeeklyReportRowDto(1L, "개발사업", "개발팀", List.of(), "진행 내용", "계획 내용");
+        return new WeeklyReportRowDto(1L, 1L, "개발사업", "개발팀", List.of(), "진행 내용", "계획 내용");
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.hubilon.modules.project.adapter.out.persistence;
 
+import com.hubilon.modules.project.domain.model.GitProvider;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,6 +55,11 @@ public class ProjectJpaEntity {
     @Column(name = "team_id")
     private Long teamId;
 
+    @Comment("Git 제공자 (GITLAB/GITHUB)")
+    @Column(name = "git_provider", nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'GITLAB'")
+    @Enumerated(EnumType.STRING)
+    private GitProvider gitProvider;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -67,7 +73,8 @@ public class ProjectJpaEntity {
 
     @Builder
     public ProjectJpaEntity(Long id, String name, String gitlabUrl, String accessToken,
-                             AuthType authType, Long gitlabProjectId, int sortOrder, Long folderId, Long teamId) {
+                             AuthType authType, Long gitlabProjectId, int sortOrder, Long folderId, Long teamId,
+                             GitProvider gitProvider) {
         this.id = id;
         this.name = name;
         this.gitlabUrl = gitlabUrl;
@@ -77,6 +84,7 @@ public class ProjectJpaEntity {
         this.sortOrder = sortOrder;
         this.folderId = folderId;
         this.teamId = teamId;
+        this.gitProvider = gitProvider != null ? gitProvider : GitProvider.GITLAB;
     }
 
     public void updateSortOrder(int sortOrder) {

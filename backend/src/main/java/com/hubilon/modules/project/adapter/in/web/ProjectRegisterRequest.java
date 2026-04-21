@@ -1,5 +1,6 @@
 package com.hubilon.modules.project.adapter.in.web;
 
+import com.hubilon.modules.project.domain.model.GitProvider;
 import com.hubilon.modules.project.domain.model.Project.AuthType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,5 +14,7 @@ public record ProjectRegisterRequest(
         String accessToken,   // 퍼블릭 프로젝트는 생략 가능
 
         @NotNull(message = "인증 방식은 필수입니다.")
-        AuthType authType
+        AuthType authType,
+
+        GitProvider gitProvider  // null이면 GITLAB으로 처리
 ) {}

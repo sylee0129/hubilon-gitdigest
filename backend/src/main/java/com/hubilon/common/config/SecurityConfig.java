@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/api/users").permitAll()
                         .requestMatchers("/api/teams").permitAll()
                         .requestMatchers(GET, "/api/categories").permitAll()
+                        .requestMatchers("/api/oauth/github/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/scheduler/**").authenticated()

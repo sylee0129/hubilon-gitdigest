@@ -1,8 +1,11 @@
 package com.hubilon.modules.report.adapter.out.gitlab;
 
 import com.hubilon.common.exception.custom.ExternalServiceException;
+import com.hubilon.modules.project.domain.model.GitProvider;
+import com.hubilon.modules.project.domain.port.out.GitProviderAdapter;
 import com.hubilon.modules.report.domain.model.CommitInfo;
 import com.hubilon.modules.report.domain.model.FileChange;
+import com.hubilon.modules.report.domain.port.out.GitCommitPort;
 import com.hubilon.modules.report.domain.port.out.GitLabPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +26,7 @@ import java.util.function.Consumer;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class GitLabAdapter implements GitLabPort {
+public class GitLabAdapter implements GitLabPort, GitCommitPort, GitProviderAdapter {
 
     private static final DateTimeFormatter ISO_FMT = DateTimeFormatter.ISO_DATE_TIME;
 
@@ -123,6 +126,45 @@ public class GitLabAdapter implements GitLabPort {
             return gitlabWebClient;
         }
     }
+
+    // --- GitProviderAdapter 인터페이스 구현 ---
+
+    @Override
+    public Long resolveProjectId(String repoUrl, String token) {
+        String projectPath = extractProjectPath(repoUrl);
+        return resolveProjectId(projectPath, token, "OAUTH");
+    }
+
+    @Override
+    public String resolveProjectName(String repoUrl, String token) {
+        String projectPath = extractProjectPath(repoUrl);
+        return resolveProjectName(projectPath, token, "OAUTH");
+    }
+
+    @Override
+    public GitProvider supports() {
+        return GitProvider.GITLAB;
+    }
+
+    private String extractProjectPath(String gitlabUrl) {
+        String[] parts = gitlabUrl.split("/", -1);
+        int hostParts = 3; // https:, "", gitlab.com
+        if (parts.length <= hostParts) {
+            return gitlabUrl;
+        }
+        StringBuilder path = new StringBuilder();
+        for (int i = hostParts; i < parts.length; i++) {
+            if (i > hostParts) path.append("/");
+            path.append(parts[i]);
+        }
+        String result = path.toString();
+        if (result.endsWith(".git")) {
+            result = result.substring(0, result.length() - 4);
+        }
+        return result;
+    }
+
+    // --- 기존 메서드 (authType 포함 오버로드) ---
 
     public Long resolveProjectId(String projectPath, String accessToken, String authType) {
         try {

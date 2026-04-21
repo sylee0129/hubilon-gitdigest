@@ -46,7 +46,7 @@ class WeeklyReportProcessorTest {
     }
 
     private WeeklyReportRowDto sampleRow(String progressSummary, String planSummary) {
-        return new WeeklyReportRowDto(1L, "개발", "개발팀 폴더", List.of(), progressSummary, planSummary);
+        return new WeeklyReportRowDto(1L, 1L, "개발", "개발팀 폴더", List.of(), progressSummary, planSummary);
     }
 
     @Test

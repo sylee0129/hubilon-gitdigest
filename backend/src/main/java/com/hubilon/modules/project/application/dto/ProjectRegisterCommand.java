@@ -1,5 +1,6 @@
 package com.hubilon.modules.project.application.dto;
 
+import com.hubilon.modules.project.domain.model.GitProvider;
 import com.hubilon.modules.project.domain.model.Project.AuthType;
 
 public record ProjectRegisterCommand(
@@ -7,5 +8,6 @@ public record ProjectRegisterCommand(
         Long gitlabProjectId,
         String accessToken,
         AuthType authType,
-        Long teamId
+        Long teamId,
+        GitProvider gitProvider
 ) {}
