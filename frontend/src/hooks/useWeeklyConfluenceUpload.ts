@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useFolders } from './useFolders'
 import { useReportStore } from '../stores/useReportStore'
 import { useAuthStore } from '../stores/useAuthStore'
@@ -6,6 +7,7 @@ import { buildWeeklyReportRows } from '../utils/buildWeeklyReportRows'
 import { confluenceApi } from '../services/confluenceApi'
 
 export function useWeeklyConfluenceUpload() {
+  const queryClient = useQueryClient()
   const { startDate, endDate } = useReportStore()
   const { data: folders } = useFolders('IN_PROGRESS')
   const user = useAuthStore((s) => s.user)
@@ -26,6 +28,7 @@ export function useWeeklyConfluenceUpload() {
         startDate,
         endDate,
       })
+      await queryClient.invalidateQueries({ queryKey: ['folder-summary'] })
       window.open(pageUrl, '_blank')
     } finally {
       setLoading(false)

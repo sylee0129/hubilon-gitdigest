@@ -4,12 +4,12 @@ server:
 spring:
   datasource:
     url: ${DB_URL}
-    driver-class-name: org.mariadb.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
@@ -18,16 +18,34 @@ spring:
           time_zone: Asia/Seoul
 
 gitlab:
+  api:
+    base-url: https://gitlab.com
   oauth:
+    client-id: ${GITLAB_OAUTH_CLIENT_ID}
+    client-secret: ${GITLAB_OAUTH_CLIENT_SECRET}
     redirect-uri: ${GITLAB_OAUTH_REDIRECT_URI:http://192.168.10.30:8090/api/oauth/gitlab/callback}
     frontend-origin: ${FRONTEND_ORIGIN:http://192.168.10.30:3300}
+
+github:
+  oauth:
+    client-id: ${GITHUB_OAUTH_CLIENT_ID}
+    client-secret: ${GITHUB_OAUTH_CLIENT_SECRET}
+    redirect-uri: ${GITHUB_OAUTH_REDIRECT_URI:http://192.168.10.30:8090/api/oauth/github/callback}
+    frontend-origin: ${FRONTEND_ORIGIN:http://192.168.10.30:3300}
+
+jwt:
+  secret: ${JWT_SECRET:local-dev-secret-key-min-32-chars-!!}
+  access-token-expiry: 3600
+  refresh-token-expiry: 604800
 
 ai:
   summary:
     enabled: true
+    api-key: ${GEMINI_API_KEY:}
+    model: gemini-2.5-flash
 
 
 scheduler:
   weekly-report:
-    enabled: true
-    cron: "0 0 19 * * THU"
+    enabled: false
+    cron: "0 0 7 * * FRI"

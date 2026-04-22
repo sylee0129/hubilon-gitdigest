@@ -372,10 +372,12 @@ export default function Sidebar({ width = 240 }: Props) {
     setSelectedProject(id)
     setTab('individual')
     setSelectedFolder(null)
+    navigate('/')
   }
 
   const handleFolderSelect = (id: number) => {
     setSelectedFolder(id)
+    navigate('/')
   }
 
   const handleDelete = (e: React.MouseEvent, id: number) => {
