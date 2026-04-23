@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ReportJpaRepository extends JpaRepository<ReportJpaEntity, Long> {
 
     @Query("SELECT r FROM ReportJpaEntity r WHERE r.projectId = :projectId " +
-           "AND r.startDate >= :startDate AND r.endDate <= :endDate")
+           "AND r.startDate <= :endDate AND r.endDate >= :startDate")
     List<ReportJpaEntity> findByProjectIdAndDateRange(
             @Param("projectId") Long projectId,
             @Param("startDate") LocalDate startDate,
@@ -19,7 +19,7 @@ public interface ReportJpaRepository extends JpaRepository<ReportJpaEntity, Long
     );
 
     @Query("SELECT r FROM ReportJpaEntity r WHERE r.projectId IN :projectIds " +
-           "AND r.startDate >= :startDate AND r.endDate <= :endDate")
+           "AND r.startDate <= :endDate AND r.endDate >= :startDate")
     List<ReportJpaEntity> findByProjectIdsAndDateRange(
             @Param("projectIds") List<Long> projectIds,
             @Param("startDate") LocalDate startDate,

@@ -45,6 +45,35 @@
   color: var(--color-text-primary);
 }
 
+.triggerSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.teamSelect {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+  cursor: pointer;
+}
+
+.teamSelect:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.teamSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .triggerBtn {
   padding: 9px 18px;
   background-color: var(--color-primary);
@@ -64,6 +93,37 @@
 .triggerBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* ─── 탭 ──────────────────────────────────────────────────────────────────── */
+
+.tabList {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tabBtn {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+}
+
+.tabBtn:hover {
+  color: var(--color-text-primary);
+}
+
+.tabActive {
+  color: var(--color-primary) !important;
+  border-bottom-color: var(--color-primary) !important;
+  font-weight: 600;
 }
 
 /* ─── 상태 컨테이너 ──────────────────────────────────────────────────────── */
@@ -193,6 +253,13 @@
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
+}
+
+/* ─── 팀 셀 ──────────────────────────────────────────────────────────────── */
+
+.teamCell {
+  color: var(--color-text-secondary);
+  font-size: 13px;
 }
 
 /* ─── 텍스트 색상 ────────────────────────────────────────────────────────── */

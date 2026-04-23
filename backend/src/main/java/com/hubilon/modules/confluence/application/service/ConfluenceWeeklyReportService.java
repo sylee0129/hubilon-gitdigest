@@ -22,7 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -69,10 +71,14 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         LocalDate startDate = LocalDate.parse(request.startDate());
         LocalDate endDate = LocalDate.parse(request.endDate());
 
+        // 헤더 표시용: 월요일~금요일 (startDate가 Mon이면 그대로, 아니면 다음 Mon으로)
+        LocalDate displayMonday = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+        LocalDate displayFriday = displayMonday.plusDays(4);
+
         CategoryMeta categoryMeta = loadCategoryMeta();
         List<WeeklyReportRowDto> rows = resolveRowSummaries(request.rows(), startDate, endDate);
-        String pageTitle = buildPageTitle(startDate, team.getName());
-        String xhtml = buildXhtml(rows, startDate, endDate, categoryMeta, team.getName());
+        String pageTitle = buildPageTitle(displayMonday, team.getName());
+        String xhtml = buildXhtml(rows, displayMonday, displayFriday, categoryMeta, team.getName());
 
         return client.findPageByTitle(spaceKey, parentPageId, pageTitle)
                 .map(page -> {

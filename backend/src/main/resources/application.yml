@@ -61,7 +61,7 @@ springdoc:
 scheduler:
   weekly-report:
     enabled: true
-    cron: "0 0 19 * * THU"
+    cron: "0 55 9 * * THU"
 #    cron: "0 40 9 * * FRI"
 
 

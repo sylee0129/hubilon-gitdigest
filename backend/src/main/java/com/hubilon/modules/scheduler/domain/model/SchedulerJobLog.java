@@ -19,6 +19,8 @@ import static lombok.AccessLevel.PROTECTED;
 public class SchedulerJobLog {
 
     private Long id;
+    private Long teamId;
+    private String teamName;
     private LocalDateTime executedAt;
     private SchedulerJobStatus status;
     private int totalFolderCount;
@@ -29,8 +31,10 @@ public class SchedulerJobLog {
     @Builder.Default
     private List<SchedulerFolderResult> folderResults = new ArrayList<>();
 
-    public static SchedulerJobLog createRunning(int totalFolderCount) {
+    public static SchedulerJobLog createRunning(Long teamId, String teamName, int totalFolderCount) {
         return SchedulerJobLog.builder()
+                .teamId(teamId)
+                .teamName(teamName)
                 .executedAt(LocalDateTime.now())
                 .status(SchedulerJobStatus.RUNNING)
                 .totalFolderCount(totalFolderCount)

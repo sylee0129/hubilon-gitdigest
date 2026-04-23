@@ -26,6 +26,14 @@ public class SchedulerJobLogJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Comment("팀 ID")
+    @Column(name = "team_id")
+    private Long teamId;
+
+    @Comment("팀 이름")
+    @Column(name = "team_name", length = 100)
+    private String teamName;
+
     @Comment("실행 시각")
     @Column(name = "executed_at", nullable = false)
     private LocalDateTime executedAt;
@@ -55,9 +63,12 @@ public class SchedulerJobLogJpaEntity {
     private List<SchedulerFolderResultJpaEntity> folderResults = new ArrayList<>();
 
     @Builder
-    public SchedulerJobLogJpaEntity(Long id, LocalDateTime executedAt, SchedulerJobStatus status,
-                                     int totalFolderCount, int successCount, int failCount) {
+    public SchedulerJobLogJpaEntity(Long id, Long teamId, String teamName, LocalDateTime executedAt,
+                                     SchedulerJobStatus status, int totalFolderCount,
+                                     int successCount, int failCount) {
         this.id = id;
+        this.teamId = teamId;
+        this.teamName = teamName;
         this.executedAt = executedAt;
         this.status = status;
         this.totalFolderCount = totalFolderCount;

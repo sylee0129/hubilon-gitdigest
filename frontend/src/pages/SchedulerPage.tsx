@@ -2,7 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import Header from '../components/layout/Header'
 import SidebarLayout from '../components/layout/SidebarLayout'
 import Toast from '../components/common/Toast'
+import SchedulerTeamSettingsTab from '../components/scheduler/SchedulerTeamSettingsTab'
 import { schedulerApi, type SchedulerLog, type SchedulerLogDetail, type SchedulerStatus } from '../services/schedulerApi'
+import { useSchedulerTeamConfigs } from '../hooks/useSchedulerTeamConfigs'
+import { useAuthStore } from '../stores/useAuthStore'
 import styles from './SchedulerPage.module.css'
 
 // ─── 상태 뱃지 ────────────────────────────────────────────────────────────────
@@ -62,7 +65,6 @@ function DetailModal({ detail, onClose }: DetailModalProps) {
     return () => document.removeEventListener('keydown', handler)
   }, [onClose])
 
-  // 성공한 폴더들의 공통 Confluence URL (모두 동일한 페이지)
   const confluenceUrl = detail.folderResults.find((fr) => fr.success && fr.confluencePageUrl)?.confluencePageUrl ?? null
 
   return (
@@ -82,6 +84,12 @@ function DetailModal({ detail, onClose }: DetailModalProps) {
             <span className={styles.metaLabel}>상태</span>
             <StatusBadge status={detail.status} />
           </div>
+          {detail.teamName && (
+            <div className={styles.metaItem}>
+              <span className={styles.metaLabel}>팀</span>
+              <span className={styles.metaValue}>{detail.teamName}</span>
+            </div>
+          )}
           <div className={styles.metaItem}>
             <span className={styles.metaLabel}>대상 폴더</span>
             <span className={styles.metaValue}>{detail.totalFolderCount}개</span>
@@ -98,7 +106,6 @@ function DetailModal({ detail, onClose }: DetailModalProps) {
           </div>
         </div>
 
-        {/* 공통 Confluence 링크 — 성공 폴더가 있을 때만 표시 */}
         {confluenceUrl && (
           <a
             href={confluenceUrl}
@@ -140,9 +147,69 @@ function DetailModal({ detail, onClose }: DetailModalProps) {
   )
 }
 
+// ─── 수동 실행 영역 ───────────────────────────────────────────────────────────
+
+type ActiveTab = 'logs' | 'team-settings'
+
+interface TriggerSectionProps {
+  isAdmin: boolean
+  isTriggerLoading: boolean
+  onTrigger: (teamId?: number) => void
+}
+
+function TriggerSection({ isAdmin, isTriggerLoading, onTrigger }: TriggerSectionProps) {
+  const { data: teamConfigs } = useSchedulerTeamConfigs()
+  const [selectedTeamId, setSelectedTeamId] = useState<number | ''>('')
+
+  useEffect(() => {
+    if (isAdmin && teamConfigs && teamConfigs.length > 0 && selectedTeamId === '') {
+      setSelectedTeamId(teamConfigs[0].teamId)
+    }
+  }, [isAdmin, teamConfigs, selectedTeamId])
+
+  const handleClick = () => {
+    if (isAdmin && selectedTeamId !== '') {
+      onTrigger(selectedTeamId as number)
+    } else {
+      onTrigger()
+    }
+  }
+
+  return (
+    <div className={styles.triggerSection}>
+      {isAdmin && (
+        <select
+          className={styles.teamSelect}
+          value={selectedTeamId}
+          onChange={(e) => setSelectedTeamId(e.target.value === '' ? '' : Number(e.target.value))}
+          disabled={isTriggerLoading}
+        >
+          <option value="">팀 선택</option>
+          {teamConfigs?.map((cfg) => (
+            <option key={cfg.teamId} value={cfg.teamId}>
+              {cfg.teamName}
+            </option>
+          ))}
+        </select>
+      )}
+      <button
+        className={styles.triggerBtn}
+        onClick={handleClick}
+        disabled={isTriggerLoading}
+      >
+        {isTriggerLoading ? '실행 중...' : '수동 실행'}
+      </button>
+    </div>
+  )
+}
+
 // ─── SchedulerPage ────────────────────────────────────────────────────────────
 
 export default function SchedulerPage() {
+  const user = useAuthStore((s) => s.user)
+  const isAdmin = user?.role === 'ADMIN'
+
+  const [activeTab, setActiveTab] = useState<ActiveTab>('logs')
 
   const [logs, setLogs] = useState<SchedulerLog[]>([])
   const [totalPages, setTotalPages] = useState(0)
@@ -181,10 +248,10 @@ export default function SchedulerPage() {
     void fetchLogs(page)
   }, [page, fetchLogs])
 
-  const handleTrigger = async () => {
+  const handleTrigger = async (teamId?: number) => {
     setIsTriggerLoading(true)
     try {
-      await schedulerApi.trigger()
+      await schedulerApi.trigger(teamId)
       showToast('스케줄러 실행이 완료되었습니다.')
       setPage(0)
       await fetchLogs(0)
@@ -221,96 +288,121 @@ export default function SchedulerPage() {
         <main className={styles.main}>
           <div className={styles.pageHeader}>
             <h1 className={styles.pageTitle}>주간보고 스케줄러</h1>
-            <button
-              className={styles.triggerBtn}
-              onClick={() => void handleTrigger()}
-              disabled={isTriggerLoading}
-            >
-              {isTriggerLoading ? '실행 중...' : '수동 실행'}
-            </button>
+            <TriggerSection
+              isAdmin={isAdmin}
+              isTriggerLoading={isTriggerLoading}
+              onTrigger={(teamId) => void handleTrigger(teamId)}
+            />
           </div>
 
-          {isLoading && (
-            <div className={styles.stateContainer}>
-              <div className={styles.spinner} />
-              <span>불러오는 중...</span>
+          {isAdmin && (
+            <div className={styles.tabList}>
+              <button
+                className={`${styles.tabBtn} ${activeTab === 'logs' ? styles.tabActive : ''}`}
+                onClick={() => setActiveTab('logs')}
+              >
+                실행 이력
+              </button>
+              <button
+                className={`${styles.tabBtn} ${activeTab === 'team-settings' ? styles.tabActive : ''}`}
+                onClick={() => setActiveTab('team-settings')}
+              >
+                팀별 설정
+              </button>
             </div>
           )}
 
-          {isError && (
-            <div className={styles.stateContainer}>
-              <span className={styles.errorText}>실행 이력을 불러오지 못했습니다.</span>
+          {activeTab === 'team-settings' && isAdmin ? (
+            <div className={styles.tableWrapper}>
+              <SchedulerTeamSettingsTab />
             </div>
-          )}
-
-          {!isLoading && !isError && (
+          ) : (
             <>
-              <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>실행 시각</th>
-                      <th>상태</th>
-                      <th>대상 폴더</th>
-                      <th>성공</th>
-                      <th>실패</th>
-                      <th>상세</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {logs.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className={styles.emptyCell}>
-                          실행 이력이 없습니다.
-                        </td>
-                      </tr>
-                    ) : (
-                      logs.map((log) => (
-                        <tr key={log.id}>
-                          <td>{formatDateTime(log.executedAt)}</td>
-                          <td>
-                            <StatusBadge status={log.status} />
-                          </td>
-                          <td>{log.totalFolderCount}</td>
-                          <td className={styles.successText}>{log.successCount}</td>
-                          <td className={log.failCount > 0 ? styles.failText : ''}>{log.failCount}</td>
-                          <td>
-                            <button
-                              className={styles.detailBtn}
-                              onClick={() => void handleOpenDetail(log.id)}
-                              disabled={isDetailLoading}
-                            >
-                              상세
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {totalPages > 1 && (
-                <div className={styles.pagination}>
-                  <button
-                    className={styles.pageBtn}
-                    disabled={page === 0}
-                    onClick={() => setPage((p) => p - 1)}
-                  >
-                    이전
-                  </button>
-                  <span className={styles.pageInfo}>
-                    {page + 1} / {totalPages}
-                    <span className={styles.totalCount}>({totalElements}건)</span>
-                  </span>
-                  <button
-                    className={styles.pageBtn}
-                    disabled={page >= totalPages - 1}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    다음
-                  </button>
+              {isLoading && (
+                <div className={styles.stateContainer}>
+                  <div className={styles.spinner} />
+                  <span>불러오는 중...</span>
                 </div>
+              )}
+
+              {isError && (
+                <div className={styles.stateContainer}>
+                  <span className={styles.errorText}>실행 이력을 불러오지 못했습니다.</span>
+                </div>
+              )}
+
+              {!isLoading && !isError && (
+                <>
+                  <div className={styles.tableWrapper}>
+                    <table className={styles.table}>
+                      <thead>
+                        <tr>
+                          <th>실행 시각</th>
+                          <th>팀</th>
+                          <th>상태</th>
+                          <th>대상 폴더</th>
+                          <th>성공</th>
+                          <th>실패</th>
+                          <th>상세</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {logs.length === 0 ? (
+                          <tr>
+                            <td colSpan={7} className={styles.emptyCell}>
+                              실행 이력이 없습니다.
+                            </td>
+                          </tr>
+                        ) : (
+                          logs.map((log) => (
+                            <tr key={log.id}>
+                              <td>{formatDateTime(log.executedAt)}</td>
+                              <td className={styles.teamCell}>{log.teamName ?? '-'}</td>
+                              <td>
+                                <StatusBadge status={log.status} />
+                              </td>
+                              <td>{log.totalFolderCount}</td>
+                              <td className={styles.successText}>{log.successCount}</td>
+                              <td className={log.failCount > 0 ? styles.failText : ''}>{log.failCount}</td>
+                              <td>
+                                <button
+                                  className={styles.detailBtn}
+                                  onClick={() => void handleOpenDetail(log.id)}
+                                  disabled={isDetailLoading}
+                                >
+                                  상세
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className={styles.pagination}>
+                      <button
+                        className={styles.pageBtn}
+                        disabled={page === 0}
+                        onClick={() => setPage((p) => p - 1)}
+                      >
+                        이전
+                      </button>
+                      <span className={styles.pageInfo}>
+                        {page + 1} / {totalPages}
+                        <span className={styles.totalCount}>({totalElements}건)</span>
+                      </span>
+                      <button
+                        className={styles.pageBtn}
+                        disabled={page >= totalPages - 1}
+                        onClick={() => setPage((p) => p + 1)}
+                      >
+                        다음
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}

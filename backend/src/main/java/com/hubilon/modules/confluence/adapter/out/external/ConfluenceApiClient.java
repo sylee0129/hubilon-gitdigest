@@ -80,6 +80,7 @@ public class ConfluenceApiClient {
         try {
             Map<String, Object> requestBody = Map.of(
                     "type", "page",
+                    "status", "draft",
                     "title", title,
                     "space", Map.of("key", spaceKey),
                     "ancestors", new Object[]{Map.of("id", parentId)},

@@ -128,7 +128,15 @@ public class ReportAnalyzeService implements ReportAnalyzeUseCase {
                 .commits(commits)
                 .build();
 
-        Report saved = reportCommandPort.save(report);
-        return reportAppMapper.toResult(saved);
+        try {
+            Report saved = reportCommandPort.save(report);
+            return reportAppMapper.toResult(saved);
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            log.warn("Report 중복 저장 감지 (race condition), 기존 레코드 반환: projectId={}, period={}-{}",
+                    project.getId(), command.startDate(), command.endDate());
+            return reportQueryPort.findExisting(project.getId(), command.startDate(), command.endDate())
+                    .map(reportAppMapper::toResult)
+                    .orElseThrow(() -> new RuntimeException("Report not found after conflict", ex));
+        }
     }
 }

@@ -9,9 +9,13 @@ import com.hubilon.modules.folder.domain.model.FolderStatus;
 import com.hubilon.modules.folder.domain.port.in.FolderQueryUseCase;
 import com.hubilon.modules.scheduler.domain.model.SchedulerJobLog;
 import com.hubilon.modules.scheduler.domain.model.SchedulerJobStatus;
+import com.hubilon.modules.scheduler.domain.model.SchedulerTeamConfig;
 import com.hubilon.modules.scheduler.domain.port.in.SchedulerTriggerUseCase;
 import com.hubilon.modules.scheduler.domain.port.out.SchedulerJobLogCommandPort;
 import com.hubilon.modules.scheduler.domain.port.out.SchedulerJobLogQueryPort;
+import com.hubilon.modules.scheduler.domain.port.out.SchedulerTeamConfigPort;
+import com.hubilon.modules.team.application.port.out.TeamQueryPort;
+import com.hubilon.modules.team.domain.model.Team;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +43,8 @@ public class WeeklyReportSchedulerService implements SchedulerTriggerUseCase {
     private final UploadWeeklyReportUseCase uploadWeeklyReportUseCase;
     private final SchedulerJobLogCommandPort schedulerJobLogCommandPort;
     private final SchedulerJobLogQueryPort schedulerJobLogQueryPort;
+    private final SchedulerTeamConfigPort schedulerTeamConfigPort;
+    private final TeamQueryPort teamQueryPort;
 
     @Scheduled(cron = "${scheduler.weekly-report.cron:0 0 9 * * MON}")
     public void executeWeeklyReport() {
@@ -50,33 +56,45 @@ public class WeeklyReportSchedulerService implements SchedulerTriggerUseCase {
             log.warn("Weekly report scheduler skipped: another job is already RUNNING.");
             return;
         }
-        trigger();
+
+        List<SchedulerTeamConfig> enabledTeams = schedulerTeamConfigPort.findAllByEnabled(true);
+        for (SchedulerTeamConfig teamConfig : enabledTeams) {
+            triggerForTeam(teamConfig.teamId(), teamConfig.teamName());
+        }
     }
 
     @Override
-    public SchedulerJobLog trigger() {
+    public SchedulerJobLog trigger(Long teamId) {
         if (schedulerJobLogQueryPort.existsByStatus(SchedulerJobStatus.RUNNING)) {
             throw new ConflictException("이미 실행 중인 주간보고 스케줄러가 있습니다.", null);
         }
 
-        List<FolderResult> folders = folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS, null);
+        Team team = teamQueryPort.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException("팀을 찾을 수 없습니다. teamId=" + teamId));
+
+        return triggerForTeam(teamId, team.getName());
+    }
+
+    private SchedulerJobLog triggerForTeam(Long teamId, String teamName) {
+        List<FolderResult> folders = folderQueryUseCase.searchAll(FolderStatus.IN_PROGRESS, teamId);
 
         SchedulerJobLog jobLog = schedulerJobLogCommandPort.save(
-                SchedulerJobLog.createRunning(folders.size())
+                SchedulerJobLog.createRunning(teamId, teamName, folders.size())
         );
 
-        LocalDate endDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.FRIDAY));
-        LocalDate startDate = endDate.minusDays(6);
+        LocalDate monday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate gitStartDate = monday;                // 월요일 (프론트엔드와 동일)
+        LocalDate gitEndDate = monday.plusDays(6);      // 일요일 (프론트엔드와 동일)
 
         // teamId → rows 그룹핑
         Map<Long, List<WeeklyReportRowDto>> rowsByTeam = new LinkedHashMap<>();
 
         for (FolderResult folder : folders) {
             try {
-                WeeklyReportRowDto row = weeklyReportProcessor.process(folder, startDate, endDate);
-                Long teamId = folder.teamId();
-                if (teamId != null) {
-                    rowsByTeam.computeIfAbsent(teamId, k -> new ArrayList<>()).add(row);
+                WeeklyReportRowDto row = weeklyReportProcessor.process(folder, gitStartDate, gitEndDate);
+                Long foldersTeamId = folder.teamId();
+                if (foldersTeamId != null) {
+                    rowsByTeam.computeIfAbsent(foldersTeamId, k -> new ArrayList<>()).add(row);
                 }
                 jobLog.recordSuccess(folder.id(), folder.name(), null);
             } catch (Exception e) {
@@ -87,17 +105,17 @@ public class WeeklyReportSchedulerService implements SchedulerTriggerUseCase {
 
         // 팀별 Confluence 업로드
         for (Map.Entry<Long, List<WeeklyReportRowDto>> entry : rowsByTeam.entrySet()) {
-            Long teamId = entry.getKey();
+            Long entryTeamId = entry.getKey();
             List<WeeklyReportRowDto> successRows = entry.getValue();
             if (successRows.isEmpty()) continue;
             try {
                 WeeklyConfluenceRequest confluenceRequest = new WeeklyConfluenceRequest(
-                        teamId, successRows, startDate.toString(), endDate.toString());
+                        entryTeamId, successRows, gitStartDate.toString(), gitEndDate.toString());
                 String pageUrl = uploadWeeklyReportUseCase.upload(confluenceRequest);
                 jobLog.updateSuccessUrls(pageUrl);
-                log.info("Confluence 업로드 성공: teamId={}, pageUrl={}", teamId, pageUrl);
+                log.info("Confluence 업로드 성공: teamId={}, pageUrl={}", entryTeamId, pageUrl);
             } catch (Exception e) {
-                log.error("Confluence 업로드 실패: teamId={}, error={}", teamId, e.getMessage());
+                log.error("Confluence 업로드 실패: teamId={}, error={}", entryTeamId, e.getMessage());
                 jobLog.markSuccessAsFailed(e.getMessage());
             }
         }

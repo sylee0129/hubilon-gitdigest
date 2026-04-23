@@ -29,6 +29,7 @@ public class SchedulerJobLogPersistenceAdapter implements SchedulerJobLogCommand
             entity = jobLogRepository.findById(jobLog.getId())
                     .orElseGet(() -> toEntity(jobLog));
             entity.updateStatus(jobLog.getStatus(), jobLog.getSuccessCount(), jobLog.getFailCount());
+
             entity.getFolderResults().clear();
         } else {
             entity = toEntity(jobLog);
@@ -70,6 +71,8 @@ public class SchedulerJobLogPersistenceAdapter implements SchedulerJobLogCommand
     private SchedulerJobLogJpaEntity toEntity(SchedulerJobLog domain) {
         return SchedulerJobLogJpaEntity.builder()
                 .id(domain.getId())
+                .teamId(domain.getTeamId())
+                .teamName(domain.getTeamName())
                 .executedAt(domain.getExecutedAt())
                 .status(domain.getStatus())
                 .totalFolderCount(domain.getTotalFolderCount())
@@ -93,6 +96,8 @@ public class SchedulerJobLogPersistenceAdapter implements SchedulerJobLogCommand
 
         return SchedulerJobLog.builder()
                 .id(entity.getId())
+                .teamId(entity.getTeamId())
+                .teamName(entity.getTeamName())
                 .executedAt(entity.getExecutedAt())
                 .status(entity.getStatus())
                 .totalFolderCount(entity.getTotalFolderCount())

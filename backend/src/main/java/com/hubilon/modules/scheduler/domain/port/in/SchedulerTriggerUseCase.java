@@ -4,5 +4,5 @@ import com.hubilon.modules.scheduler.domain.model.SchedulerJobLog;
 
 public interface SchedulerTriggerUseCase {
 
-    SchedulerJobLog trigger();
+    SchedulerJobLog trigger(Long teamId);
 }

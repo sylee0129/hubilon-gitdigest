@@ -15,6 +15,11 @@ public class TeamPersistenceAdapter implements TeamQueryPort {
     private final TeamRepository teamRepository;
 
     @Override
+    public Optional<Team> findById(Long id) {
+        return teamRepository.findById(id).map(this::toDomain);
+    }
+
+    @Override
     public Optional<Team> findByName(String name) {
         return teamRepository.findByName(name).map(this::toDomain);
     }
