@@ -219,8 +219,8 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
                 }
 
                 sb.append("      <td>").append(escape(row.folderName())).append("</td>\n");
-                sb.append("      <td>").append(escapeWithBreaks(row.progressSummary())).append("</td>\n");
-                sb.append("      <td>").append(escapeWithBreaks(row.planSummary())).append("</td>\n");
+                sb.append("      <td>").append(markdownToHtml(row.progressSummary())).append("</td>\n");
+                sb.append("      <td>").append(markdownToHtml(row.planSummary())).append("</td>\n");
                 sb.append("      <td style=\"text-align: center;\">")
                         .append(membersToHtml(row.members())).append("</td>\n");
                 sb.append("    </tr>\n");
@@ -250,6 +250,14 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
     private String escapeWithBreaks(String text) {
         if (text == null) return "";
         return escape(text).replace("\n", "<br/>");
+    }
+
+    private String markdownToHtml(String text) {
+        if (text == null) return "";
+        String escaped = escape(text);
+        escaped = escaped.replaceAll("\\*\\*(.+?)\\*\\*", "<strong>$1</strong>");
+        escaped = escaped.replaceAll("(?m)^#{1,6}\\s*", "");
+        return escaped.replace("\n", "<br/>");
     }
 
     private String membersToHtml(List<String> members) {
