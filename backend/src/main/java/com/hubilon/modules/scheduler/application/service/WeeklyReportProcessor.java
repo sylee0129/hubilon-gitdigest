@@ -1,4 +1,4 @@
-package com.hubilon.modules.scheduler.application.service;
+﻿package com.hubilon.modules.scheduler.application.service;
 
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest.WeeklyReportRowDto;
 import com.hubilon.modules.folder.application.dto.FolderResult;
@@ -33,6 +33,7 @@ public class WeeklyReportProcessor {
                 .orElse(null);
 
         boolean hasManualContent = existing != null
+                && !existing.isAiSummaryFailed()
                 && hasContent(existing.getProgressSummary())
                 && hasContent(existing.getPlanSummary());
 

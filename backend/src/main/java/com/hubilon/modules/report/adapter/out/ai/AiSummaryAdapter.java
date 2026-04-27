@@ -1,4 +1,4 @@
-package com.hubilon.modules.report.adapter.out.ai;
+﻿package com.hubilon.modules.report.adapter.out.ai;
 
 import com.hubilon.modules.report.domain.model.AiSummaryResult;
 import com.hubilon.modules.report.domain.model.CommitInfo;
@@ -51,8 +51,8 @@ public class AiSummaryAdapter implements AiSummaryPort {
         log.info("[AI요약] 시작: folderName={}, commitCount={}, aiEnabled={}", folderName, commitCount, aiEnabled);
 
         if (commits == null || commits.isEmpty()) {
-            log.info("[AI요약] 커밋 없음 → 기본값 반환: folderName={}", folderName);
-            return new FolderAiSummaryResult("진행사항 없음", "진행사항 확인", true);
+            log.info("[AI요약] 커밋 없음 → 빈 값 반환: folderName={}", folderName);
+            return new FolderAiSummaryResult("", "", false);
         }
 
         if (aiEnabled) {
