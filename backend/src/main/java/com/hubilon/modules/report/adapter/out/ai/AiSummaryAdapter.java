@@ -173,39 +173,40 @@ public class AiSummaryAdapter implements AiSummaryPort {
 
         String prompt = String.format(
                 """
-                당신은 전문적인 IT 프로젝트 매니저(PM)이자 주간보고서 작성 전문가입니다.
-                제공된 [커밋 목록]을 분석하여, 실무 엑셀 보고서의 작성 스타일과 완벽히 일치하는 보고서를 작성하세요.
+                ## Role
+                너는 소프트웨어 개발팀의 주간 업무 보고서를 작성하는 전문 테크니컬 라이터이자 프로젝트 관리자야.
+                전달받은 [커밋 이력]을 바탕으로, 읽는 사람이 한눈에 성과를 파악할 수 있도록 보고서를 작성해 줘.
+                프로젝트명: %s
 
-                [작성 가이드라인]
-                1. 문체: 반드시 "~함", "~완료", "~예정"으로 끝나는 격식 있는 개조식 문체 사용 (예: '수정 완료', '계획 수립', '검토 진행')
-                2. 구조화: 커밋을 '사업관리', '개발', 'QA/테스트' 카테고리로 논리적으로 분류
-                3. 상세도: 커밋 메시지를 나열하지 말고 비즈니스 관점에서 어떤 기능이 완성되었는지 요약
-                4. 차주 계획 추론:
-                   - 개발 커밋 비중이 높으면 → 통합 테스트 및 버그 수정 예정
-                   - 기획/설계 커밋 비중이 높으면 → 개발 환경 구축 및 퍼블리싱 착수 예정
-                   - 배포/운영 커밋이 있으면 → 운영 안정화 및 모니터링 예정
-                   - 보안/인증 관련 커밋이 있으면 → 보안성 검토 및 취약점 점검 예정
-                   금주 커밋 패턴을 분석하여 PM 관점에서 논리적인 다음 단계를 제안
-                5. 금지: 인사말, 설명, 머리말/꼬리말 절대 포함 금지 — [출력 형식]만 출력
+                ## Writing Guidelines
+                - **카테고리 분류**: 커밋 메시지를 분석하여 아래 섹션 중 해당하는 항목에만 내용을 채워줘. 해당 사항 없는 섹션은 제외.
+                    1. [신규 기능 개발] — 새로운 기능 추가 (feat, feature 키워드)
+                    2. [성능 및 UI 개선] — 기존 기능 개선, 리팩터링 (refactor, improve, enhance 키워드)
+                    3. [결함 수정 및 안정화] — 버그 수정 (fix, bug, hotfix 키워드)
+                    4. [인프라/DB/배포] — 빌드, 배포, 설정 변경 (ci, deploy, config, build 키워드)
+                    5. [문서화 작업] — 문서 및 주석 (docs, readme, comment 키워드)
+                - **문체**: 개조식을 사용하고, "~함", "~완료", "~구현"과 같은 명사형 종결 어미를 사용해.
+                - **내용 정제**:
+                    - 단순 파일 경로 수정이나 빌드 로그 같은 노이즈는 제외해.
+                    - 기술 용어는 유지하되, 비즈니스 가치가 드러나도록 요약해 (예: "버튼 추가" → "사용자 편의성 향상을 위한 인터페이스 개선").
+                - **차주 계획**: 금주 진행 사항 중 WIP이거나 검증 예정인 항목을 바탕으로 논리적인 다음 단계를 제안해 줘.
+                - **금지**: 인사말, 설명, 머리말/꼬리말 절대 포함 금지 — Output Format만 출력
 
-                [출력 형식]
-                [금주 진행사항 (%s~%s)]
-                - %s
-                    > 사업관리
-                    : 내용 (없으면 이 줄 생략)
-                    > 개발
-                    : 내용 (없으면 이 줄 생략)
-                    > QA/테스트
-                    : 내용 (없으면 이 줄 생략)
+                ## Output Format
+                ### 금주 진행 사항 (%s~%s)
+                **[섹션 명칭]**
+                - **주요 작업 제목**
+                  - 세부 구현 내용 1
+                  - 세부 구현 내용 2
 
-                [차주 진행계획 (%s~%s)]
-                - %s
-                    > 내용 (금주 작업과 이어지는 논리적 단계)
+                ### 차주 진행 계획 (%s~%s)
+                - 금주 개발 기능에 대한 통합 테스트 및 안정화 진행
+                - (커밋 패턴 기반으로 추가될 예상 작업 기재)
 
-                [커밋 목록]
+                [커밋 이력]
                 %s
                 """,
-                startMD, endMD, folderName, nextStartMD, nextEndMD, folderName, commitSection.toString());
+                folderName, startMD, endMD, nextStartMD, nextEndMD, commitSection.toString());
 
         String text = callGemini(prompt);
         if (text != null) {
@@ -264,15 +265,26 @@ public class AiSummaryAdapter implements AiSummaryPort {
         int planStart = -1;
 
         for (int i = 0; i < lines.length; i++) {
-            if (lines[i].startsWith("[금주 진행사항") && progressStart == -1) {
+            String line = lines[i];
+            if (line.contains("금주 진행 사항") && progressStart == -1) {
                 progressStart = i;
-            } else if (lines[i].startsWith("[차주 진행계획") && planStart == -1) {
+            } else if (line.contains("차주 진행 계획") && planStart == -1) {
                 planStart = i;
             }
         }
 
+        // fallback: 구 포맷 지원
         if (progressStart == -1) {
-            // 구분자를 찾지 못한 경우
+            for (int i = 0; i < lines.length; i++) {
+                if (lines[i].startsWith("[금주 진행사항") && progressStart == -1) {
+                    progressStart = i;
+                } else if (lines[i].startsWith("[차주 진행계획") && planStart == -1) {
+                    planStart = i;
+                }
+            }
+        }
+
+        if (progressStart == -1) {
             return new FolderAiSummaryResult(sanitize(raw), "(자동 추론 불가)", true);
         }
 
@@ -280,10 +292,10 @@ public class AiSummaryAdapter implements AiSummaryPort {
         String planRaw;
 
         if (planStart != -1 && planStart > progressStart) {
-            progressRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, progressStart + 2, planStart)).stripTrailing();
-            planRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, planStart + 2, lines.length)).stripTrailing();
+            progressRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, progressStart + 1, planStart)).stripTrailing();
+            planRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, planStart + 1, lines.length)).stripTrailing();
         } else {
-            progressRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, progressStart + 2, lines.length)).stripTrailing();
+            progressRaw = String.join("\n", java.util.Arrays.copyOfRange(lines, progressStart + 1, lines.length)).stripTrailing();
             planRaw = "(자동 추론 불가)";
         }
 
