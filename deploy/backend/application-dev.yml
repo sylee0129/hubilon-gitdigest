@@ -47,5 +47,5 @@ ai:
 
 scheduler:
   weekly-report:
-    enabled: false
+    enabled: true
     cron: "0 0 7 * * FRI"
