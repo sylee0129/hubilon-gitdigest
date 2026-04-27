@@ -100,6 +100,7 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
 
             FolderSummary summary = folderSummaryQueryPort
                     .findByFolderIdAndDateRange(row.folderId(), startDate, endDate)
+                    .filter(existing -> hasContent(existing.getProgressSummary()) || hasContent(existing.getPlanSummary()))
                     .map(existing -> {
                         log.info("[Confluence] folder_summary DB 조회 성공: folderId={}, folderName={}", row.folderId(), row.folderName());
                         return existing;
@@ -183,13 +184,13 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         sb.append("  <tbody>\n");
 
         sb.append("    <tr>\n");
-        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\">사업구분</th>\n");
-        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\">프로젝트명</th>\n");
-        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\">금주 진행사항 (")
-                .append(escape(startMDD)).append("~").append(escape(endMDD)).append(")</th>\n");
-        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\">차주 진행계획 (")
-                .append(escape(nextStartMDD)).append("~").append(escape(nextEndMDD)).append(")</th>\n");
-        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\">담당자</th>\n");
+        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\"><strong>구분</strong></th>\n");
+        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\"><strong>프로젝트명</strong></th>\n");
+        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\"><strong>금주 진행사항 (")
+                .append(escape(startMDD)).append("~").append(escape(endMDD)).append(")</strong></th>\n");
+        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\"><strong>차주 진행계획 (")
+                .append(escape(nextStartMDD)).append("~").append(escape(nextEndMDD)).append(")</strong></th>\n");
+        sb.append("      <th style=\"background-color: #dae4f0; text-align: center;\"><strong>담당자</strong></th>\n");
         sb.append("    </tr>\n");
 
         for (Map.Entry<Long, List<WeeklyReportRowDto>> entry : grouped.entrySet()) {
@@ -231,6 +232,10 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         sb.append("</table>");
 
         return sb.toString();
+    }
+
+    private boolean hasContent(String text) {
+        return text != null && !text.isBlank();
     }
 
     private String formatMDD(LocalDate date) {
