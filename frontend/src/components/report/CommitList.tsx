@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import type { CommitInfo } from '../../types/report'
 import styles from './CommitList.module.css'
 
@@ -76,12 +76,14 @@ export default function CommitList({ commits }: Props) {
                 return (
                   <div key={commit.id} className={styles.commitBlock}>
                     <div
-                      className={styles.commitRow}
-                      onClick={() => hasFiles && toggleCommit(commit.id)}
+                      className={`${styles.commitRow} ${isExpanded ? styles.commitRowExpanded : ''}`}
+                      onClick={() => toggleCommit(commit.id)}
                     >
                       <div className={styles.commitMain}>
                         <span className={styles.date}>{commit.committedAt?.slice(0, 10)}</span>
-                        <span className={styles.message}>{cleanMessage(commit.message)}</span>
+                        <span className={`${styles.message} ${isExpanded ? styles.messageExpanded : ''}`}>
+                          {cleanMessage(commit.message)}
+                        </span>
                       </div>
                       {hasFiles && (
                         <span className={`${styles.fileArrow} ${isExpanded ? styles.open : ''}`}>▼</span>

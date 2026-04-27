@@ -1,4 +1,4 @@
-.container {
+﻿.container {
   margin-top: 4px;
 }
 
@@ -96,6 +96,10 @@
   gap: 8px;
 }
 
+.commitRowExpanded {
+  align-items: flex-start;
+}
+
 .commitRow:hover {
   background-color: var(--color-bg);
 }
@@ -122,6 +126,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.messageExpanded {
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .fileArrow {
