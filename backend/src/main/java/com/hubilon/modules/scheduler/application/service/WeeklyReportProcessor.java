@@ -1,4 +1,4 @@
-﻿package com.hubilon.modules.scheduler.application.service;
+package com.hubilon.modules.scheduler.application.service;
 
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest.WeeklyReportRowDto;
 import com.hubilon.modules.folder.application.dto.FolderResult;
