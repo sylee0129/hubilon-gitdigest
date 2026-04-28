@@ -1,4 +1,4 @@
-﻿package com.hubilon.modules.report.adapter.out.ai;
+package com.hubilon.modules.report.adapter.out.ai;
 
 import com.hubilon.modules.report.domain.model.AiSummaryResult;
 import com.hubilon.modules.report.domain.model.CommitInfo;
