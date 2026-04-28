@@ -185,6 +185,8 @@ public class AiSummaryAdapter implements AiSummaryPort {
                     3. [결함 수정 및 안정화] — 버그 수정 (fix, bug, hotfix 키워드)
                     4. [인프라/DB/배포] — 빌드, 배포, 설정 변경 (ci, deploy, config, build 키워드)
                     5. [문서화 작업] — 문서 및 주석 (docs, readme, comment 키워드)
+                    6. [유지보수] — 빌드 설정, 의존성, 환경 정리 등 기능 외 작업 (chore 키워드)
+                    7. [기타] — 위 분류에 해당하지 않는 기타 작업 (etc 키워드)
                 - **문체**: 개조식을 사용하고, "~함", "~완료", "~구현"과 같은 명사형 종결 어미를 사용해.
                 - **내용 정제**:
                     - 단순 파일 경로 수정이나 빌드 로그 같은 노이즈는 제외해.
