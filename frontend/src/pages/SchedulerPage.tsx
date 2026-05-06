@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import Header from '../components/layout/Header'
 import SidebarLayout from '../components/layout/SidebarLayout'
 import Toast from '../components/common/Toast'
@@ -207,7 +207,7 @@ function TriggerSection({ isAdmin, isTriggerLoading, onTrigger }: TriggerSection
 
 export default function SchedulerPage() {
   const user = useAuthStore((s) => s.user)
-  const isAdmin = user?.role === 'ADMIN'
+  const isAdmin = user?.role === 'ROLE_ADMIN'
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('logs')
 
@@ -424,3 +424,4 @@ export default function SchedulerPage() {
     </div>
   )
 }
+

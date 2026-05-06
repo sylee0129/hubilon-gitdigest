@@ -1,6 +1,7 @@
 package com.hubilon.modules.report;
 
 import com.hubilon.common.exception.custom.NotFoundException;
+import com.hubilon.modules.project.domain.model.GitProvider;
 import com.hubilon.modules.project.domain.model.Project;
 import com.hubilon.modules.project.domain.port.out.ProjectQueryPort;
 import com.hubilon.modules.report.application.dto.ReportAnalyzeCommand;
@@ -8,12 +9,12 @@ import com.hubilon.modules.report.application.dto.ReportResult;
 import com.hubilon.modules.report.application.mapper.ReportAppMapper;
 import com.hubilon.modules.report.application.service.ReportAnalyzeService;
 import com.hubilon.modules.report.domain.model.Report;
-import com.hubilon.modules.report.domain.port.out.GitLabPort;
+import com.hubilon.modules.report.domain.port.out.GitCommitPort;
 import com.hubilon.modules.report.domain.port.out.ReportCommandPort;
 import com.hubilon.modules.report.domain.port.out.ReportQueryPort;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -40,27 +41,37 @@ class ReportAnalyzeServiceTest {
     ReportCommandPort reportCommandPort;
 
     @Mock
-    GitLabPort gitLabPort;
+    GitCommitPort gitCommitPort;
 
     @Mock
     ReportAppMapper reportAppMapper;
 
-    @InjectMocks
     ReportAnalyzeService reportAnalyzeService;
 
     private final LocalDate START = LocalDate.of(2026, 4, 1);
     private final LocalDate END = LocalDate.of(2026, 4, 7);
 
+    @BeforeEach
+    void setUp() {
+        when(gitCommitPort.supports()).thenReturn(GitProvider.GITLAB);
+        reportAnalyzeService = new ReportAnalyzeService(
+                List.of(gitCommitPort),
+                projectQueryPort,
+                reportQueryPort,
+                reportCommandPort,
+                reportAppMapper
+        );
+    }
+
     @Test
     void projectIds_빈배열이면_빈리스트_반환() {
-        // ReportController에서 빈 배열을 먼저 차단하지만, 서비스 내 resolveProjects 분기 검증
-        // 빈 배열(not null)이면 stream이 빈 리스트를 생성 → analyze 결과도 빈 리스트
         ReportAnalyzeCommand command = new ReportAnalyzeCommand(null, Collections.emptyList(), START, END);
 
         List<ReportResult> results = reportAnalyzeService.analyze(command);
 
         assertThat(results).isEmpty();
-        verifyNoInteractions(gitLabPort, reportCommandPort);
+        verifyNoInteractions(reportCommandPort);
+        verify(gitCommitPort, never()).fetchCommits(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -88,7 +99,7 @@ class ReportAnalyzeServiceTest {
 
         when(projectQueryPort.findById(1L)).thenReturn(Optional.of(project));
         when(reportQueryPort.findExisting(eq(1L), eq(START), eq(END))).thenReturn(Optional.empty());
-        when(gitLabPort.fetchCommits(anyLong(), anyString(), anyString(), anyString(), eq(START), eq(END)))
+        when(gitCommitPort.fetchCommits(anyLong(), anyString(), anyString(), anyString(), eq(START), eq(END)))
                 .thenReturn(List.of());
         when(reportCommandPort.save(any())).thenReturn(report);
         when(reportAppMapper.toResult(report)).thenReturn(result);
@@ -99,7 +110,7 @@ class ReportAnalyzeServiceTest {
         assertThat(results).hasSize(1);
         assertThat(results.get(0).projectId()).isEqualTo(1L);
         verify(projectQueryPort).findById(1L);
-        verify(gitLabPort).fetchCommits(anyLong(), anyString(), anyString(), anyString(), eq(START), eq(END));
+        verify(gitCommitPort).fetchCommits(anyLong(), anyString(), anyString(), anyString(), eq(START), eq(END));
     }
 
     @Test
@@ -138,7 +149,7 @@ class ReportAnalyzeServiceTest {
 
         when(projectQueryPort.findById(2L)).thenReturn(Optional.of(project));
         when(reportQueryPort.findExisting(eq(2L), eq(START), eq(END))).thenReturn(Optional.empty());
-        when(gitLabPort.fetchCommits(anyLong(), anyString(), anyString(), anyString(), eq(START), eq(END)))
+        when(gitCommitPort.fetchCommits(anyLong(), anyString(), anyString(), anyString(), eq(START), eq(END)))
                 .thenReturn(List.of());
         when(reportCommandPort.save(any())).thenReturn(report);
         when(reportAppMapper.toResult(report)).thenReturn(result);

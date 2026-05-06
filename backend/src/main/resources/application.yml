@@ -20,6 +20,12 @@ spring:
     baseline-version: 0
   application:
     name: work-log-ai
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
+          jwk-set-uri: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
 
 server:
   port: 8080
@@ -51,6 +57,10 @@ jwt:
   access-token-expiry: 3600
   refresh-token-expiry: 604800
 
+keycloak:
+  auth-server-url: ${KEYCLOAK_URL}
+  realm: ${KEYCLOAK_REALM}
+  client-id: ${KEYCLOAK_CLIENT_ID}
 
 springdoc:
   swagger-ui:
@@ -63,5 +73,3 @@ scheduler:
     enabled: true
     cron: "0 55 9 * * THU"
 #    cron: "0 40 9 * * FRI"
-
-

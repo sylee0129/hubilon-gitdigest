@@ -29,7 +29,7 @@ class AiSummaryAdapterParseFolderSummaryTest {
 
         FolderAiSummaryResult result = parse(raw);
 
-        // 파서는 헤더 줄(index N)과 바로 다음 줄(index N+1)을 건너뛰고 N+2부터 슬라이싱
+        // 파서는 헤더 줄(index N) 다음인 N+1부터 차주 헤더 직전까지 슬라이싱
         assertThat(result.progressSummary()).contains("김철수: 대시보드 UI 개선");
         assertThat(result.progressSummary()).doesNotContain("[차주 진행계획");
         assertThat(result.planSummary()).contains("김철수: 차트 컴포넌트 개발 예정");
@@ -57,16 +57,15 @@ class AiSummaryAdapterParseFolderSummaryTest {
 
         FolderAiSummaryResult result = parse(raw);
 
-        // 파서는 N+2부터 슬라이싱하므로 내용이 없으면 빈 문자열 반환
-        assertThat(result.progressSummary()).isEmpty();
+        // 파서는 progressStart+1부터 끝까지 슬라이싱
+        assertThat(result.progressSummary()).contains("홍길동: 기능 구현 완료");
         assertThat(result.planSummary()).isEqualTo("(자동 추론 불가)");
         assertThat(result.aiUsed()).isTrue();
     }
 
     @Test
     void HTML_태그가_포함된_경우_sanitize_처리() {
-        // 파서는 헤더(N)와 그 다음 줄(N+1)을 건너뛰고 N+2부터 슬라이싱
-        // 입력 구조상 N+2가 비어있으면 빈 문자열 반환 — sanitize 자체는 태그를 제거함을 검증
+        // 파서는 헤더(N) 다음인 N+1부터 슬라이싱 — sanitize가 HTML 태그를 제거함을 검증
         String raw = """
                 [금주 진행사항 (04/01~04/07)]
                 - <b>홍길동</b>: <em>로그인</em> 기능 구현

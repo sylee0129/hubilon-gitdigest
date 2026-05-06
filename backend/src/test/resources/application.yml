@@ -12,6 +12,11 @@ spring:
       ddl-auto: create-drop
     defer-datasource-initialization: true
     show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/test/protocol/openid-connect/certs
 
 gitlab:
   api:
@@ -25,5 +30,10 @@ jwt:
   secret: test-secret-key-min-32-chars-for-testing!!
   access-token-expiry: 3600
   refresh-token-expiry: 604800
+
+keycloak:
+  auth-server-url: http://localhost:8080
+  realm: test-realm
+  client-id: test-client
 
 CONFLUENCE_TOKEN_SECRET: vfsiY9pQWTTZIvg1b5Ely+21rybhMfKaoKf19n0g3ys=

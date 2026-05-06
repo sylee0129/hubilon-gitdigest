@@ -1,8 +1,10 @@
-import { Navigate, Outlet } from 'react-router-dom'
-import { useAuthStore } from '../../stores/useAuthStore'
+﻿import { Outlet } from 'react-router-dom'
+import keycloak from '../../lib/keycloak'
 
 export default function ProtectedRoute() {
-  const accessToken = useAuthStore((s) => s.accessToken)
-  if (!accessToken) return <Navigate to="/login" replace />
+  if (!keycloak.authenticated) {
+    keycloak.login()
+    return null
+  }
   return <Outlet />
 }
