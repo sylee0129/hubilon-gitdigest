@@ -13,36 +13,23 @@ interface User {
 
 interface AuthStore {
   user: User | null
-  accessToken: string | null
-  refreshToken: string | null
-  login: (email: string, password: string) => Promise<void>
-  logout: () => Promise<void>
-  setAccessToken: (token: string) => void
+  fetchUser: () => Promise<void>
+  logout: () => void
   setUser: (user: User) => void
   clearAuth: () => void
 }
 
-export const useAuthStore = create<AuthStore>((set, get) => ({
+export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
-  accessToken: null,
-  refreshToken: null,
-  login: async (email, password) => {
-    const data = await authApi.login(email, password)
+  fetchUser: async () => {
+    const user = await authApi.me()
+    set({ user })
+  },
+  logout: () => {
     queryClient.clear()
-    set({ user: data.user, accessToken: data.accessToken, refreshToken: data.refreshToken })
+    set({ user: null })
+    window.location.href = '/auth/logout'
   },
-  logout: async () => {
-    const { refreshToken } = get()
-    try {
-      if (refreshToken) {
-        await authApi.logout(refreshToken)
-      }
-    } finally {
-      queryClient.clear()
-      set({ user: null, accessToken: null, refreshToken: null })
-    }
-  },
-  setAccessToken: (token) => set({ accessToken: token }),
   setUser: (user) => set({ user }),
-  clearAuth: () => set({ user: null, accessToken: null, refreshToken: null }),
+  clearAuth: () => set({ user: null }),
 }))

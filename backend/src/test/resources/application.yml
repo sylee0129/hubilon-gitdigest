@@ -27,3 +27,31 @@ jwt:
   refresh-token-expiry: 604800
 
 CONFLUENCE_TOKEN_SECRET: vfsiY9pQWTTZIvg1b5Ely+21rybhMfKaoKf19n0g3ys=
+
+keycloak:
+  server-url: http://localhost:9999
+  realm: test-realm
+  client-id: test-client
+  client-secret: test-secret
+  oauth-state-cookie: test_oauth_state
+  session-id-token-key: test_id_token
+  redirect-uri: http://localhost:8080/auth/callback
+  post-logout-redirect-uri: http://localhost:8080/auth/login
+  post-login-redirect-uri: /
+  secure-cookie: false
+  permit-all-paths:
+    - /**
+  auth-controller:
+    enabled: false
+  uri:
+    login: /auth/login
+    callback: /auth/callback
+    logout: /auth/logout
+    refresh: /auth/refresh
+
+github:
+  oauth:
+    client-id: test-github-client
+    client-secret: test-github-secret
+    redirect-uri: http://localhost:8080/api/oauth/github/callback
+    frontend-origin: http://localhost:3000

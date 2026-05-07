@@ -1,43 +1,19 @@
 import apiClient from './axios'
+import type { ApiResponse } from '../types/api'
 
-interface LoginResponse {
-  accessToken: string
-  refreshToken: string
-  expiresIn: number
-  user: {
-    id: number
-    name: string
-    email: string
-    teamId: number | null
-    teamName: string | null
-    role: 'ADMIN' | 'USER'
-  }
-}
-
-interface ApiResponse<T> {
-  success: boolean
-  data: T
-  message: string | null
+interface UserInfo {
+  id: number
+  name: string
+  email: string
+  teamId: number | null
+  teamName: string | null
+  role: 'ADMIN' | 'USER'
 }
 
 const authApi = {
-  login: async (email: string, password: string): Promise<LoginResponse> => {
-    const res = await apiClient.post<ApiResponse<LoginResponse>>('/auth/login', { email, password })
+  me: async (): Promise<UserInfo> => {
+    const res = await apiClient.get<ApiResponse<UserInfo>>('/auth/me')
     return res.data.data
-  },
-  refresh: async (): Promise<string> => {
-    const res = await apiClient.post<ApiResponse<{ accessToken: string; expiresIn: number }>>('/auth/refresh', {})
-    return res.data.data.accessToken
-  },
-  logout: async (refreshToken: string): Promise<void> => {
-    await apiClient.post('/auth/logout', { refreshToken })
-  },
-  me: async () => {
-    const res = await apiClient.get<ApiResponse<{ id: number; name: string; email: string; teamId: number | null; teamName: string | null; role: 'ADMIN' | 'USER' }>>('/auth/me')
-    return res.data.data
-  },
-  register: async (data: { name: string; email: string; password: string; teamId: number }): Promise<void> => {
-    await apiClient.post('/users', data)
   },
 }
 

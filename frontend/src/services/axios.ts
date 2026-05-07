@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
-import { useAuthStore } from '../stores/useAuthStore'
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? '/api',
@@ -8,21 +7,8 @@ const apiClient: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// refresh 전용 인스턴스 — apiClient 순환 참조 방지
-const refreshClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? '/api',
-  timeout: 30000,
-  withCredentials: true,
-  headers: { 'Content-Type': 'application/json' },
-})
-
-apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = useAuthStore.getState().accessToken
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
+let isRefreshing = false
+let refreshQueue: Array<() => void> = []
 
 apiClient.interceptors.response.use(
   (response) => response,
@@ -30,23 +16,30 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
     if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      if (
+        error.response?.status === 401 &&
+        !originalRequest._retry &&
+        !originalRequest.url?.includes('/auth/refresh')
+      ) {
         originalRequest._retry = true
+
+        if (isRefreshing) {
+          return new Promise((resolve) => {
+            refreshQueue.push(() => resolve(apiClient(originalRequest)))
+          })
+        }
+
+        isRefreshing = true
         try {
-          const refreshToken = useAuthStore.getState().refreshToken
-          const res = await refreshClient.post<{
-            success: boolean
-            data: { accessToken: string; expiresIn: number }
-            message: string | null
-          }>('/auth/refresh', { refreshToken })
-          const newToken = res.data.data.accessToken
-          useAuthStore.getState().setAccessToken(newToken)
-          originalRequest.headers.Authorization = `Bearer ${newToken}`
+          await apiClient.post('/auth/refresh')
+          refreshQueue.forEach((cb) => cb())
+          refreshQueue = []
           return apiClient(originalRequest)
         } catch {
-          useAuthStore.getState().clearAuth()
-          window.location.href = '/login'
+          window.location.href = '/auth/login'
           return Promise.reject(error)
+        } finally {
+          isRefreshing = false
         }
       }
 

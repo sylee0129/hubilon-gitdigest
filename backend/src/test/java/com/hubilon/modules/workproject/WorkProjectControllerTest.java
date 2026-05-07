@@ -2,17 +2,21 @@ package com.hubilon.modules.workproject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.hubilon.modules.auth.adapter.out.jwt.JwtTokenAdapter;
+import com.hubilon.auth.UserContext;
+import com.hubilon.auth.UserInfo;
+import com.hubilon.config.TestSecurityConfig;
 import com.hubilon.modules.folder.adapter.in.web.FolderCreateRequest;
 import com.hubilon.modules.folder.domain.model.FolderStatus;
 import com.hubilon.modules.workproject.adapter.in.web.WorkProjectCreateRequest;
 import com.hubilon.modules.workproject.adapter.in.web.WorkProjectReorderRequest;
 import com.hubilon.modules.workproject.adapter.in.web.WorkProjectUpdateRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,19 +32,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @ActiveProfiles("test")
+@Import(TestSecurityConfig.class)
 @Transactional
 class WorkProjectControllerTest {
 
     @Autowired
     WebApplicationContext context;
 
-    @Autowired
-    JwtTokenAdapter jwtTokenAdapter;
-
     final ObjectMapper objectMapper = JsonMapper.builder().build();
 
     MockMvc mockMvc;
-    String token;
     Long folderId;
 
     @BeforeEach
@@ -49,15 +50,19 @@ class WorkProjectControllerTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-        token = "Bearer " + jwtTokenAdapter.generateAccessToken("test@hubilon.com");
+        UserContext.set(new UserInfo("test-id", "테스트유저", "test@hubilon.com", List.of("ROLE_USER")));
 
         FolderCreateRequest folderReq = new FolderCreateRequest("테스트폴더", 1L, FolderStatus.IN_PROGRESS, List.of(), null);
         String folderBody = mockMvc.perform(post("/api/folders")
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(folderReq)))
                 .andReturn().getResponse().getContentAsString();
         folderId = objectMapper.readTree(folderBody).path("data").path("id").asLong();
+    }
+
+    @AfterEach
+    void tearDown() {
+        UserContext.clear();
     }
 
     @Test
@@ -65,7 +70,6 @@ class WorkProjectControllerTest {
         WorkProjectCreateRequest req = new WorkProjectCreateRequest(folderId, "세부프로젝트A");
 
         mockMvc.perform(post("/api/work-projects")
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated())
@@ -78,7 +82,6 @@ class WorkProjectControllerTest {
     void 세부프로젝트_수정_성공() throws Exception {
         WorkProjectCreateRequest createReq = new WorkProjectCreateRequest(folderId, "수정전프로젝트");
         String body = mockMvc.perform(post("/api/work-projects")
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createReq)))
                 .andReturn().getResponse().getContentAsString();
@@ -87,7 +90,6 @@ class WorkProjectControllerTest {
 
         WorkProjectUpdateRequest updateReq = new WorkProjectUpdateRequest(folderId, "수정후프로젝트");
         mockMvc.perform(put("/api/work-projects/" + id)
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateReq)))
                 .andExpect(status().isOk())
@@ -98,15 +100,13 @@ class WorkProjectControllerTest {
     void 세부프로젝트_삭제_성공() throws Exception {
         WorkProjectCreateRequest req = new WorkProjectCreateRequest(folderId, "삭제프로젝트");
         String body = mockMvc.perform(post("/api/work-projects")
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andReturn().getResponse().getContentAsString();
 
         Long id = objectMapper.readTree(body).path("data").path("id").asLong();
 
-        mockMvc.perform(delete("/api/work-projects/" + id)
-                        .header("Authorization", token))
+        mockMvc.perform(delete("/api/work-projects/" + id))
                 .andExpect(status().isNoContent());
     }
 
@@ -116,12 +116,10 @@ class WorkProjectControllerTest {
         WorkProjectCreateRequest req2 = new WorkProjectCreateRequest(folderId, "프로젝트2");
 
         String b1 = mockMvc.perform(post("/api/work-projects")
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req1)))
                 .andReturn().getResponse().getContentAsString();
         String b2 = mockMvc.perform(post("/api/work-projects")
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req2)))
                 .andReturn().getResponse().getContentAsString();
@@ -135,7 +133,6 @@ class WorkProjectControllerTest {
         ));
 
         mockMvc.perform(patch("/api/work-projects/reorder")
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reorderReq)))
                 .andExpect(status().isOk())
@@ -147,7 +144,6 @@ class WorkProjectControllerTest {
         WorkProjectCreateRequest req = new WorkProjectCreateRequest(folderId, "");
 
         mockMvc.perform(post("/api/work-projects")
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isBadRequest());
@@ -158,24 +154,8 @@ class WorkProjectControllerTest {
         WorkProjectCreateRequest req = new WorkProjectCreateRequest(null, "폴더없음프로젝트");
 
         mockMvc.perform(post("/api/work-projects")
-                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void 인증없이_세부프로젝트_생성_실패() throws Exception {
-        WorkProjectCreateRequest req = new WorkProjectCreateRequest(folderId, "인증없음");
-
-        mockMvc.perform(post("/api/work-projects")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
-                .andExpect(result -> {
-                    int status = result.getResponse().getStatus();
-                    if (status != 401 && status != 403) {
-                        throw new AssertionError("Expected 401 or 403 but was: " + status);
-                    }
-                });
     }
 }

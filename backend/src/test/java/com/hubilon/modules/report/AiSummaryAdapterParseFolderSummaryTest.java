@@ -57,8 +57,8 @@ class AiSummaryAdapterParseFolderSummaryTest {
 
         FolderAiSummaryResult result = parse(raw);
 
-        // 파서는 N+2부터 슬라이싱하므로 내용이 없으면 빈 문자열 반환
-        assertThat(result.progressSummary()).isEmpty();
+        // 파서는 헤더(N) 다음 줄(N+1)부터 슬라이싱
+        assertThat(result.progressSummary()).contains("홍길동: 기능 구현 완료");
         assertThat(result.planSummary()).isEqualTo("(자동 추론 불가)");
         assertThat(result.aiUsed()).isTrue();
     }

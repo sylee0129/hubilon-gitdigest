@@ -2,12 +2,7 @@ package com.hubilon.modules.auth.adapter.in.web;
 
 import com.hubilon.modules.user.domain.model.User;
 
-public record LoginResponse(
-        String accessToken,
-        String refreshToken,
-        long expiresIn,
-        UserInfo user
-) {
+public class LoginResponse {
     public record UserInfo(
             Long id,
             String name,
