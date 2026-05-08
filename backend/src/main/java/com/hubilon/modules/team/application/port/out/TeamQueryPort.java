@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface TeamQueryPort {
     Optional<Team> findById(Long id);
     Optional<Team> findByName(String name);
+    Optional<Team> findByNameAndDeptId(String name, Long deptId);
     List<Team> findAll();
     List<Team> findByDeptId(Long deptId);
 }

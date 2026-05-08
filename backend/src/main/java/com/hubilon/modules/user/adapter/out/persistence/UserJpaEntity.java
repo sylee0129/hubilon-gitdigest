@@ -34,8 +34,12 @@ public class UserJpaEntity {
     private String email;
 
     @Comment("비밀번호 (BCrypt 해시)")
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
+
+    @Comment("Keycloak preferred_username")
+    @Column(name = "keycloak_username")
+    private String keycloakUsername;
 
     @Comment("권한")
     @Enumerated(EnumType.STRING)
@@ -59,11 +63,12 @@ public class UserJpaEntity {
 
     @Builder
     public UserJpaEntity(Long id, String name, String email, String password,
-                         Role role, TeamJpaEntity team) {
+                         String keycloakUsername, Role role, TeamJpaEntity team) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.keycloakUsername = keycloakUsername;
         this.role = role;
         this.team = team;
     }

@@ -1,5 +1,6 @@
 package com.hubilon.modules.team.adapter.out.persistence;
 
+import com.hubilon.modules.team.application.port.out.TeamCommandPort;
 import com.hubilon.modules.team.application.port.out.TeamQueryPort;
 import com.hubilon.modules.team.domain.model.Team;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class TeamPersistenceAdapter implements TeamQueryPort {
+public class TeamPersistenceAdapter implements TeamQueryPort, TeamCommandPort {
 
     private final TeamRepository teamRepository;
 
@@ -25,6 +26,11 @@ public class TeamPersistenceAdapter implements TeamQueryPort {
     }
 
     @Override
+    public Optional<Team> findByNameAndDeptId(String name, Long deptId) {
+        return teamRepository.findByNameAndDeptId(name, deptId).map(this::toDomain);
+    }
+
+    @Override
     public List<Team> findAll() {
         return teamRepository.findAll().stream()
                 .map(this::toDomain)
@@ -36,6 +42,16 @@ public class TeamPersistenceAdapter implements TeamQueryPort {
         return teamRepository.findByDeptId(deptId).stream()
                 .map(this::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Team save(Team team) {
+        TeamJpaEntity entity = TeamJpaEntity.builder()
+                .id(team.getId())
+                .name(team.getName())
+                .deptId(team.getDeptId())
+                .build();
+        return toDomain(teamRepository.saveAndFlush(entity));
     }
 
     private Team toDomain(TeamJpaEntity entity) {

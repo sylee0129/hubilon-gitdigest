@@ -1,7 +1,7 @@
 package com.hubilon.common.security;
 
 import com.hubilon.auth.UserContext;
-import com.hubilon.common.exception.custom.NotFoundException;
+import com.hubilon.modules.user.application.service.UserProvisioningService;
 import com.hubilon.modules.user.domain.model.User;
 import com.hubilon.modules.user.domain.port.out.UserQueryPort;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +11,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SecurityUtils {
     private final UserQueryPort userQueryPort;
+    private final UserProvisioningService userProvisioningService;
 
     public User getCurrentUser() {
         String email = UserContext.getEmail();
         return userQueryPort.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseGet(() -> userProvisioningService.provisionOrSync(email));
     }
 }

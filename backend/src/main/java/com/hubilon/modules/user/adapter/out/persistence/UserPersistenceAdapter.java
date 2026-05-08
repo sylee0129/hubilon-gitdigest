@@ -30,6 +30,7 @@ public class UserPersistenceAdapter implements UserCommandPort, UserQueryPort {
                 .name(user.getName())
                 .email(user.getEmail())
                 .password(user.getPassword())
+                .keycloakUsername(user.getKeycloakUsername())
                 .role(toJpaRole(user.getRole()))
                 .team(teamEntity)
                 .build();
@@ -78,6 +79,7 @@ public class UserPersistenceAdapter implements UserCommandPort, UserQueryPort {
                 .name(entity.getName())
                 .email(entity.getEmail())
                 .password(entity.getPassword())
+                .keycloakUsername(entity.getKeycloakUsername())
                 .teamId(team != null ? team.getId() : null)
                 .teamName(team != null ? team.getName() : null)
                 .role(toDomainRole(entity.getRole()))

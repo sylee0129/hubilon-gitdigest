@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface DepartmentQueryPort {
     List<Department> findAll();
     Optional<Department> findById(Long id);
+    Optional<Department> findByName(String name);
 }

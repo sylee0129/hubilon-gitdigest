@@ -17,6 +17,7 @@ public class User {
     private String name;
     private String email;
     private String password;
+    private String keycloakUsername;
     private Long teamId;
     private String teamName;
     private Role role;
