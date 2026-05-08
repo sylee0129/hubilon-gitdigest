@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { useReportStore } from '../../stores/useReportStore'
 import { useAuthStore } from '../../stores/useAuthStore'
@@ -68,16 +67,10 @@ export default function Header() {
   const { upload, loading: confluenceLoading, disabled } = useWeeklyConfluenceUpload()
 
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
   const { user, logout } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const weeks = generateWeeks()
-
-  const handleLogout = async () => {
-    await logout()
-    navigate('/login')
-  }
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -156,7 +149,7 @@ export default function Header() {
           {user?.teamName && <span className={styles.teamName}>{user.teamName}</span>}
           {user?.name ?? '사용자'}
         </span>
-        <button className={styles.logoutBtn} onClick={() => void handleLogout()}>로그아웃</button>
+        <button className={styles.logoutBtn} onClick={logout}>로그아웃</button>
       </div>
     </header>
   )
