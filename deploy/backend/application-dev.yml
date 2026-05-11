@@ -1,4 +1,4 @@
-server:
+﻿server:
   port: 8090
 
 spring:
@@ -47,5 +47,15 @@ ai:
 
 scheduler:
   weekly-report:
-    enabled: true
+    enabled: false
     cron: "0 0 7 * * FRI"
+
+keycloak:
+  server-url: ${KEYCLOAK_SERVER_URL:http://192.168.10.30:8080}
+  realm: ${KEYCLOAK_REALM:hubilon_pd}
+  client-id: ${KEYCLOAK_CLIENT_ID:hubilon-gitdigest}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:VAFlVOoN5vPz6gpqeARhAuvtN81TuYuK}
+  redirect-uri: ${KEYCLOAK_REDIRECT_URI:http://192.168.10.30:3300/auth/callback}
+  post-logout-redirect-uri: ${KEYCLOAK_POST_LOGOUT_REDIRECT_URI:http://192.168.10.30:3300/auth/login}
+  post-login-redirect-uri: ${KEYCLOAK_POST_LOGIN_REDIRECT_URI:http://192.168.10.30:3300}
+  secure-cookie: ${KEYCLOAK_SECURE_COOKIE:false}

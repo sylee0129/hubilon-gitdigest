@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -84,12 +83,11 @@ public class FolderSummaryController {
     @PutMapping("/{id}/summary")
     public Response<FolderSummaryResponse> updateSummary(
             @PathVariable Long id,
-            @Valid @RequestBody FolderSummaryUpdateRequest request,
-            @AuthenticationPrincipal String currentUserEmail
+            @Valid @RequestBody FolderSummaryUpdateRequest request
     ) {
         return Response.ok(
                 folderSummaryWebMapper.toResponse(
-                        folderSummaryUpdateUseCase.update(id, folderSummaryWebMapper.toCommand(request), currentUserEmail)
+                        folderSummaryUpdateUseCase.update(id, folderSummaryWebMapper.toCommand(request))
                 )
         );
     }

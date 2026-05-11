@@ -5,5 +5,5 @@ import com.hubilon.modules.report.application.dto.FolderSummaryUpdateCommand;
 
 public interface FolderSummaryUpdateUseCase {
 
-    FolderSummaryResult update(Long id, FolderSummaryUpdateCommand command, String currentUserEmail);
+    FolderSummaryResult update(Long id, FolderSummaryUpdateCommand command);
 }

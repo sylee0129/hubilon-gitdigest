@@ -1,9 +1,6 @@
 package com.hubilon.modules.report;
 
 import com.hubilon.common.exception.custom.NotFoundException;
-import com.hubilon.modules.folder.adapter.out.persistence.FolderMemberJpaEntity;
-import com.hubilon.modules.folder.adapter.out.persistence.FolderMemberJpaRepository;
-import com.hubilon.modules.folder.adapter.out.persistence.FolderJpaEntity;
 import com.hubilon.modules.report.application.dto.FolderSummaryResult;
 import com.hubilon.modules.report.application.dto.FolderSummaryUpdateCommand;
 import com.hubilon.modules.report.application.mapper.FolderSummaryAppMapper;
@@ -11,8 +8,6 @@ import com.hubilon.modules.report.application.service.FolderSummaryUpdateService
 import com.hubilon.modules.report.domain.model.FolderSummary;
 import com.hubilon.modules.report.domain.port.out.FolderSummaryCommandPort;
 import com.hubilon.modules.report.domain.port.out.FolderSummaryQueryPort;
-import com.hubilon.modules.user.adapter.out.persistence.UserJpaEntity;
-import com.hubilon.modules.user.adapter.out.persistence.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,23 +35,13 @@ class FolderSummaryUpdateServiceTest {
     @Mock
     FolderSummaryAppMapper folderSummaryAppMapper;
 
-    @Mock
-    FolderMemberJpaRepository folderMemberJpaRepository;
-
-    @Mock
-    UserRepository userRepository;
-
     @InjectMocks
     FolderSummaryUpdateService service;
 
     private static final Long SUMMARY_ID = 1L;
     private static final Long FOLDER_ID = 10L;
-    private static final Long USER_ID = 100L;
-    private static final String USER_EMAIL = "user@example.com";
 
     private FolderSummary existingSummary;
-    private UserJpaEntity userEntity;
-    private FolderMemberJpaEntity memberEntity;
 
     @BeforeEach
     void setUp() {
@@ -75,25 +59,11 @@ class FolderSummaryUpdateServiceTest {
                 .manuallyEdited(false)
                 .aiSummaryFailed(false)
                 .build();
-
-        userEntity = mock(UserJpaEntity.class);
-        memberEntity = mock(FolderMemberJpaEntity.class);
-    }
-
-    private void stubBasicAuth() {
-        FolderJpaEntity folderEntity = mock(FolderJpaEntity.class);
-        lenient().when(folderEntity.getId()).thenReturn(FOLDER_ID);
-        lenient().when(memberEntity.getFolder()).thenReturn(folderEntity);
-
-        lenient().when(folderSummaryQueryPort.findById(SUMMARY_ID)).thenReturn(Optional.of(existingSummary));
-        lenient().when(userRepository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(userEntity));
-        lenient().when(userEntity.getId()).thenReturn(USER_ID);
-        lenient().when(folderMemberJpaRepository.findByUserId(USER_ID)).thenReturn(List.of(memberEntity));
     }
 
     @Test
     void progressSummary가_null이면_기존_값_보존() {
-        stubBasicAuth();
+        when(folderSummaryQueryPort.findById(SUMMARY_ID)).thenReturn(Optional.of(existingSummary));
 
         FolderSummaryUpdateCommand command = new FolderSummaryUpdateCommand(null, null, "새 계획");
 
@@ -110,9 +80,8 @@ class FolderSummaryUpdateServiceTest {
         when(folderSummaryCommandPort.save(any())).thenReturn(captured);
         when(folderSummaryAppMapper.toResult(captured)).thenReturn(expectedResult);
 
-        FolderSummaryResult result = service.update(SUMMARY_ID, command, USER_EMAIL);
+        FolderSummaryResult result = service.update(SUMMARY_ID, command);
 
-        // progressSummary는 null 전달 → 기존 "기존 진행사항" 보존
         assertThat(result.progressSummary()).isEqualTo("기존 진행사항");
         assertThat(result.planSummary()).isEqualTo("새 계획");
 
@@ -123,7 +92,7 @@ class FolderSummaryUpdateServiceTest {
 
     @Test
     void progressSummary가_빈_문자열이면_null로_처리() {
-        stubBasicAuth();
+        when(folderSummaryQueryPort.findById(SUMMARY_ID)).thenReturn(Optional.of(existingSummary));
 
         FolderSummaryUpdateCommand command = new FolderSummaryUpdateCommand(null, "", "새 계획");
 
@@ -140,9 +109,8 @@ class FolderSummaryUpdateServiceTest {
         when(folderSummaryCommandPort.save(any())).thenReturn(captured);
         when(folderSummaryAppMapper.toResult(captured)).thenReturn(expectedResult);
 
-        FolderSummaryResult result = service.update(SUMMARY_ID, command, USER_EMAIL);
+        FolderSummaryResult result = service.update(SUMMARY_ID, command);
 
-        // progressSummary는 "" 전달 → null로 처리
         assertThat(result.progressSummary()).isNull();
 
         ArgumentCaptor<FolderSummary> captor = ArgumentCaptor.forClass(FolderSummary.class);
@@ -152,7 +120,7 @@ class FolderSummaryUpdateServiceTest {
 
     @Test
     void progressSummary에_값이_있으면_신규_값_사용() {
-        stubBasicAuth();
+        when(folderSummaryQueryPort.findById(SUMMARY_ID)).thenReturn(Optional.of(existingSummary));
 
         FolderSummaryUpdateCommand command = new FolderSummaryUpdateCommand(null, "새 진행사항", "새 계획");
 
@@ -169,7 +137,7 @@ class FolderSummaryUpdateServiceTest {
         when(folderSummaryCommandPort.save(any())).thenReturn(captured);
         when(folderSummaryAppMapper.toResult(captured)).thenReturn(expectedResult);
 
-        FolderSummaryResult result = service.update(SUMMARY_ID, command, USER_EMAIL);
+        FolderSummaryResult result = service.update(SUMMARY_ID, command);
 
         assertThat(result.progressSummary()).isEqualTo("새 진행사항");
         assertThat(result.planSummary()).isEqualTo("새 계획");
@@ -187,7 +155,7 @@ class FolderSummaryUpdateServiceTest {
         FolderSummaryUpdateCommand command = new FolderSummaryUpdateCommand(null, "내용", "계획");
 
         org.assertj.core.api.Assertions.assertThatThrownBy(
-                () -> service.update(999L, command, USER_EMAIL)
+                () -> service.update(999L, command)
         ).isInstanceOf(NotFoundException.class);
     }
 }

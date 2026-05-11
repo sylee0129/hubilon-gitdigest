@@ -31,7 +31,7 @@ apiClient.interceptors.response.use(
 
         isRefreshing = true
         try {
-          await apiClient.post('/auth/refresh')
+          await axios.post('/auth/refresh', null, { withCredentials: true })
           refreshQueue.forEach((cb) => cb())
           refreshQueue = []
           return apiClient(originalRequest)

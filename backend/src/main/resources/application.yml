@@ -47,16 +47,16 @@ ai:
     model: gemini-2.5-flash
 
 keycloak:
-  server-url: http://192.168.10.30:8080
-  realm: hubilon_pd
-  client-id: hubilon-gitdigest-local
-  client-secret: YUA90njSxvvdXq6crpJj58oiAnQHxe3j
+  server-url: ${KEYCLOAK_SERVER_URL:http://192.168.10.30:8080}
+  realm: ${KEYCLOAK_REALM:hubilon_pd}
+  client-id: ${KEYCLOAK_CLIENT_ID:hubilon-gitdigest-local}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:YUA90njSxvvdXq6crpJj58oiAnQHxe3j}
   oauth-state-cookie: my_oauth_state
   session-id-token-key: my_id_token
-  redirect-uri: http://localhost:8080/auth/callback
-  post-logout-redirect-uri: http://localhost:8080/auth/login
-  post-login-redirect-uri: http://localhost:3000
-  secure-cookie: false
+  redirect-uri: ${KEYCLOAK_REDIRECT_URI:http://localhost:8080/auth/callback}
+  post-logout-redirect-uri: ${KEYCLOAK_POST_LOGOUT_REDIRECT_URI:http://localhost:8080/auth/login}
+  post-login-redirect-uri: ${KEYCLOAK_POST_LOGIN_REDIRECT_URI:http://localhost:3000}
+  secure-cookie: ${KEYCLOAK_SECURE_COOKIE:false}
   permit-all-paths:
     - /public/**
     - /health

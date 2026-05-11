@@ -24,7 +24,7 @@ public class FolderSummaryUpdateService implements FolderSummaryUpdateUseCase {
 
     @Transactional
     @Override
-    public FolderSummaryResult update(Long id, FolderSummaryUpdateCommand command, String currentUserEmail) {
+    public FolderSummaryResult update(Long id, FolderSummaryUpdateCommand command) {
         FolderSummary folderSummary = folderSummaryQueryPort.findById(id)
                 .orElseThrow(() -> new NotFoundException("폴더 요약을 찾을 수 없습니다. id=" + id));
 
