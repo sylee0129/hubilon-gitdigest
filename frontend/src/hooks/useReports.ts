@@ -108,11 +108,9 @@ export function useRefreshReports() {
   const { startDate, endDate } = useReportStore()
 
   return useMutation({
-    mutationFn: (extraParams?: Pick<ReportQueryParams, 'projectId' | 'projectIds'>) =>
-      reportApi.getReports({ ...extraParams, startDate, endDate, forceRefresh: true }),
-    onSuccess: (data, variables) => {
-      const key = REPORT_QUERY_KEY({ startDate, endDate, ...variables })
-      queryClient.setQueryData(key, data)
+    mutationFn: () => reportApi.getReports({ startDate, endDate, forceRefresh: true }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['reports'] })
     },
   })
 }
