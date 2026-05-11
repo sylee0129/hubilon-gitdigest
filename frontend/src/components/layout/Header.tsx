@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
-import { useQueryClient, useIsFetching } from '@tanstack/react-query'
+﻿import { useState, useRef, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useReportStore } from '../../stores/useReportStore'
 import { useAuthStore } from '../../stores/useAuthStore'
 import { useWeeklyExcelDownload } from '../../hooks/useWeeklyExcelDownload'
 import { useWeeklyConfluenceUpload } from '../../hooks/useWeeklyConfluenceUpload'
+import { useRefreshReports } from '../../hooks/useReports'
 import styles from './Header.module.css'
 
 interface WeekOption {
@@ -67,8 +68,7 @@ export default function Header() {
   const { upload, loading: confluenceLoading, disabled } = useWeeklyConfluenceUpload()
 
   const queryClient = useQueryClient()
-  const isFetching = useIsFetching({ queryKey: ['reports'] })
-  const isRefreshing = isFetching > 0
+  const { mutate: refreshReports, isPending: isRefreshing } = useRefreshReports()
   const { user, logout } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -132,7 +132,7 @@ export default function Header() {
         </button>
         <button
           className={styles.refreshBtn}
-          onClick={() => void queryClient.invalidateQueries({ queryKey: ['reports'] })}
+          onClick={() => refreshReports()}
           disabled={isRefreshing}
           title='커밋 이력 새로고침'
         >

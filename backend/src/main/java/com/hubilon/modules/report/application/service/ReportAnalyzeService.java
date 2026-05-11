@@ -78,7 +78,7 @@ public class ReportAnalyzeService implements ReportAnalyzeUseCase {
         // 진행 중인 주(endDate >= 오늘)이면 항상 최신 커밋 조회
         boolean isCurrentPeriod = !command.endDate().isBefore(LocalDate.now());
 
-        if (!isCurrentPeriod) {
+        if (!isCurrentPeriod && !command.forceRefresh()) {
             // 완료된 주 — 캐시된 보고서 반환 (AI 요약은 버튼으로 별도 생성)
             Optional<Report> existing = reportQueryPort.findExisting(
                     project.getId(), command.startDate(), command.endDate());
@@ -106,7 +106,7 @@ public class ReportAnalyzeService implements ReportAnalyzeUseCase {
         );
 
         // 진행 중인 주 — 기존 레코드가 있으면 커밋만 갱신
-        if (isCurrentPeriod) {
+        if (isCurrentPeriod || command.forceRefresh()) {
             Optional<Report> existing = reportQueryPort.findExisting(
                     project.getId(), command.startDate(), command.endDate());
             if (existing.isPresent()) {

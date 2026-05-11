@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { reportApi, type ReportQueryParams } from '../services/reportApi'
+import { useReportStore } from '../stores/useReportStore'
 import type { UpdateSummaryRequest } from '../types/report'
 
 export function useFolderSummary(params: { folderId: number | null; startDate: string; endDate: string }) {
@@ -97,6 +98,21 @@ export function useGenerateAiSummary() {
     mutationFn: (id: number) => reportApi.generateAiSummary(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['reports'] })
+    },
+  })
+}
+
+
+export function useRefreshReports() {
+  const queryClient = useQueryClient()
+  const { startDate, endDate } = useReportStore()
+
+  return useMutation({
+    mutationFn: (extraParams?: Pick<ReportQueryParams, 'projectId' | 'projectIds'>) =>
+      reportApi.getReports({ ...extraParams, startDate, endDate, forceRefresh: true }),
+    onSuccess: (data, variables) => {
+      const key = REPORT_QUERY_KEY({ startDate, endDate, ...variables })
+      queryClient.setQueryData(key, data)
     },
   })
 }

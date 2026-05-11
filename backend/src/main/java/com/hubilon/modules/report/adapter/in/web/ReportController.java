@@ -36,14 +36,15 @@ public class ReportController {
             @RequestParam(required = false) Long projectId,
             @RequestParam(required = false) List<Long> projectIds,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false, defaultValue = "false") boolean forceRefresh
     ) {
         if (projectIds != null && projectIds.isEmpty()) {
             return Response.ok(List.of());
         }
         User currentUser = securityUtils.getCurrentUser();
         Long teamId = currentUser.getTeamId();
-        ReportAnalyzeCommand command = new ReportAnalyzeCommand(projectId, projectIds, startDate, endDate, teamId);
+        ReportAnalyzeCommand command = new ReportAnalyzeCommand(projectId, projectIds, startDate, endDate, teamId, forceRefresh);
         List<ReportResponse> responses = reportAnalyzeUseCase.analyze(command).stream()
                 .map(reportWebMapper::toResponse)
                 .toList();

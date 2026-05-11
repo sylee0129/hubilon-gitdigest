@@ -7,6 +7,7 @@ export interface ReportQueryParams {
   projectIds?: number[]
   startDate: string
   endDate: string
+  forceRefresh?: boolean
 }
 
 export const reportApi = {
