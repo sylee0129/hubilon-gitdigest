@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient, useIsFetching } from '@tanstack/react-query'
 import { useReportStore } from '../../stores/useReportStore'
 import { useAuthStore } from '../../stores/useAuthStore'
 import { useWeeklyExcelDownload } from '../../hooks/useWeeklyExcelDownload'
@@ -67,6 +67,8 @@ export default function Header() {
   const { upload, loading: confluenceLoading, disabled } = useWeeklyConfluenceUpload()
 
   const queryClient = useQueryClient()
+  const isFetching = useIsFetching({ queryKey: ['reports'] })
+  const isRefreshing = isFetching > 0
   const { user, logout } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -127,6 +129,14 @@ export default function Header() {
           void queryClient.invalidateQueries({ queryKey: ['reports'] })
         }}>
           이번주
+        </button>
+        <button
+          className={styles.refreshBtn}
+          onClick={() => void queryClient.invalidateQueries({ queryKey: ['reports'] })}
+          disabled={isRefreshing}
+          title='커밋 이력 새로고침'
+        >
+          <span className={styles.refreshIcon}>↺</span>
         </button>
       </div>
 
