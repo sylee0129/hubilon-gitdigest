@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+﻿import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   DndContext,
@@ -32,8 +32,14 @@ import type { Folder, WorkProjectItem, Category } from '../../types/folder'
 import type { FolderOrderItem } from '../../services/folderApi'
 import styles from './Sidebar.module.css'
 
-function ProviderIcon({ gitlabUrl }: { gitlabUrl?: string | null }) {
-  const src = gitlabUrl?.toLowerCase().includes('github.com')
+function ProviderIcon({
+  gitlabUrl,
+  provider,
+}: {
+  gitlabUrl?: string | null
+  provider?: 'gitlab' | 'github'
+}) {
+  const src = provider === 'github' || gitlabUrl?.toLowerCase().includes('github.com')
     ? '/images/github.png'
     : '/images/gitlab.png'
   return <img src={src} alt="" className={styles.providerIcon} />
@@ -108,7 +114,7 @@ function SortableProjectItem({ project, isActive, onProjectClick, onDelete, onMo
               className={styles.contextMenuItem}
               onClick={() => { setMenuOpen(false); onMoveToFolder(project.id) }}
             >
-              폴더로 이동
+              이동
             </button>
             <button
               className={`${styles.contextMenuItem} ${styles.contextMenuItemDanger}`}
@@ -164,7 +170,7 @@ function AssignedProjectItem({ project, onProjectClick, onProjectDelete, onMoveT
               className={styles.contextMenuItem}
               onClick={() => { setMenuOpen(false); onMoveToFolder(project.id) }}
             >
-              폴더 이동
+              이동
             </button>
             <button
               className={`${styles.contextMenuItem} ${styles.contextMenuItemDanger}`}
@@ -332,6 +338,7 @@ export default function Sidebar({ width = 240 }: Props) {
   const navigate = useNavigate()
   const { isCollapsed, toggleSidebar } = useSidebarStore()
   const teamId = useAuthStore((s) => s.user?.teamId)
+  const teamName = useAuthStore((s) => s.user?.teamName)
   const isAdmin = useAuthStore((s) => s.user?.role === 'ADMIN')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isGitHubModalOpen, setIsGitHubModalOpen] = useState(false)
@@ -583,13 +590,17 @@ export default function Sidebar({ width = 240 }: Props) {
         <div className={styles.divider} />
 
         <div className={styles.folderSectionHeader}>
-          <div className={styles.sectionLabel}>Projects</div>
-          <button className={styles.addFolderBtn} onClick={() => setIsModalOpen(true)}>
-            + GitLab 프로젝트 추가
-          </button>
-          <button className={styles.addFolderBtn} onClick={() => setIsGitHubModalOpen(true)}>
-            + GitHub 프로젝트 추가
-          </button>
+          <div className={styles.sectionLabel}>Projects (미분류)</div>
+          <div className={styles.addProviderBtns}>
+            <button className={styles.addProviderBtn} onClick={() => setIsModalOpen(true)} title="GitLab 프로젝트 추가">
+              <ProviderIcon provider="gitlab" />
+              <span>+</span>
+            </button>
+            <button className={styles.addProviderBtn} onClick={() => setIsGitHubModalOpen(true)} title="GitHub 프로젝트 추가">
+              <ProviderIcon provider="github" />
+              <span>+</span>
+            </button>
+          </div>
         </div>
 
         <nav className={styles.projectList}>
@@ -635,13 +646,14 @@ export default function Sidebar({ width = 240 }: Props) {
         <div className={styles.divider} />
 
         <div className={styles.folderSectionHeader}>
-          <div className={styles.sectionLabel}>Folders</div>
+          {/*<div className={styles.sectionLabel}>{teamName ?? 'Folders'}</div>*/}
+          <div className={styles.sectionLabel}>Projects ({teamName})</div>
           <div className={styles.addBtnGroup}>
-            <button className={styles.addFolderBtn} onClick={handleOpenCategoryModal}>
-              + 카테고리 추가
+            <button className={styles.addFolderBtn} onClick={handleOpenCategoryModal} title="카테고리 추가">
+              + 카테고리
             </button>
-            <button className={styles.addFolderBtn} onClick={handleOpenFolderModal}>
-              + 프로젝트 추가
+            <button className={styles.addFolderBtn} onClick={handleOpenFolderModal} title="프로젝트 추가">
+              + 프로젝트
             </button>
           </div>
         </div>

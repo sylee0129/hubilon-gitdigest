@@ -80,6 +80,6 @@ springdoc:
 
 scheduler:
   weekly-report:
-    enabled: true
+    enabled: false
     cron: "0 55 9 * * THU"
 #    cron: "0 40 9 * * FRI"

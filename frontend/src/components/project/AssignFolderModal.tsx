@@ -19,7 +19,7 @@ export default function AssignFolderModal({ projectId, onClose }: Props) {
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>폴더로 이동</h2>
+          <h2 className={styles.title}>프로젝트 이동</h2>
           <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
         <div style={{ padding: '8px 0' }}>
@@ -27,7 +27,7 @@ export default function AssignFolderModal({ projectId, onClose }: Props) {
             style={{ display: 'block', width: '100%', padding: '10px 20px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', fontSize: '13px', color: 'var(--color-text-secondary)' }}
             onClick={() => handleSelect(null)}
           >
-            미분류 (폴더 해제)
+            미분류
           </button>
           {folders?.map((folder) => (
             <button
