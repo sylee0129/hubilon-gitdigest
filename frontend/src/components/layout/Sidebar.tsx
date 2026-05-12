@@ -32,6 +32,14 @@ import type { Folder, WorkProjectItem, Category } from '../../types/folder'
 import type { FolderOrderItem } from '../../services/folderApi'
 import styles from './Sidebar.module.css'
 
+function ProviderIcon({ gitlabUrl }: { gitlabUrl?: string | null }) {
+  const src = gitlabUrl?.toLowerCase().includes('github.com')
+    ? '/images/github.png'
+    : '/images/gitlab.png'
+  return <img src={src} alt="" className={styles.providerIcon} />
+}
+
+
 // ─── GitLab 프로젝트 아이템 ───────────────────────────────────────────────────
 
 interface SortableProjectItemProps {
@@ -84,6 +92,7 @@ function SortableProjectItem({ project, isActive, onProjectClick, onDelete, onMo
       >
         ⠿
       </span>
+      <ProviderIcon gitlabUrl={project.gitlabUrl} />
       <span className={styles.projectName}>{project.name}</span>
       <div className={styles.menuWrapper} ref={menuRef} onClick={(e) => e.stopPropagation()}>
         <button
@@ -139,6 +148,7 @@ function AssignedProjectItem({ project, onProjectClick, onProjectDelete, onMoveT
 
   return (
     <div className={styles.workProjectItem} onClick={() => onProjectClick(project.id)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onProjectClick(project.id)}>
+      <ProviderIcon gitlabUrl={project.gitlabUrl} />
       <span className={styles.workProjectName}>{project.name}</span>
       <div className={styles.menuWrapper} ref={menuRef} onClick={(e) => e.stopPropagation()}>
         <button
