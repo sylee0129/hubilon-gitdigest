@@ -176,6 +176,33 @@ class UserProvisioningServiceTest {
         assertThat(result.getRole()).isEqualTo(User.Role.ADMIN);
     }
 
+    @Test
+    void 한국어_이름은_성이름_순서로_저장된다() {
+        Map<String, Object> claims = Map.of(
+                "preferred_username", "korean_user",
+                "given_name", "수연",
+                "family_name", "이",
+                "roles", List.of("USER"),
+                "department", List.of("Hubilon/Engineering/Backend")
+        );
+        mockJwtClaims(claims);
+
+        Department dept = Department.builder().id(10L).name("Engineering").build();
+        Team team = Team.builder().id(20L).name("Backend").deptId(10L).build();
+        User savedUser = User.builder().id(8L).name("이수연").email("korean@example.com")
+                .keycloakUsername("korean_user").teamId(20L).role(User.Role.USER).build();
+
+        when(userQueryPort.findByEmail("korean@example.com")).thenReturn(Optional.empty());
+        when(departmentQueryPort.findByName("Engineering")).thenReturn(Optional.of(dept));
+        when(teamQueryPort.findByNameAndDeptId("Backend", 10L)).thenReturn(Optional.of(team));
+        when(userCommandPort.save(any())).thenReturn(savedUser);
+
+        User result = userProvisioningService.provisionOrSync("korean@example.com");
+
+        assertThat(result.getName()).isEqualTo("이수연");
+        verify(userCommandPort).save(any());
+    }
+
     // ──────────────────────────────────────────────
     // 기존 유저 role/team 재동기화
     // ──────────────────────────────────────────────

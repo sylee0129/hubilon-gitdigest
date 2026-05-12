@@ -115,7 +115,14 @@ public class UserProvisioningService {
         if (givenName == null && familyName == null) return "Unknown";
         if (givenName == null) return familyName;
         if (familyName == null) return givenName;
+        if (isKorean(givenName) || isKorean(familyName)) {
+            return familyName + givenName;
+        }
         return givenName + " " + familyName;
+    }
+
+    private boolean isKorean(String text) {
+        return text != null && text.chars().anyMatch(c -> c >= 0xAC00 && c <= 0xD7A3);
     }
 
     private User.Role extractRole(Map<String, Object> claims) {
