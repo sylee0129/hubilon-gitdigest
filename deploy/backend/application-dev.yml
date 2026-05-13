@@ -17,6 +17,7 @@ spring:
         jdbc:
           time_zone: Asia/Seoul
 
+# GitLab OAuth — 프로젝트 연동용. redirect-uri는 백엔드가 직접 받으므로 8090 포트
 gitlab:
   api:
     base-url: https://gitlab.com
@@ -26,6 +27,7 @@ gitlab:
     redirect-uri: ${GITLAB_OAUTH_REDIRECT_URI:http://192.168.10.30:8090/api/oauth/gitlab/callback}
     frontend-origin: ${FRONTEND_ORIGIN:http://192.168.10.30:3300}
 
+# GitHub OAuth — 프로젝트 연동용. redirect-uri는 백엔드가 직접 받으므로 8090 포트
 github:
   oauth:
     client-id: ${GITHUB_OAUTH_CLIENT_ID}
@@ -33,6 +35,7 @@ github:
     redirect-uri: ${GITHUB_OAUTH_REDIRECT_URI:http://192.168.10.30:8090/api/oauth/github/callback}
     frontend-origin: ${FRONTEND_ORIGIN:http://192.168.10.30:3300}
 
+# common-auth-lib 내부에서 사용하는 JWT 서명 키 (Keycloak 세션 쿠키 서명용)
 jwt:
   secret: ${JWT_SECRET:local-dev-secret-key-min-32-chars-!!}
   access-token-expiry: 3600
@@ -47,7 +50,7 @@ ai:
 
 scheduler:
   weekly-report:
-    enabled: true
+    enabled: false
     cron: "0 0 7 * * FRI"
 
 keycloak:
@@ -55,7 +58,17 @@ keycloak:
   realm: ${KEYCLOAK_REALM:hubilon_pd}
   client-id: ${KEYCLOAK_CLIENT_ID:hubilon-gitdigest}
   client-secret: ${KEYCLOAK_CLIENT_SECRET:VAFlVOoN5vPz6gpqeARhAuvtN81TuYuK}
+  # Keycloak 인증 완료 후 브라우저가 리다이렉트되는 주소.
+  # 브라우저 → Nginx(3300) → 백엔드(8090) 구조이므로 Nginx 포트(3300) 사용.
+  # 8090으로 설정하면 Nginx를 우회해 백엔드에 직접 접근하게 됨.
   redirect-uri: ${KEYCLOAK_REDIRECT_URI:http://192.168.10.30:3300/auth/callback}
+  # 로그아웃 후 브라우저가 이동할 프론트엔드 페이지 → Nginx 포트(3300)
   post-logout-redirect-uri: ${KEYCLOAK_POST_LOGOUT_REDIRECT_URI:http://192.168.10.30:3300/auth/login}
+  # 로그인 성공 후 프론트엔드 루트로 이동
   post-login-redirect-uri: ${KEYCLOAK_POST_LOGIN_REDIRECT_URI:http://192.168.10.30:3300}
+  # HTTP 환경(개발서버)에서는 false, HTTPS 운영 환경에서는 true로 변경
   secure-cookie: ${KEYCLOAK_SECURE_COOKIE:false}
+  uri:
+    register: /auth/register
+    checkUsername: /auth/check-username
+    checkEmail: /auth/check-email

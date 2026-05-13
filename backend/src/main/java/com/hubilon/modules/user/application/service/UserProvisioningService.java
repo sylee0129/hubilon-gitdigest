@@ -60,13 +60,14 @@ public class UserProvisioningService {
                 claims.get("realm_access") instanceof Map<?,?> m ? m.get("roles") : null,
                 claims.get("resource_access") instanceof Map<?,?> ra ? ra.keySet() : null,
                 role);
-        Long teamId = resolveTeamId(claims);
+        Long claimsTeamId = resolveTeamId(claims);
 
         Optional<User> existing = userQueryPort.findByEmail(email);
         if (existing.isPresent()) {
             User user = existing.get();
+            Long effectiveTeamId = claimsTeamId != null ? claimsTeamId : user.getTeamId();
             boolean changed = !role.equals(user.getRole())
-                    || !Objects.equals(teamId, user.getTeamId())
+                    || !Objects.equals(effectiveTeamId, user.getTeamId())
                     || !Objects.equals(fullName, user.getName());
             if (changed) {
                 User updated = User.builder()
@@ -75,7 +76,7 @@ public class UserProvisioningService {
                         .email(user.getEmail())
                         .password(user.getPassword())
                         .keycloakUsername(preferredUsername)
-                        .teamId(teamId)
+                        .teamId(effectiveTeamId)
                         .role(role)
                         .build();
                 return userCommandPort.save(updated);
@@ -88,7 +89,7 @@ public class UserProvisioningService {
                 .email(email)
                 .password(null)
                 .keycloakUsername(preferredUsername)
-                .teamId(teamId)
+                .teamId(claimsTeamId)
                 .role(role)
                 .build();
         return userCommandPort.save(newUser);

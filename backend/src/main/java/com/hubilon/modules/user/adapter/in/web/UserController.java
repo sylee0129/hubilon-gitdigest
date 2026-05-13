@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,7 @@ public class UserController {
     @Operation(summary = "사용자 등록")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public Response<UserRegisterResult> register(@Valid @RequestBody UserRegisterRequest request) {
         UserRegisterCommand command = new UserRegisterCommand(
                 request.name(), request.email(), request.password(), request.teamId(), User.Role.USER
@@ -54,3 +56,4 @@ public class UserController {
         return Response.ok();
     }
 }
+

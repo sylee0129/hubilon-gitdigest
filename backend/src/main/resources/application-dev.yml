@@ -50,7 +50,7 @@ ai:
 
 scheduler:
   weekly-report:
-    enabled: false
+    enabled: true
     cron: "0 0 7 * * FRI"
 
 keycloak:
@@ -68,3 +68,7 @@ keycloak:
   post-login-redirect-uri: ${KEYCLOAK_POST_LOGIN_REDIRECT_URI:http://192.168.10.30:3300}
   # HTTP 환경(개발서버)에서는 false, HTTPS 운영 환경에서는 true로 변경
   secure-cookie: ${KEYCLOAK_SECURE_COOKIE:false}
+  uri:
+    register: /auth/register
+    checkUsername: /auth/check-username
+    checkEmail: /auth/check-email

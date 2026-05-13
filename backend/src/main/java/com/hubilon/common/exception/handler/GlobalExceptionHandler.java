@@ -1,5 +1,7 @@
 package com.hubilon.common.exception.handler;
 
+import com.hubilon.auth.KeycloakClient;
+import com.hubilon.auth.KeycloakConfigurationException;
 import com.hubilon.common.exception.custom.ConflictException;
 import com.hubilon.common.exception.custom.ExternalServiceException;
 import com.hubilon.common.exception.custom.ForbiddenException;
@@ -64,6 +66,27 @@ public class GlobalExceptionHandler {
         return Response.fail(e.getMessage());
     }
 
+
+    @ExceptionHandler(KeycloakClient.KeycloakConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Response<Void> handleKeycloakConflict(KeycloakClient.KeycloakConflictException e) {
+        log.warn("Keycloak conflict: {}", e.getMessage());
+        return Response.fail(e.getMessage());
+    }
+
+    @ExceptionHandler(KeycloakClient.KeycloakUnavailableException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public Response<Void> handleKeycloakUnavailable(KeycloakClient.KeycloakUnavailableException e) {
+        log.warn("Keycloak unavailable: {}", e.getMessage());
+        return Response.fail("인증 서버에 연결할 수 없습니다.");
+    }
+
+    @ExceptionHandler(KeycloakConfigurationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Response<Void> handleKeycloakConfiguration(KeycloakConfigurationException e) {
+        log.error("Keycloak configuration error: {}", e.getMessage());
+        return Response.fail("인증 서버 설정 오류가 발생했습니다.");
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response<Void> handleValidation(MethodArgumentNotValidException e) {

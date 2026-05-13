@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+@WithMockUser(roles = {"USER", "ADMIN"})
 @ActiveProfiles("test")
 @Import(TestSecurityConfig.class)
 @Transactional
@@ -45,7 +47,7 @@ class UserControllerTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-        UserContext.set(new UserInfo("test-id", "테스트유저", "test@hubilon.com", List.of("ROLE_USER")));
+        UserContext.set(new UserInfo("test-id", "테스트유저", "test@hubilon.com", List.of("ROLE_USER", "ROLE_ADMIN")));
     }
 
     @AfterEach
