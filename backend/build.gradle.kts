@@ -9,7 +9,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -34,7 +34,7 @@ implementation("org.projectlombok:lombok")
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation(files("libs/common-auth-lib-1.0.9.jar"))
+    implementation(files("libs/common-auth-lib-2.0.0.jar"))
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("net.javacrumbs.shedlock:shedlock-spring:6.0.2")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.0.2")

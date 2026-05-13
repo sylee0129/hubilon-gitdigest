@@ -92,7 +92,7 @@ class UserProvisioningServiceTest {
                 "given_name", "John",
                 "family_name", "Doe",
                 "roles", List.of("USER"),
-                "department", List.of("Engineering/Backend")
+                "department", List.of("Hubilon/Engineering/Backend")
         );
         mockJwtClaims(claims);
 
@@ -127,7 +127,7 @@ class UserProvisioningServiceTest {
                 "given_name", "John",
                 "family_name", "Doe",
                 "roles", List.of("USER"),
-                "department", List.of("Engineering/Backend")
+                "department", List.of("Hubilon/Engineering/Backend")
         );
         mockJwtClaims(claims);
 
@@ -156,8 +156,8 @@ class UserProvisioningServiceTest {
                 "preferred_username", "admin_user",
                 "given_name", "Admin",
                 "family_name", "User",
-                "roles", List.of("ROLE_ADMIN"),
-                "department", List.of("IT/Ops")
+                "roles", List.of("ADMIN"),
+                "department", List.of("Hubilon/IT/Ops")
         );
         mockJwtClaims(claims);
 
@@ -213,8 +213,8 @@ class UserProvisioningServiceTest {
                 "preferred_username", "jdoe",
                 "given_name", "John",
                 "family_name", "Doe",
-                "roles", List.of("ROLE_ADMIN"),
-                "department", List.of("Engineering/Backend")
+                "roles", List.of("ADMIN"),
+                "department", List.of("Hubilon/Engineering/Backend")
         );
         mockJwtClaims(claims);
 
@@ -243,7 +243,7 @@ class UserProvisioningServiceTest {
                 "given_name", "John",
                 "family_name", "Doe",
                 "roles", List.of("USER"),
-                "department", List.of("Engineering/Frontend")
+                "department", List.of("Hubilon/Engineering/Frontend")
         );
         mockJwtClaims(claims);
 
@@ -272,7 +272,7 @@ class UserProvisioningServiceTest {
                 "given_name", "John",
                 "family_name", "Doe",
                 "roles", List.of("USER"),
-                "department", List.of("Engineering/Backend")
+                "department", List.of("Hubilon/Engineering/Backend")
         );
         mockJwtClaims(claims);
 
@@ -298,7 +298,7 @@ class UserProvisioningServiceTest {
                 "given_name", "Jonathan",
                 "family_name", "Doe",
                 "roles", List.of("USER"),
-                "department", List.of("Engineering/Backend")
+                "department", List.of("Hubilon/Engineering/Backend")
         );
         mockJwtClaims(claims);
 
@@ -391,7 +391,7 @@ class UserProvisioningServiceTest {
     }
 
     @Test
-    void department_클레임_세그먼트_1개면_DefaultDept와_함께_팀_생성() {
+    void department_클레임_세그먼트_3개_미만이면_teamId_null로_유저_생성() {
         Map<String, Object> claims = Map.of(
                 "preferred_username", "onlydept",
                 "given_name", "Only",
@@ -400,21 +400,17 @@ class UserProvisioningServiceTest {
         );
         mockJwtClaims(claims);
 
-        Department defaultDept = Department.builder().id(99L).name("Default").build();
-        Team savedTeam = Team.builder().id(55L).name("Backend").deptId(99L).build();
         User savedUser = User.builder().id(6L).name("Only Team").email("onlyteam@example.com")
-                .keycloakUsername("onlydept").teamId(55L).role(User.Role.USER).build();
+                .keycloakUsername("onlydept").teamId(null).role(User.Role.USER).build();
 
         when(userQueryPort.findByEmail("onlyteam@example.com")).thenReturn(Optional.empty());
-        when(teamQueryPort.findByName("Backend")).thenReturn(Optional.empty());
-        when(departmentQueryPort.findByName("Default")).thenReturn(Optional.of(defaultDept));
-        when(teamCommandPort.save(any())).thenReturn(savedTeam);
         when(userCommandPort.save(any())).thenReturn(savedUser);
 
         User result = userProvisioningService.provisionOrSync("onlyteam@example.com");
 
-        assertThat(result.getTeamId()).isEqualTo(55L);
-        verify(teamCommandPort).save(any());
+        assertThat(result.getTeamId()).isNull();
+        verify(teamCommandPort, never()).save(any());
+        verify(departmentCommandPort, never()).save(any());
     }
 
     // ──────────────────────────────────────────────
@@ -427,7 +423,7 @@ class UserProvisioningServiceTest {
                 "preferred_username", "racedoe",
                 "given_name", "Race",
                 "family_name", "Doe",
-                "department", List.of("Engineering/Backend")
+                "department", List.of("Hubilon/Engineering/Backend")
         );
         mockJwtClaims(claims);
 
@@ -456,7 +452,7 @@ class UserProvisioningServiceTest {
                 "preferred_username", "racedoe",
                 "given_name", "Race",
                 "family_name", "Doe",
-                "department", List.of("Engineering/Backend")
+                "department", List.of("Hubilon/Engineering/Backend")
         );
         mockJwtClaims(claims);
 
