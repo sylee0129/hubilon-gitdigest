@@ -1,11 +1,13 @@
 package com.hubilon.modules.confluence.application.service;
 
+import com.hubilon.common.exception.custom.ExternalServiceException;
 import com.hubilon.common.exception.custom.NotFoundException;
 import com.hubilon.modules.category.domain.model.Category;
 import com.hubilon.modules.category.domain.port.out.CategoryQueryPort;
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest;
 import com.hubilon.modules.confluence.adapter.in.web.WeeklyConfluenceRequest.WeeklyReportRowDto;
 import com.hubilon.modules.confluence.adapter.out.external.ConfluenceApiClient;
+import com.hubilon.modules.confluence.adapter.out.external.ConfluenceApiClient.ConfluencePage;
 import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceSpaceConfigJpaEntity;
 import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceSpaceConfigRepository;
 import com.hubilon.modules.confluence.adapter.out.persistence.ConfluenceTeamConfigJpaEntity;
@@ -19,6 +21,7 @@ import com.hubilon.modules.team.adapter.out.persistence.TeamJpaEntity;
 import com.hubilon.modules.team.adapter.out.persistence.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,35 +69,91 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
                         "Confluence Team 설정이 없습니다. teamId=" + teamId));
 
         String spaceKey = spaceConfig.getSpaceKey();
-        String parentPageId = teamConfig.getParentPageId();
+
+        var _auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserEmail = (_auth != null && _auth.getName() != null) ? _auth.getName() : "system";
 
         LocalDate startDate = LocalDate.parse(request.startDate());
         LocalDate endDate = LocalDate.parse(request.endDate());
 
-        // 헤더 표시용: 월요일~금요일 (startDate가 Mon이면 그대로, 아니면 다음 Mon으로)
         LocalDate displayMonday = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
         LocalDate displayFriday = displayMonday.plusDays(4);
+
+        String actualParentPageId = resolveMonthlyParentPageId(teamConfig, spaceKey, team, displayMonday, currentUserEmail);
 
         CategoryMeta categoryMeta = loadCategoryMeta();
         List<WeeklyReportRowDto> rows = resolveRowSummaries(request.rows(), startDate, endDate);
         String pageTitle = buildPageTitle(displayMonday, team.getName());
         String xhtml = buildXhtml(rows, displayMonday, displayFriday, categoryMeta, team.getName());
 
-        return client.findPageByTitle(spaceKey, parentPageId, pageTitle)
+        return client.findPageByTitle(spaceKey, actualParentPageId, pageTitle)
                 .map(page -> {
                     log.info("Confluence 페이지 수정: title={}, id={}", pageTitle, page.id());
                     return client.updatePage(page.id(), page.version() + 1, pageTitle, xhtml);
                 })
                 .orElseGet(() -> {
-                    log.info("Confluence 페이지 생성: title={}, parentId={}", pageTitle, parentPageId);
-                    return client.createPage(spaceKey, parentPageId, pageTitle, xhtml);
+                    log.info("Confluence 페이지 생성: title={}, parentId={}", pageTitle, actualParentPageId);
+                    return client.createPage(spaceKey, actualParentPageId, pageTitle, xhtml).url();
                 });
+    }
+
+    private String resolveMonthlyParentPageId(
+            ConfluenceTeamConfigJpaEntity teamConfig,
+            String spaceKey,
+            TeamJpaEntity team,
+            LocalDate displayMonday,
+            String currentUserEmail
+    ) {
+        String storedPageId = teamConfig.getParentPageId();
+        String pageNamePrefix = (teamConfig.getPageName() != null && !teamConfig.getPageName().isBlank())
+                ? teamConfig.getPageName()
+                : team.getName();
+        String monthPageTitle = pageNamePrefix + "_" + displayMonday.getMonthValue() + "월";
+        ConfluenceApiClient client = confluenceClientCache.get(team.getDeptId());
+
+        return client.findPageByTitleInSpace(spaceKey, monthPageTitle)
+                .map(page -> {
+                    if (!page.id().equals(storedPageId)) {
+                        updateTeamConfigParentPage(teamConfig, page.id(), currentUserEmail);
+                        log.info("Confluence 월 페이지 ID 자동 갱신: {} -> {}", storedPageId, page.id());
+                    }
+                    return page.id();
+                })
+                .orElseGet(() -> {
+                    String rootPageId = client.getPageInfo(storedPageId)
+                            .map(info -> isMonthlyPageTitle(info.title()) ? info.parentId() : storedPageId)
+                            .orElse(storedPageId);
+                    try {
+                        ConfluencePage created = client.createPage(spaceKey, rootPageId, monthPageTitle, "", true);
+                        log.info("Confluence 월 페이지 생성: title={}, parentId={}", monthPageTitle, rootPageId);
+                        updateTeamConfigParentPage(teamConfig, created.id(), currentUserEmail);
+                        return created.id();
+                    } catch (ExternalServiceException e) {
+                        // CQL 인덱스 지연으로 검색 실패했으나 페이지가 이미 존재하는 경우 재조회
+                        return client.findPageByTitleInSpace(spaceKey, monthPageTitle)
+                                .map(page -> {
+                                    log.info("Confluence 월 페이지 재조회 성공 (create 충돌): title={}, id={}", monthPageTitle, page.id());
+                                    updateTeamConfigParentPage(teamConfig, page.id(), currentUserEmail);
+                                    return page.id();
+                                })
+                                .orElseThrow(() -> e);
+                    }
+                });
+    }
+
+    private boolean isMonthlyPageTitle(String title) {
+        return title != null && title.matches(".*_\\d+월$");
+    }
+
+    private void updateTeamConfigParentPage(ConfluenceTeamConfigJpaEntity teamConfig, String newPageId, String email) {
+        teamConfig.update(newPageId, email);
+        teamConfigRepository.save(teamConfig);
     }
 
     private List<WeeklyReportRowDto> resolveRowSummaries(List<WeeklyReportRowDto> rows, LocalDate startDate, LocalDate endDate) {
         return rows.stream().map(row -> {
             if (row.folderId() == null) {
-                log.info("[Confluence] folderId 없음, 요청값 그대로 사용: folderName={}", row.folderName());
+                log.info("[Confluence] folderId 없음, 입력값 그대로 사용: folderName={}", row.folderName());
                 return row;
             }
 
@@ -106,7 +165,7 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
                         return existing;
                     })
                     .orElseGet(() -> {
-                        log.info("[Confluence] folder_summary 없음 → AI 요약 생성 시작: folderId={}, folderName={}, period={} ~ {}",
+                        log.info("[Confluence] folder_summary 없음 -> AI 요약 생성 시작: folderId={}, folderName={}, period={} ~ {}",
                                 row.folderId(), row.folderName(), startDate, endDate);
                         var result = folderSummaryAiSummarizeUseCase.summarize(
                                 new FolderSummaryAiSummarizeCommand(row.folderId(), startDate, endDate));
@@ -142,7 +201,7 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         int dayOfMonth = startDate.getDayOfMonth();
         int firstDayOfWeekValue = startDate.withDayOfMonth(1).getDayOfWeek().getValue() % 7;
         int weekNumber = (int) Math.ceil((dayOfMonth + firstDayOfWeekValue) / 7.0);
-        return startDate.getMonthValue() + "월_" + weekNumber + "주차_" + teamName + "_주간보고";
+        return startDate.getYear() + "_" + startDate.getMonthValue() + "월_" + weekNumber + "주차_" + teamName + "_주간보고";
     }
 
     private String buildXhtml(List<WeeklyReportRowDto> rows, LocalDate startDate, LocalDate endDate,
@@ -172,7 +231,7 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<h2>").append(escape(teamName)).append(" | ").append(month).append("월 ").append(weekNumber).append("주</h2>\n");
+        sb.append("<h2>").append(escape(teamName)).append(" | ").append(month).append("월").append(weekNumber).append("주</h2>\n");
         sb.append("<table style=\"width: 100%;\">\n");
         sb.append("  <colgroup>\n");
         sb.append("    <col style=\"width: 8%;\" />\n");
