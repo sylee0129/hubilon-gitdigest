@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useTeamConfigs, useDeleteTeamConfig } from './hooks/useConfluenceConfigs'
 import DeleteConfirmModal from '../../../components/common/DeleteConfirmModal'
 import type { TeamConfig } from '../../../services/confluenceAdminApi'
@@ -25,7 +25,7 @@ export default function TeamConfigTable() {
   }
 
   if (!configs || configs.length === 0) {
-    return <div className={styles.stateMsg}>등록된 팀별 설정이 없습니다.</div>
+    return <div className={styles.stateMsg}>등록된 팀 설정이 없습니다.</div>
   }
 
   return (
@@ -35,7 +35,8 @@ export default function TeamConfigTable() {
           <thead>
             <tr>
               <th>팀</th>
-              <th>Parent Page ID</th>
+              <th>주간보고 폴더 ID</th>
+              <th>하위 페이지 prefix</th>
               <th>수정자</th>
               <th>수정일</th>
               <th></th>
@@ -48,6 +49,7 @@ export default function TeamConfigTable() {
                 <td>
                   <code className={styles.codeText}>{cfg.parentPageId}</code>
                 </td>
+                <td>{cfg.pageName ?? '-'}</td>
                 <td>{cfg.updatedBy}</td>
                 <td className={styles.dateCell}>{cfg.updatedAt?.slice(0, 10)}</td>
                 <td>
@@ -67,7 +69,7 @@ export default function TeamConfigTable() {
 
       {deletingItem && (
         <DeleteConfirmModal
-          title="팀별 설정 삭제"
+          title="팀 설정 삭제"
           message={`'${deletingItem.teamName}' 팀의 Confluence 설정을 삭제하시겠습니까?`}
           isPending={deleteConfig.isPending}
           onConfirm={handleConfirmDelete}

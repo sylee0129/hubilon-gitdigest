@@ -9,6 +9,7 @@ public record TeamConfigResponse(
         Long teamId,
         String teamName,
         String parentPageId,
+        String pageName,
         String updatedBy,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime updatedAt

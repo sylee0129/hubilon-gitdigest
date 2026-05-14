@@ -99,6 +99,7 @@ public class ConfluenceConfigController {
         TeamConfigResponse result = confluenceConfigService.upsertTeamConfig(
                 request.teamId(),
                 request.parentPageId(),
+                request.pageName(),
                 currentUserEmail
         );
         return Response.ok(result);

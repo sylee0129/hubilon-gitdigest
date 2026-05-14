@@ -16,7 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.hubilon.auth.UserContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -59,9 +59,9 @@ public class SchedulerJobLogController {
     @Operation(summary = "스케줄러 수동 실행")
     @PostMapping("/trigger")
     public ResponseEntity<Response<SchedulerJobLogDetailResponse>> trigger(
-            @RequestBody(required = false) TriggerRequest request,
-            @AuthenticationPrincipal String email
+            @RequestBody(required = false) TriggerRequest request
     ) {
+        String email = UserContext.getEmail();
         User currentUser = userQueryUseCase.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다. email=" + email));
 

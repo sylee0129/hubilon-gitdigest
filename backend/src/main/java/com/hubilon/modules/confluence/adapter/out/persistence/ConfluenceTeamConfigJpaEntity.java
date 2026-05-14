@@ -32,6 +32,10 @@ public class ConfluenceTeamConfigJpaEntity {
     @Column(nullable = false, length = 100)
     private String parentPageId;
 
+    @Comment("Confluence 페이지명 prefix (예: 플랫폼개발팀)")
+    @Column(length = 100)
+    private String pageName;
+
     @Column(length = 100)
     private String createdBy;
 
@@ -46,17 +50,24 @@ public class ConfluenceTeamConfigJpaEntity {
     private LocalDateTime updatedAt;
 
     @Builder(toBuilder = true)
-    public ConfluenceTeamConfigJpaEntity(Long id, Long teamId, String parentPageId,
+    public ConfluenceTeamConfigJpaEntity(Long id, Long teamId, String parentPageId, String pageName,
                                          String createdBy, String updatedBy) {
         this.id = id;
         this.teamId = teamId;
         this.parentPageId = parentPageId;
+        this.pageName = pageName;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
     }
 
     public void update(String parentPageId, String updatedBy) {
         this.parentPageId = parentPageId;
+        this.updatedBy = updatedBy;
+    }
+
+    public void update(String parentPageId, String pageName, String updatedBy) {
+        this.parentPageId = parentPageId;
+        this.pageName = pageName;
         this.updatedBy = updatedBy;
     }
 }

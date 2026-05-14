@@ -7,5 +7,6 @@ public record TeamConfigUpsertRequest(
         @NotNull(message = "teamId는 필수입니다.")
         Long teamId,
         @NotBlank(message = "parentPageId는 필수입니다.")
-        String parentPageId
+        String parentPageId,
+        String pageName
 ) {}

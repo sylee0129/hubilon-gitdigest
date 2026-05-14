@@ -1,4 +1,4 @@
-import apiClient from './axios'
+﻿import apiClient from './axios'
 import type { ApiResponse } from '../types/api'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -20,6 +20,7 @@ export interface TeamConfig {
   teamId: number
   teamName: string
   parentPageId: string
+  pageName: string
   updatedBy: string
   updatedAt: string
 }
@@ -35,6 +36,7 @@ export interface SpaceConfigUpsertRequest {
 export interface TeamConfigUpsertRequest {
   teamId: number
   parentPageId: string
+  pageName?: string | null
 }
 
 // ─── API ──────────────────────────────────────────────────────────────────────

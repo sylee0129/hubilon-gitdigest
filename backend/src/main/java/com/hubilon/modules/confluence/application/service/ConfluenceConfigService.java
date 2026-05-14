@@ -115,24 +115,25 @@ public class ConfluenceConfigService {
     // ===== Team 기능 =====
 
     @Transactional
-    public TeamConfigResponse upsertTeamConfig(Long teamId, String parentPageId, String currentUserEmail) {
+    public TeamConfigResponse upsertTeamConfig(Long teamId, String parentPageId, String pageName, String currentUserEmail) {
         TeamJpaEntity team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new NotFoundException("팀을 찾을 수 없습니다. teamId=" + teamId));
 
         ConfluenceTeamConfigJpaEntity entity = teamConfigRepository.findByTeamId(teamId)
                 .map(existing -> {
-                    existing.update(parentPageId, currentUserEmail);
+                    existing.update(parentPageId, pageName, currentUserEmail);
                     return existing;
                 })
                 .orElseGet(() -> ConfluenceTeamConfigJpaEntity.builder()
                         .teamId(teamId)
                         .parentPageId(parentPageId)
+                        .pageName(pageName)
                         .createdBy(currentUserEmail)
                         .updatedBy(currentUserEmail)
                         .build());
 
         ConfluenceTeamConfigJpaEntity saved = teamConfigRepository.saveAndFlush(entity);
-        log.info("Confluence Team 설정 저장: teamId={}, parentPageId={}, updatedBy={}", teamId, parentPageId, currentUserEmail);
+        log.info("Confluence Team 설정 저장: teamId={}, parentPageId={}, pageName={}, updatedBy={}", teamId, parentPageId, pageName, currentUserEmail);
         return toTeamResponse(saved, team.getName());
     }
 
@@ -205,6 +206,7 @@ public class ConfluenceConfigService {
                 entity.getTeamId(),
                 teamName,
                 entity.getParentPageId(),
+                entity.getPageName(),
                 entity.getUpdatedBy(),
                 entity.getUpdatedAt()
         );
