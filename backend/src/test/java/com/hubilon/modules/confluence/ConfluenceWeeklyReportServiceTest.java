@@ -103,19 +103,19 @@ class ConfluenceWeeklyReportServiceTest {
     class BuildPageTitle {
         @Test @DisplayName("월 첫째 주")
         void firstWeek() throws Exception {
-            assertThat(invokePageTitle(LocalDate.of(2026, 3, 1))).isEqualTo("3월_1주차_테스트팀_주간보고");
+            assertThat(invokePageTitle(LocalDate.of(2026, 3, 1))).isEqualTo("2026_3월_1주차_테스트팀_주간보고");
         }
         @Test @DisplayName("4월 3주차")
         void april_week3() throws Exception {
-            assertThat(invokePageTitle(LocalDate.of(2026, 4, 13))).isEqualTo("4월_3주차_테스트팀_주간보고");
+            assertThat(invokePageTitle(LocalDate.of(2026, 4, 13))).isEqualTo("2026_4월_3주차_테스트팀_주간보고");
         }
         @Test @DisplayName("월 마지막 주")
         void lastWeek() throws Exception {
-            assertThat(invokePageTitle(LocalDate.of(2026, 4, 27))).startsWith("4월_").contains("테스트팀").endsWith("주간보고");
+            assertThat(invokePageTitle(LocalDate.of(2026, 4, 27))).startsWith("2026_4월_").contains("테스트팀").endsWith("주간보고");
         }
         @Test @DisplayName("제목 형식 검증")
         void titleFormat() throws Exception {
-            assertThat(invokePageTitle(LocalDate.of(2026, 1, 5))).matches("\\d+월_\\d+주차_.+_주간보고");
+            assertThat(invokePageTitle(LocalDate.of(2026, 1, 5))).matches("\\d+_\\d+월_\\d+주차_.+_주간보고");
         }
     }
 

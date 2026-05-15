@@ -18,10 +18,10 @@ import com.hubilon.modules.report.domain.model.FolderSummary;
 import com.hubilon.modules.report.domain.port.in.FolderSummaryAiSummarizeUseCase;
 import com.hubilon.modules.report.domain.port.out.FolderSummaryQueryPort;
 import com.hubilon.modules.team.adapter.out.persistence.TeamJpaEntity;
+import com.hubilon.auth.UserContext;
 import com.hubilon.modules.team.adapter.out.persistence.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,8 +70,7 @@ public class ConfluenceWeeklyReportService implements UploadWeeklyReportUseCase 
 
         String spaceKey = spaceConfig.getSpaceKey();
 
-        var _auth = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserEmail = (_auth != null && _auth.getName() != null) ? _auth.getName() : "system";
+        String currentUserEmail = UserContext.getEmail() != null ? UserContext.getEmail() : "system";
 
         LocalDate startDate = LocalDate.parse(request.startDate());
         LocalDate endDate = LocalDate.parse(request.endDate());

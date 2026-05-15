@@ -1,6 +1,6 @@
 services:
   backend:
-    image: eclipse-temurin:17-jre-alpine
+    image: eclipse-temurin:21-jre-alpine
     volumes:
       - ./backend:/app
     command:
