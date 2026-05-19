@@ -71,6 +71,9 @@ keycloak:
     callback: /auth/callback
     logout: /auth/logout
     refresh: /auth/refresh
+    checkUsername: /auth/check-username
+    checkEmail: /auth/check-email
+    register: /auth/register
 
 springdoc:
   swagger-ui:
